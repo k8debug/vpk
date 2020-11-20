@@ -264,7 +264,7 @@ function nsChange(ns) {
 		}
 
 	if (ns !== 'clusterLevel') {
-			let bBindings = buildRoleBindings(ns);
+		let bBindings = buildRoleBindings(ns);
 		if (typeof bBindings !== 'undefined') {
 			rtn = rtn + bBindings;
 		}
@@ -1213,6 +1213,41 @@ function svgGenerators(data, fnum) {
 			} 
 		}
 
+		if (typeof data.CRD !== 'undefined') {
+			if (typeof data.CRD[0].level1CRD !== 'undefined') {
+				if (data.CRD[0].level1CRD === true) {
+					image = checkImage('CRD');
+					let cFnum1 = data.CRD[0].level1Fnum;
+					let action1 = buildSvgInfo(data.CRD[0].level1Name, cFnum1, 'CRD')
+					let what1 = '<image x="108" y="3"  width="40" height="40" href="images/' + image + '.svg" '
+					+ 'onmousemove="showTooltip(evt, \'' 
+					+ action1
+					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'CRD@' + cFnum1 +'\')"/>' 
+					+ '<line  x1="175" x2="175" y1="20" y2="26" stroke="black" stroke-width="2" stroke-linecap="round"/>' 
+					+ '<line  x1="175" x2="147" y1="20" y2="20"  stroke="black" stroke-width="2" stroke-linecap="round"/>' 
+					+ '<line  x1="147" x2="151" y1="20" y2="15"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
+					+ '<line  x1="147" x2="151" y1="20" y2="25"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
+					rtn = rtn + what1;
+				}
+			}
+			if (typeof data.CRD[0].level2CRD !== 'undefined') {
+				if (data.CRD[0].level2CRD === true) {
+					image = checkImage('CRD');
+					let cFnum2 = data.CRD[0].level2Fnum;
+					let action2 = buildSvgInfo(data.CRD[0].level2Name, cFnum2, 'CRD')
+					let what2 = '<image x="8" y="3"  width="40" height="40" href="images/' + image + '.svg" '
+					+ 'onmousemove="showTooltip(evt, \'' 
+					+ action2
+					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'CRD@' + cFnum2 +'\')"/>' 
+					+ '<line  x1="75" x2="75" y1="20" y2="26" stroke="black" stroke-width="2" stroke-linecap="round"/>' 
+					+ '<line  x1="75" x2="47" y1="20" y2="20"  stroke="black" stroke-width="2" stroke-linecap="round"/>' 
+					+ '<line  x1="47" x2="51" y1="20" y2="15"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
+					+ '<line  x1="47" x2="51" y1="20" y2="25"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
+					rtn = rtn + what2;
+				}
+			}
+		}
+
 		if (bnds.show === true) {
 			rtn = rectP1a + x + rectP1b + width+ rectP1c + rectH + rectP2a + rectFill + rectP2b + rtn;
 		}
@@ -1451,6 +1486,9 @@ function buildSvgInfo(data, fnum, type) {
 	if (type === 'Phase') {
 		tName = 'Status'
 	}
+	if (type === 'CRD') {
+		tName = 'CustomResourceDefinition'
+	}
 	// check if an entry already exists, if so skip
 	if (typeof svgInfo[id][0] === 'undefined') {
 		svgInfo[id].push('<span style="font-size: 0.80rem; text-decoration: underline;">' + tName + '</span><br><span style="font-size: 0.70rem;">' + content + '</span>');
@@ -1466,8 +1504,6 @@ function buildTipContent(data, type, fnum) {
 		content = '<div class="vpkfont-xsm">' + content + '</div>'
 		return content;
 	}
-
-	
 
 	if (type === 'Secret' || type === 'ConfigMap') {
 		if (typeof data[0] !== 'undefined' ) {
@@ -1488,6 +1524,8 @@ function buildTipContent(data, type, fnum) {
 				content = content + data[k].name ;  
 			}
 		}	
+	} else if (type === 'CRD') {
+		content = 'Name: ' + data;  
 	} else if (type === 'ControllerRevision') {
 		if (typeof data[0] !== 'undefined' ) {
 			cnt = 0;			
@@ -1542,7 +1580,6 @@ function buildTipContent(data, type, fnum) {
 				}
 			}			
 		}
-
 	} else if (type === 'PersistentVolumeClaim') {
 		if (typeof data[0] !== 'undefined' ) {
 			cnt = 0;			
@@ -1669,6 +1706,8 @@ function checkImage(kind) {
 	let image;
 	if (kind === 'Alertmanager') {
 		image = 'openshift/ocp-am';
+	} else if (kind === 'CRD') {
+		image = 'k8/crd';
 	} else if (kind === 'ControllerRevision') {
 		image = 'k8/c-rev';
 	} else if (kind === 'DaemonSet') {

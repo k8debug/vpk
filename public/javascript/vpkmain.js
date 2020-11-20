@@ -592,7 +592,7 @@ function getDef2(def) {
     if (type === 'workload') {
         //selectedDef = data.src + '::' + data.part + '::' + data.name;
         editObj();
-    } else if (type === 'ControllerRevision' || type === 'PersistentVolume' || type === 'StorageClass') {
+    } else if (type === 'ControllerRevision' || type === 'PersistentVolume' || type === 'StorageClass' || type === 'CRD') {
         // fParts = parts[1].split('.');
         // src = rootDir + '/config' + fParts[0] + '.yaml';
         // selectedDef = src + '::' + fParts[1] + '::ControllerRevision';
