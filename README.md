@@ -33,7 +33,7 @@ You cannot install and run this application without first installing node.js and
 
 Download the source files and place in a directory.  The source files are available on github and can be downloaded using the following clone command or retrieved 
 
-git clone http://github.com/k8debug/vpk.git/ 
+git clone https://github.com/k8debug/vpk.git/ 
 
 Change to the directory where the files were placed. Run the following 
 NPM command to install the required Node modules:
@@ -106,8 +106,7 @@ ADD ALL THE OTHER INFORMATION FOR USER
 
 Dave Weilert
 
-https://github.com/IBM-ICP-CoC/VpK 
-
+https://github.com/k8debug/vpk.git/ 
 
 ## License
 
