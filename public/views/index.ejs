@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <div class="wrapper">
+        <div id="main">
+            <div id="header-bar" class="header">
+                <img style='vertical-align:middle;' src='images/vpk.png' width='30' height='30'>
+                <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont-lg pl-2'>
+                    Visual parsed Kubernetes
+                </div>
+                <div class="header-right">
+                    <a href="javascript:showMessage('build the gear code', 'fail')">
+                        <i class="fas fa-cog fa-lg"></i>
+                    </a>
+                </div>
+            </div> <!-- end of id="header-bar" -->
+
+            <div id="datasource" class="header vpkfont-md">
+                <select id="pickDataSource" 
+                    class="js-example-basic-multiple  vpkfont-md"
+                    style="width: 200px; vertical-align:middle;">
+                    <option></option>
+                    <option>Running K8 Cluster</option>
+                    <option>Previous K8 Snapshot</option>
+                    <option>Upload K8 files</option>
+                </select>
+                <div class="pl-3" style='vertical-align:middle; display:inline;'>
+                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md "
+                        onclick="dirStats()">
+                        <span id="baseDir" class="float-left"></span>
+                    </button>
+                </div>                    
+                <div class="float-right">
+                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
+                        onclick="searchObj()">
+                        Show data
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
+                        data-toggle="collapse" data-target="#filterdata">
+                        Filter data
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
+                        onclick="clearData()">
+                        Clear data
+                    </button>                </div>
+            </div> <!-- end of id="datasource" -->
+
+            <div id="messageDiv" class="collapse hide mt-1 mb-0">
+                <div id="messageType" class="alert alert-warning fade show" role="alert">
+                    <span id="messageText"></span>
+                    <button type="button" class="close" onclick="hideMessage()">
+                    <span>&times;</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ==================================== -->
+            <!-- Filtered data results section        -->
+            <!-- ==================================== -->
+            <div class="grid">
+                <div id="filterdata" class="border rounded mt-1 collapse hide vpkcolor">
+                    <div id="filter-bar-1" class="row filterBack pl-1 mt-1">
+                        <div class="vpkfont-md mt-2" style="width: 250px;">
+                            Namespace(s) 
+                        </div>                       
+                        <div id="bar1-select" class="ml-1 mr-1 mt-1 vpkfont-md">
+                            <select id="ns-filter" class="js-example-basic-multiple" 
+                                multiple="multiple" 
+                                style="width: 550px"
+                                id="bar1-options" >
+                                <option>all-namespaces</option>
+                                <option>&lt;cluster-level&gt;</option>
+                                <option>openshift</option>
+                                <option>default</option>
+                                <option>team01</option>
+                                <option>team02</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+
+                    <div id="filter-bar-2" class="row filterBack pl-1">
+                        <div class="vpkfont-md mt-2" style="width: 250px;">
+                            Kind(s) 
+                        </div>
+                        <div id="bar2-select" class="ml-1 mr-1 mt-1 vpkfont-md">
+                            <select id="kind-filter" class="js-example-basic-multiple" 
+                                multiple="multiple" 
+                                style="width: 550px"
+                                id="bar2-options" >
+                                <option>all-kinds</option>
+                                <option>Pod</option>
+                                <option>Deployment</option>
+                                <option>ConfigMap</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div id="filter-bar-3" class="row filterBack pl-1">
+                        <div class="vpkfont-md mt-2" style="width: 250px;">
+                            Labels(s) 
+                        </div>
+                        <div id="bar3-select" class="ml-1 mr-1 mt-1 vpkfont-md">
+                            <select id="label-filter" class="js-example-basic-multiple" 
+                                multiple="multiple" 
+                                style="width: 550px"
+                                id="bar3-options" >
+                                <option>key1 : value1</option>
+                                <option>key2 : value2</option>
+                                <option>key3 : value3</option>
+                                <option>key4 : value4</option>
+                                <option>key5 : value5</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="filter-bar-4" class="row filterBack pl-1">
+                        <div class="vpkfont-md mt-2" style="width: 250px;">
+                            Annotation(s) 
+                        </div>
+                        <div id="bar4-select" class="ml-1 mr-1 mt-1 vpkfont-md">
+                            <select id="anno-filter" class="js-example-basic-multiple" 
+                                multiple="multiple" 
+                                style="width: 550px"
+                                id="bar4-options" >
+                                <option>key1 : value1</option>
+                                <option>key2 : value2</option>
+                                <option>key3 : value3</option>
+                                <option>key4 : value4</option>
+                                <option>key5 : value5</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="filter-bar-5" class="row filterBack pl-1">
+                        <div class="vpkfont-md mt-2" style="width: 250px;">
+                            K8 resource kind name
+                        </div>
+                        <div id="bar5-select" class="ml-1 mr-1 mt-1 vpkfont-md" style="width: 550px;">
+                            <input type="text" class="form-control vpkfont-md" id="kind-name" placeholder="enter resource name">
+                        </div>
+                    </div>
+
+                    <div id="filterTheData" class="row filterBack">
+                        <div class="col-9">
+                            <span>
+                                &nbsp;
+                            </span>
+                        </div>
+                        <div class="col-3 mt-1 mb-1">
+                            <button type="button" class="btn btn-sm btn-primary vpkfont-md float-right vpkwhite" onclick="searchObj()">
+                            Apply filters
+                        </button>
+                        </div>
+                    </div>
+                </div>  <!-- end of id="filterdata" -->
+
+                <div class="row">
+                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                </div>
+            </div>
+
+            <ul id="tabs" class="nav nav-tabs">
+                <li class="nav-item"><a id="instTab"      href="#instructions" data-target="#instructions" data-toggle="tab" class="nav-link small text-uppercase active">Instructions</a></li>
+                <li class="nav-item"><a id="tableTab"     href="#searchR"      data-target="#searchR"      data-toggle="tab" class="nav-link small text-uppercase">Table View</a></li>
+                <li class="nav-item"><a id="graphicTab"   href="#graphic"      data-target="#graphic"      data-toggle="tab" class="nav-link small text-uppercase">Graphic View</a></li>
+                <li class="nav-item"><a id="schematicTab" href="#schematic"    data-target="#schematic"    data-toggle="tab" class="nav-link small text-uppercase">Schematics</a></li>
+            </ul>
+            <br>
+            <div id="tabsContent" class="tab-content">
+
+                <div id="instructions" class="tab-pane active show">
+                    <div id="instDetail" class="vpkfont">
+                        Instructions should be placed here.
+                    </div>
+                </div>
+
+                <div id="searchR" class="tab-pane">
+                    <div id="searchResults">
+                        <table id="tableL" class="table table-bordered table-sm"
+                            data-buttons-class="primary"
+                            data-buttons-prefix="btn-sm btn"
+                            data-click-to-select="true"
+                            data-icon-size="sm"
+                            data-loading-template="loadingTemplate"
+                            data-maintain-meta-data="true"
+                            data-page-list="[10, 25, 50, 100, 200, All]"
+                            data-pagination="true"
+                            data-pagination-v-align="both"
+                            data-search="true"
+                            data-search-highlight="true"
+                            data-show-columns="true"
+                            data-show-export="true"
+                            data-show-fullscreen="true"
+                            data-show-print="true"
+                            data-show-refresh="true"
+                            data-show-toggle="true"
+                            data-sort-class="table-active"
+                            data-sortable="true"
+                            data-trim-on-search="false"
+                            data-toggle="table"
+                            data-visible="true"
+                            >
+                            <thead class='thead-light'>
+                            <tr>
+                                <th data-field="cbox" data-checkbox="true"></th>
+                                <th data-field="id"  data-sortable="true">ID </th>
+                                <th data-field="namespace"  data-sortable="true">Namespace</th>
+                                <th data-field="kind"  data-sortable="true">Kind</th>
+                                <th data-field="value" data-sortable="true">Kind Name</th>
+                                <th data-field="src">File</th>
+                                <th data-field="part">Part</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="col-md-12 mt-2 mb-3 p-0">
+                        <button type="button" class="btn btn-outline-primary btn-sm vpkButtons mr-1 pl-2 pr-2" id="viewsvg" onclick="showSvg()">
+                        View
+                        </button>
+                        <span class="mr-2 vpkfont-md">
+                            Select one or more items from the above table and press the view button to visualize item(s).  Once displayed click the item to view the yaml.
+                        </span>
+                    </div>
+
+                    <div class="col-md-12 mb-3 p-0">
+                        <button type="button" class="btn btn-outline-primary btn-sm vpkButtons mr-1 pl-2 pr-2" id="clearsvg" onclick="clearSvg()">
+                        Clear
+                        </button>
+                        <span class="mr-2 vpkfont-md">
+                            Once images are shown press button to clear images.
+                        </span>
+                    </div>
+
+                    <div class="container">
+                        <div id="svgResults">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="graphic" class="tab-pane">
+                    <div class="container row vpkButtons">
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart01" onclick="getChart('hierarchy')">
+                            &nbsp;Hierarchy&nbsp;
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart02" onclick="getChart('collapsible')">
+                                &nbsp;Collapsible&nbsp;
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart03" onclick="getChart('circlePack')">
+                                &nbsp;Circle Pack&nbsp;
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart04" onclick="getChart('tree')">
+                                &nbsp;Tree&nbsp;
+                            </button>
+                        </div>
+
+                        <div id="chartInfo">
+                        </div>
+
+                        <div id="charts" class="container" >
+                            <svg width="950" height="50"></svg>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div id="schematic" class="tab-pane">
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSchematic()">
+                        &nbsp;Workload Schematics&nbsp;
+                        </button>
+                    </div>
+
+                    <div id="schematicDetail" class="vpkfont">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ==================================== -->
+            <!-- SVG images are shown here            -->		        
+            <!-- ==================================== -->
+            <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
+
+            <!-- <div id="chartInfo">
+            </div>
+            <div id="charts" class="container" >
+                <svg width="950" height="50"></svg>
+            </div> -->
+
+            <div id="schematicOUT" >
+                <!-- ??? -->
+            </div>
+
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- Running cluster Modal section        -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="clusterModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="clusterHeader">
+                            <h6 class="modal-title">Cluster Information</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- Drop down for cluster type is dynamically built -->
+                        <div class="form-group col-4" style="margin: -15px; padding-bottom: 15px;">
+                            <label for="clusterType">Cluster type</label>
+                            <select class="form-control form-control-sm" id="clusterType">
+                                <option value="none">select cluster type</option>
+                            </select>
+                        </div>
+
+                        <div id="clusterInfo">
+                        </div>
+
+                        <div id="clusterStatus">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="closeGetCluster()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Change directory Modal section       -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="chgDirModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="dirHeader">
+                            <h6 class="modal-title">Change Directory</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group"> 
+                            <input id="newDir" type="text" class="form-control form-control-sm" placeholder="New full directory path">
+                            <button id="validateBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="reload()" style="margin: 5px;">
+                            Validate/Load
+                            </button>
+                        </div>
+                        <div id="loadStatus">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- About Modal section                  -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Visual parsed Kubernetes<br>
+                            <span id="version" style="font-size: 60%""></span>
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div style="background-color: #eee;">
+                        <div class="align-middle">
+                            <div style="font-size: 80%; text-align: center; margin-top: 25px; margin-bottom: 25px;">TECHNOLOGIES USED</div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img src="images/bootstrap-stack.png" style="height:40px; width:auto;" class="mx-auto d-block">
+                                </div>
+                                <div class="col-sm-3" style="margin-top: 10px;">
+                                    <img src="images/dropzone.svg" style="height:22px; width:auto;" class="mx-auto d-block">
+                                </div>
+                                <div class="col-sm-3" style="margin-top: 15px;">
+                                    <img src="images/jQuery.png" style="height:18px; width:auto;" class="mx-auto d-block">
+                                </div>
+                                <div class="col-sm-3" style="margin-top: 5px;">
+                                    <img src="images/nodejs.png" style="height:25px; width:auto;" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background-color: #eee;">
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Multi-List Modal section             -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="multiModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="multiHeader">
+                            <h6 class="modal-title">Select resource</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+						<div style="font-size: 80%;">
+						    <p>Select item from resource list to view or edit.
+						    </p>
+						</div>
+                        <div id="multiContents" style="text-align: left;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Color Palette Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="colorModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="colorHeader">
+                            <h6 class="modal-title">Color Palette</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+						<div style="font-size: 80%;">
+						    <p>To modify the color palette edit the configuration file <span style="color: green; font-style: italic; font-weight: bold;">colors.json</span>.  This file is located in the directory where you started VpK. 
+						       After editing save the file and restart the VpK server and refresh the browser session.
+						    </p>
+						    
+						</div>
+                        <div id="colorContents" style="text-align: center;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Server log Modal section             -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="logModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="logHeader">
+                            <h6 class="modal-title">Results</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="logContents" style="font-size: 70%;">
+                            <p>Log file data</P>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ==================================== -->
+        <!-- File upload Modal section            -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="logHeader">
+                            <h5 class="modal-title">File upload</h5>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-left: 35px; margin-right: 25px;">
+                            <p>Specify the server target directory for file upload.  If it does not exist it will be created</p>
+                        </div>
+                        <div class="input-group col-10" style="margin-bottom:20px; margin-left: 25px;">
+                            <input id="uploadDir" type="text" class="form-control form-control-sm" placeholder="Target directory">
+                            <button id="fileDirBtn" type="button" class="btn btn-outline-primary btn-sm" style="margin: 5px;">
+                            Process
+                            </button>
+                        </div>
+                        <div id="uploadStatus" style="margin-left: 35px; margin-right: 25px; margin-bottom: 15px;">
+                        </div>
+                        <div id="filedropzone">
+                            <form action="/upload" class="dropzone needsclick" id="file-upload-dropzone">
+                                <div class="dz-message needsclick">
+                                    Drop files here or click to upload.<br />
+                                    <span class="note needsclick"></span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Directory stats Modal section        -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="statsHeader">
+                            <h5 class="modal-title vpkfont">K8 data source stats</h5>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="statContents" class="vpkfont-md">
+                            <p>Log file data</P>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- editor Modal section                 -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="editorModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="editHeader">
+                            <h6 class="modal-title" id="editTitle">Object Definition</h6>
+                            <h6 class="modal-title" id="editPart"></h6>
+                        </div>
+                    </div>
+                    <div class="modal-body mb-0 pb-0">
+                        <div class="panel panel-default border">
+                            <div class="panel-body">
+                                <div id="file-content" style="display: none;"></div>
+                                <div id="editor"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-row mt-1 mb-0">
+                            <div class="form-group col-md-1 text-right pr-1 pt-1 pb-0">
+                                <span style="font-size: 65%">Theme:</span>&nbsp;
+                            </div>
+                            <div class="form-group col-md-2 pl-0">
+                                <select class="form-control-sm" id="eTheme" name="eTheme">
+                                    '<option value="sqlserver" selected>Light</option>'
+                                    '<option value="solarized_light">Medium</option>'
+                                    '<option value="monokai">Dark</option>'
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2 text-right pr-1 pt-1">
+                                <span style="font-size: 65%">Font size:</span>&nbsp;
+                            </div>
+                            <div class="form-group col-md-1 pl-0">
+                                <select class="form-control-sm" id="eFont" name="eFont">
+                                    '<option value="12" selected>Small</option>'
+                                    '<option value="14">Medium</option>'
+                                    '<option value="18">Large</option>'
+                                </select>
+                            </div>
+                        </div>        
+                    </div>
+                    <div id="saveStatus">
+                        <!-- File save status message here -->
+                    </div>
+                    <div class="modal-footer mt-0 pt-1" id="saFooter">
+                        <div class="form-row col-md-12">
+                            <div class="form-group col-md-2" id="sa1">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="saveFile()">Save</button>
+                            </div>
+                            <!-- <div class="form-group col-md-2" id="sa2">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="saveFileAs()">Save As</button>
+                            </div> -->
+                            <div class="form-group col-md-8" >&nbsp;</div>
+                            <div class="form-group col-md-2">
+                                <button type="button" class="btn btn-sm btn-outline-primary float-right" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End of editor Modal -->
+
+    </div>  <!-- End of Wrapper -->
+  </body>
+  
+  <!-- Append the needed scripts -->
+  <%- include('partials/scripts') %>
+
+</html>

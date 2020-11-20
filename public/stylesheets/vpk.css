@@ -1,0 +1,234 @@
+
+
+/* font sizes */
+.vpkfont-xsm {
+    font-size: 0.35rem;
+}
+.vpkfont-sm {
+    font-size: 0.6rem;
+}
+.vpkfont-md {
+    font-size: 0.75rem;
+}
+.vpkfont {
+    font-size: 0.90rem;
+}
+.vpkfont-lg {
+    font-size: 1.25rem;
+}
+.vpkfont-xl {
+    font-size: 1.50rem;
+}
+.vpkcolor {
+    color: rgb(0, 123, 255);
+}
+.vpkwhite {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 123, 255);
+}
+.vpkfont-phase {
+    font-weight: 700;
+    font-size: .60rem;
+}
+
+
+
+.text-vm {
+    vertical-align: middle;
+}
+
+
+
+/* buttons */
+.vpkButtons {
+    font-size: 0.75rem;
+    margin-right: 2px;
+    padding: 1px;
+}
+
+.datasource {
+    width: 350px !important;
+}
+.hr-width {
+    width: 320px !important; 
+    padding: 0px;
+    margin: 0px;
+}
+
+/* chart info bar */
+.chartInfo {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    font-size: .8rem;
+}    
+
+/* font awsome icons */
+.fa {
+	color: white;
+}
+.fa-plus-circle {
+    color: #999;
+    padding: 1px;
+}
+.fa-minus-circle {
+    color: #999;
+    padding: 1px;
+}
+.fa-cog {
+    color: rgb(0, 123, 255);
+    padding: 2px;
+}
+
+/* filter bars */
+.filterBack {
+    /*background-color: rgba(0, 123, 255, 0.2);*/
+    margin: 0px;
+}
+
+/* Search table results */
+#searchResults {
+    font-size: 0.75rem;
+}
+#searchResults table td {
+    font-size: 0.75rem;
+    padding: 1px;
+}
+
+#searchResultsXX .fixed-tabel-toolbar {
+    font-size: 0.75rem;
+    padding: 1px;
+}
+
+.bootstrap-table .fixed-table-toolbar .bs-bars, 
+.bootstrap-table .fixed-table-toolbar .columns, 
+.bootstrap-table .fixed-table-toolbar .search {
+    font-size: 0.75rem;
+    margin-top: 0px;
+    margin-bottom: 1px;
+}
+
+/* Header bars */
+* {box-sizing: border-box;}
+
+body { 
+  margin: 0;
+}
+
+.header {
+  overflow: hidden;
+  /* background-color: #f1f1f1; */
+  padding: 10px 10px;
+  max-width: 1280px;
+}
+
+.header a {
+  float: left;
+  color: black;
+  text-align: center;
+  padding: 0px;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.header a:hover {
+  background-color: none;
+  color: black;
+}
+
+.header a.active {
+  background-color:rgb(0, 123, 255);
+  color: white;
+}
+
+.header-right {
+  float: right;
+}
+
+@media screen and (max-width: 500px) {
+  .header a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+  .header-right {
+    float: none;
+  }
+}
+
+.wrapper {
+    max-width: 1280px;
+    margin: auto;
+    border-radius: 10px;
+}
+  
+#tooltip {
+    background: cornsilk;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.workloadText {
+    margin-left: 10px;
+    font-size: 0.85rem;
+} 
+
+.breakBar {
+    margin-left: 10px;
+    font-size: 0.75rem;
+    color: rgb(0, 123, 255);
+} 
+.breakHeader {
+    margin-left: 10px;
+    font-size: 0.75rem;
+    color: rgb(0, 123, 255);
+}
+.breakBar hr {
+    margin-top: 2px;
+    margin-bottom: 2px;
+} 
+
+.multiList {
+    margin: 5px;
+    font-size: 0.75rem;
+}
+
+.pickIcon {
+    margin: 5px;
+    font-size: 0.60rem;
+}
+
+.events {
+    margin-left: 10px;
+    margin-bottom: 15px;
+    font-size: 0.75rem;
+    color: black;
+}
+
+.eventBar {
+    margin-left: 30px;
+    margin-bottom: 5px;
+    font-size: 0.75rem;
+} 
+
+.partsBar {
+    margin-left: 30px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    font-size: 0.75rem;
+}
+
+.partsList {
+    font-size: 0.75rem;
+    background-color: rgb(0, 123, 255);
+    color: white;
+} 
+.parts {
+    margin-left: 10px;
+    font-size: 0.75rem;
+    color: rgb(0, 123, 255);
+}

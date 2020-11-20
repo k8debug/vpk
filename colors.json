@@ -1,0 +1,338 @@
+{ 
+	"APIService": [{
+		"backgroundColor": "006600",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Args": [{
+		"backgroundColor": "9900ff",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"CertificateSigningRequest": [{
+		"backgroundColor": "003399",
+		"textColor": "ffffff",
+		"title": "CertSignReq"
+	}], 
+	"Command": [{
+		"backgroundColor": "0099cc",
+		"textColor": "ffffff",
+		"title": ""
+	}],
+	"ComponentStatus": [{
+		"backgroundColor": "0099cc",
+		"textColor": "ffffff",
+		"title": "CS"
+	}],
+	"ConfigMap": [{
+		"backgroundColor": "3366ff",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Container": [{
+		"backgroundColor": "339933",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"ContainerImage": [{
+		"backgroundColor": "ffd700",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"ContainerName": [{
+		"backgroundColor": "ffa500",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"ContainerPort": [{
+		"backgroundColor": "5b7c98",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"ClusterRole": [{
+		"backgroundColor": "00ff99",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"ClusterRoleBinding": [{
+		"backgroundColor": "9966ff",
+		"textColor": "ffffff",
+		"title": "ClusRoleBind"
+	}], 
+	"CronJob": [{
+		"backgroundColor": "ff9999",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"CustomResourceDefinition": [{
+		"backgroundColor": "ffff99",
+		"textColor": "000000",
+		"title": "CRD"
+	}], 
+	"DaemonSet": [{
+		"backgroundColor": "008b8b",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Deployment": [{
+		"backgroundColor": "33cccc",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Endpoints": [{
+		"backgroundColor": "333300",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Env": [{
+		"backgroundColor": "999966",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"HorizontalPodAutoscaler": [{
+		"backgroundColor": "df3a01",
+		"textColor": "ffffff",
+		"title": "HorzPodAuto"
+	}], 
+	"Ingress": [{
+		"backgroundColor": "99ff66",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"InitContainer": [{
+		"backgroundColor": "336699",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"InitializerConfiguration": [{
+		"backgroundColor": "7DCEA0",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Job": [{
+		"backgroundColor": "6b8e23",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Labels": [{
+		"backgroundColor": "cd5c5c",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"LabelsSpecTemplate": [{
+		"backgroundColor": "D7BDE2",
+		"textColor": "000000",
+		"title": "LabelSpcTmpl"
+	}], 
+	"LimitRange": [{
+		"backgroundColor": "D68910",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"List": [{
+		"backgroundColor": "EBDEF0",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"LivenessProbe": [{
+		"backgroundColor": "F9E79F",
+		"textColor": "000000",
+		"title": "LivenessProbe"
+	}], 
+	"Namespace": [{
+		"backgroundColor": "A2D9CE",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"NetworkPolicy": [{
+		"backgroundColor": "85929E",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"NodeSelector": [{
+		"backgroundColor": "9A7D0A",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Node": [{
+		"backgroundColor": "2E86C1",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Path": [{
+		"backgroundColor": "5858fa",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"PersistentVolume": [{
+		"backgroundColor": "f4a460",
+		"textColor": "ffffff",
+		"title": "PersistentVol"
+	}], 
+	"PersistentVolumeClaim": [{
+		"backgroundColor": "a52a2a",
+		"textColor": "ffffff",
+		"title": "PersistVolClm"
+	}], 
+	"Pod": [{
+		"backgroundColor": "6622ff",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"PodPreset": [{
+		"backgroundColor": "330099",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"PodDisruptionBudget": [{
+		"backgroundColor": "cc9900",
+		"textColor": "ffffff",
+		"title": "PodDisrupBgt"
+	}], 
+	"PodSecurityPolicy": [{
+		"backgroundColor": "99ccff",
+		"textColor": "ffffff",
+		"title": "PodSecPolicy"
+	}], 
+	"PodTemplate": [{
+		"backgroundColor": "7FB3D5",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"PriorityClass": [{
+		"backgroundColor": "7D6608",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"PV-Access": [{
+		"backgroundColor": "32cd32",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"PV-Reclaim": [{
+		"backgroundColor": "cdff5c",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"PV-StorClass": [{
+		"backgroundColor": "b22222",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"ReadinessProbe": [{
+		"backgroundColor": "4b0082",
+		"textColor": "ffffff",
+		"title": "ReadinessPrb"
+	}], 
+	"ReplicaSet": [{
+		"backgroundColor": "5c3e88",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"ReplicationController": [{
+		"backgroundColor": "EDBB99",
+		"textColor": "000000",
+		"title": "RepController"
+	}], 
+	"ResourceQuota": [{
+		"backgroundColor": "ff0077",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"Role": [{
+		"backgroundColor": "99ddcc",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"RoleBinding": [{
+		"backgroundColor": "330033",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Secret": [{
+		"backgroundColor": "d9182D",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"SecretUse": [{
+		"backgroundColor": "00182D",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Selector": [{
+		"backgroundColor": "00ccdd",
+		"textColor": "000000",
+		"title": ""
+	}], 
+	"Service": [{
+		"backgroundColor": "00bfff",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"ServiceAccount": [{
+		"backgroundColor": "ffbb55",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"ServicePort": [{
+		"backgroundColor": "ffa07a",
+		"textColor": "ffffff",
+		"title": "Port"
+	}], 
+	"SourceFile": [{
+		"backgroundColor": "222222",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"StatefulSet": [{
+		"backgroundColor": "666666",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"StorageClass": [{
+		"backgroundColor": "6699bb",
+		"textColor": "ffffff",
+		"title": "StorageClass"
+	}], 
+	"TokenReview": [{
+		"backgroundColor": "ff446d",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Tolerations": [{
+		"backgroundColor": "77446d",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"Volume": [{
+		"backgroundColor": "dd6644",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"VolumeAttachment": [{
+		"backgroundColor": "cceecc",
+		"textColor": "000000",
+		"title": "VolAttach"
+	}], 
+	"VolumeClaimTemplates": [{
+		"backgroundColor": "2f4f4f",
+		"textColor": "ffffff",
+		"title": "VolClmTemplt"
+	}], 
+	"VolumeMount": [{
+		"backgroundColor": "b8995B",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"VolumeMounts": [{
+		"backgroundColor": "99b899",
+		"textColor": "ffffff",
+		"title": ""
+	}], 
+	"default": [{
+		"backgroundColor": "ff0000",
+		"textColor": "ffffff",
+		"title": "Not in list"
+	}]
+  
+}
