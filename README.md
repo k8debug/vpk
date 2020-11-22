@@ -1,7 +1,7 @@
 # VpK - Visual parsed Kubernetes 
 <br>
 
-<b>VpK</b> was created as the result of needing a tool to understand what is defined in all those Kubernetes yaml files.
+<b>VpK</b> was created as the result of needing a tool to understand what is defined in Kubernetes.
 
 <b>VpK</b> is comprised of a server and browser features.  The server portion is a node.js application that reads and parses Kubernetes definition 'yaml' files.  The browser portion uses javascript and BootStrap.  Communication between the browser and server use both http and web sockets. 
 
