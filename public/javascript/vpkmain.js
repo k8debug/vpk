@@ -44,6 +44,8 @@ var currentTab = "instructions"
 var newData = [];
 var rootDir;
 var k8cData;
+var dsCounts;
+var dsToggle = 'kind';
 
 //----------------------------------------------------------
 // document ready
@@ -98,26 +100,33 @@ $(document).ready(function() {
             $('#chartInfo').show();
             $('#charts').show();
             $('#schematic').show();
-
         }
     });
 
-    $("#clusterModal").on("hidden.bs.modal", function () {
-        $('#pickDataSource').val(null).trigger('change');
-    });
+    // $("#clusterModal").on("hidden.bs.modal", function () {
+    //     console.log('clusterModal hidden')
+    //     //$('#pickDataSource').val(null).trigger('change');
+    // });
 
-    $("#chgDirModal").on("hidden.bs.modal", function () {
-        $('#pickDataSource').val(null).trigger('change');
-    });  
+    // $("#chgDirModal").on("hidden.bs.modal", function () {
+    //     console.log('chgDirModal hidden')
+    //     //$('#pickDataSource').val(null).trigger('change');
+    // });  
     
-    $("#fileModal").on("hidden.bs.modal", function () {
-        $('#pickDataSource').val(null).trigger('change');
-    })
+    // $("#fileModal").on("hidden.bs.modal", function () {
+    //     $('#pickDataSource').val(null).trigger('change');
+    // })
 
     $('#pickDataSource').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "Select data source"
+    });
+
+    $('#pickDataSource').on('select2:select', function (e) { 
+        var selected = $('#pickDataSource option:selected').val();
+        pickData(selected);
+        $('#pickDataSource').val(null)
     });
 
     $('#label-filter').select2({
@@ -130,6 +139,11 @@ $(document).ready(function() {
         containerCssClass: "vpkfont-md"
     });  
 
+    $('#dsInstances').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "select instance"
+    });    
     $("#searchBtn").click(function(e) {
         e.preventDefault();
         searchObj();
@@ -140,10 +154,10 @@ $(document).ready(function() {
         reload();
     });
 
-    $("#fileDirBtn").click(function(e) {
-        e.preventDefault();
-        uploadDir();
-    });
+    // $("#fileDirBtn").click(function(e) {
+    //     e.preventDefault();
+    //     uploadDir();
+    // });
 
 	// 
 	$("#clusterType").change(function(){
@@ -151,11 +165,12 @@ $(document).ready(function() {
         buildClusterUI(selected);
 	});
 
-	// 
-	$("#pickDataSource").change(function(){
-        var selected = $('#pickDataSource option:selected').val();
-        pickData(selected);
-	});
+    // 
+
+	// $("#pickDataSource").change(function(){
+    //     var selected = $('#pickDataSource option:selected').val();
+    //     pickData(selected);
+	// });
 
     editor = ace.edit("editor");
 
@@ -177,46 +192,46 @@ $(document).ready(function() {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    $(function() {
-        Dropzone.options.fileUploadDropzone = {
-            maxFilesize: 1,
-            maxFiles: 500,
-            addRemoveLinks: true,
-            dictResponseError: 'Server not Configured',
-            url: '/upload',
-            uploadMultiple: true,
-            parallelUploads: 5,
-            addRemoveLinks: true,
-            dictRemoveFile: 'Delete',
-            init: function() {
+    // $(function() {
+    //     Dropzone.options.fileUploadDropzone = {
+    //         maxFilesize: 1,
+    //         maxFiles: 500,
+    //         addRemoveLinks: true,
+    //         dictResponseError: 'Server not Configured',
+    //         url: '/upload',
+    //         uploadMultiple: true,
+    //         parallelUploads: 5,
+    //         addRemoveLinks: true,
+    //         dictRemoveFile: 'Delete',
+    //         init: function() {
 
-                var cd;
-                this.on("success", function(file, response) {
-                    $('.dz-progress').hide();
-                    $('.dz-size').hide();
-                    $('.dz-error-mark').hide();
-                    cd = response;
-                });
-                this.on("addedfile", function(file) {
-                    var removeButton = Dropzone.createElement("<a href=\"#\">Remove file</a>");
-                    var _this = this;
-                    removeButton.addEventListener("click", function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        _this.removeFile(file);
-                        var name = "largeFileName=" + cd.pi.largePicPath + "&smallFileName=" + cd.pi.smallPicPath;
-                        $.ajax({
-                            type: 'POST',
-                            url: 'DeleteImage',
-                            data: name,
-                            dataType: 'json'
-                        });
-                    });
-                    file.previewElement.appendChild(removeButton);
-                });
-            }
-        };
-    })
+    //             var cd;
+    //             this.on("success", function(file, response) {
+    //                 $('.dz-progress').hide();
+    //                 $('.dz-size').hide();
+    //                 $('.dz-error-mark').hide();
+    //                 cd = response;
+    //             });
+    //             this.on("addedfile", function(file) {
+    //                 var removeButton = Dropzone.createElement("<a href=\"#\">Remove file</a>");
+    //                 var _this = this;
+    //                 removeButton.addEventListener("click", function(e) {
+    //                     e.preventDefault();
+    //                     e.stopPropagation();
+    //                     _this.removeFile(file);
+    //                     var name = "largeFileName=" + cd.pi.largePicPath + "&smallFileName=" + cd.pi.smallPicPath;
+    //                     $.ajax({
+    //                         type: 'POST',
+    //                         url: 'DeleteImage',
+    //                         data: name,
+    //                         dataType: 'json'
+    //                     });
+    //                 });
+    //                 file.previewElement.appendChild(removeButton);
+    //             });
+    //         }
+    //     };
+    // })
 
     clearDisplay();
     getSelectLists();
@@ -245,7 +260,12 @@ socket.on('connect', function(data) {
 });
 
 socket.on('dirStatsResult', function(data) {
-    buildDirStats(data);
+    dsCounts = data;
+    if (dsToggle === 'kind' || dsToggle === '') {
+        buildKindStats();
+    } else {
+        buildNamespaceStats();
+    }
 });
 
 socket.on('dynamicResults', function(data) {
@@ -333,14 +353,16 @@ socket.on('cmdResult', function(data) {
 socket.on('objectDef', function(data) {
     // always edit, no longer provide browse 
     editDef(data);
-
-    //if (selectedAction === 'edit') {
-    //    editDef(data);
-    //} else {
-    //    objectDef(data);
-    //}
 });
 
+// decoded secret
+socket.on('decodeDef', function(data) {
+    $("#decodeName").empty();
+    $("#decodeName").html('&nbsp;' + data.secret + '&nbsp;');
+    $("#decode").empty();
+    $("#decode").html(JSON.stringify(data.value, null, 4));
+    $('#decodeModal').modal('show');
+});
 
 socket.on('resetResults', function(data) {
     $("#loadStatus").empty();
@@ -383,26 +405,35 @@ socket.on('svgResult', function(data) {
     svgResult(data);
 });
 
-socket.on('uploadDirResult', function(data) {
-    $("#uploadStatus").empty();
-    $("#uploadStatus").html('');
-    $("#uploadStatus").html(data.msg);
+// socket.on('uploadDirResult', function(data) {
+//     $("#uploadStatus").empty();
+//     $("#uploadStatus").html('');
+//     $("#uploadStatus").html(data.msg);
 
-    if (data.status === 'PASS') {
-        $("#uploadDir").val(data.dir);
-        $("div#filedropzone").show();
-    }
-});
+//     if (data.status === 'PASS') {
+//         $("#uploadDir").val(data.dir);
+//         $("div#filedropzone").show();
+//     }
+// });
 
 socket.on('version', function(data) {
     version = data.version;
 });
 
+socket.on('clusterDirResult', function(data) {
+    //build the drop down of existing directories
+    var items = bldClusterDir(data.dirs);
+    $('#dsInstances').html(items);
+    $("#chgDirModal").modal('show');
+
+});
 
 //----------------------------------------------------------
 // socket io definitions for out-bound
 //----------------------------------------------------------
-
+function closeChgDir() {
+    $("#chgDirModal").modal('hide')
+}
 
 function barAction(act) {
     alert(act);
@@ -562,6 +593,20 @@ function getDef3(def) {
         editObj();
     }
 }
+
+function getDef4(def, secret) {
+    $("#multiModal").modal('hide');
+    selectedDef = def;
+    if (selectedDef.indexOf('undefined') > -1) {
+        showMessage('Unable to locate data source yaml.','fail');
+    } else {
+        data = {"file": selectedDef, "secret": secret}
+        socket.emit('decode', data);
+    
+    }
+
+}
+
 
 function getDef2(def) {
     let parts = def.split('@');
@@ -740,7 +785,14 @@ function multiList(type, data) {
         html = html 
         + '<div class="multiList">'
         + '<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
-        + 'onclick="getDef3(\'' + ref + '\')">' + type + '</button>'
+        + 'onclick="getDef3(\'' + ref + '\')">' + type + '</button>';
+
+        if (type === 'Secret') {
+            html = html 
+            + '&nbsp;&nbsp<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
+            + 'onclick="getDef4(\'' + ref + '\', \'' +  data[i].name + use + '\')">Decode</button>';
+        }
+        html = html 
         + '&nbsp;&nbsp;' + data[i].name + use + '</div>'
     }
 
@@ -821,7 +873,9 @@ function clearSvg() {
 
 // send request to load new directory
 function reload() {
-    var newDir = $("#newDir").val();
+    //var newDir = $("#newDir").val();
+    var newDir = $('#dsInstances').select2('data');
+    newDir = newDir[0].text;
     socket.emit('reload', newDir);
 
     $("#charts").empty();
@@ -943,13 +997,13 @@ function hideTooltip() {
 
 function pickData(tmp) {
     tmp.trim();
-    if (tmp === 'Running K8 Cluster') {
+    if (tmp === 'Running cluster') {
         getCluster();
-    } else if (tmp === 'Previous K8 Snapshot') {
+    } else {
         changeDir();
-    } else if (tmp === 'Upload K8 files') {
-        fileUpload();
-    }
+    } //else if (tmp === 'Upload K8 files') {
+    //    fileUpload();
+    //}
 }
 
 
@@ -1076,25 +1130,24 @@ function viewPalette() {
 // show change directory modal 
 function changeDir() {
     closeNav();
-    
+    socket.emit('clusterDir');
     $("#loadStatus").empty();
     $("#loadStatus").html('&nbsp');
-
-    $("#chgDirModal").modal();
+    // results are processing in returning payload
 }
 
-// show file upload modal 
-function fileUpload() {
-    $("div#filedropzone").hide();
-    closeNav();
-    $("#fileModal").modal();
-}
+// // show file upload modal 
+// function fileUpload() {
+//     $("div#filedropzone").hide();
+//     closeNav();
+//     $("#fileModal").modal();
+// }
 
-// show change directory modal 
-function uploadDir() {
-    var upDir = $('#uploadDir').val();
-    socket.emit('uploadDir', upDir);
-}
+// // show change directory modal 
+// function uploadDir() {
+//     var upDir = $('#uploadDir').val();
+//     socket.emit('uploadDir', upDir);
+// }
 
 // show server parse statistics
 function dirStats() {
@@ -1114,6 +1167,7 @@ function getCluster() {
         backdrop: 'static',
         keyboard: false        
     }); 
+    $("#clusterModal").modal('show');
     $("#clusterStatus").empty();
     $("#clusterStatus").html('&nbsp');
    
@@ -1132,12 +1186,12 @@ function buildClusterUI(selected) {
         + '</div></div>';
     // values to be used in building the UI    
     var tmp00 = '<dir class="form-row">';
-    var tmp01 = '<label class="col-sm-2 col-form-label" for="';       //add name
+    var tmp01 = '<label class="col-sm-4 col-form-label" for="';       //add name
     var tmp02 = '" style="padding-top: 15px;">';                      //add name
     var tmp03 = '</label>';
     var tmp04 = '<input id="'                                         //add name
-    var tmp05t = '" type="text" class="form-control col-sm-10" ';     //plain text input 
-    var tmp05p = '" type="password" class="form-control col-sm-10" '; //password input
+    var tmp05t = '" type="text" class="form-control col-sm-8" ';     //plain text input 
+    var tmp05p = '" type="password" class="form-control col-sm-8" '; //password input
     var tmp06a = 'value="';                                           // if default value is provided add the value
     var tmp06b = '"';
     var tmp07 = ' style="margin-bottom: 5px;"></div>';
@@ -1330,24 +1384,98 @@ function populateSelectLists(data) {
 
     }
 }
+function buildStatsToggle() {
+    if (dsToggle === 'kind') {
+        buildNamespaceStats();
+        dsToggle = 'ns'
+    } else {
+        buildKindStats(); 
+        dsToggle = 'kind'   
+    }
+}
 
-function buildDirStats(stats) {
-    var tmp;
-    var parts;
-    var htm;
-    htm = '<table data-toggle="table" data-click-to-select="true"><thead><tr>' +
-        '<th data-field="namespace">Kind / Type</th><th data-field="kind">Count</th>' +
-        '</tr></thead><tbody>';
+function buildKindStats() {
+    dsToggle = 'kind';
+    data = dsCounts.kind;
+    let keys = Object.keys(data);
+    keys.sort();
+    let total = data._total._cnt;
+    let cKeys;
+    let nsText = '';
+    let htm = '<table class="vpkfont-md"><thead><tr class="bg-secondary text-light">' 
+        + '<th>-Kind-</th><th class="pl-2">-Count-</th><th class="pl-2">-Namespace-</th>'
+        + '</tr></thead><tbody>';
+    // add overall total line
+    htm = htm + '<tr><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
 
-    var newPart;
-    for (var i = 0; i < stats.length; i++) {
-        tmp = stats[i];
-        parts = tmp.split('::');
 
-        // add source file name to the button
-        newPart = '<tr>' +
-            '<td width="300">' + parts[0] + '</td><td>' + parts[1] + '</td>'
-        htm = htm + newPart
+    for (let i = 0; i < keys.length; i++) {
+        if ( keys[i].startsWith('_') ) {
+            continue;
+        }
+        htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
+        
+        htm = htm + '<tr><td  class="vpkcount">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+
+        cKeys = Object.keys(data[keys[i]]);
+        cKeys.sort();
+        for (let c = 0; c < cKeys.length; c++) {
+            if (cKeys[c].startsWith('_') ) {
+                continue;
+            } else {
+                nsText = cKeys[c];
+                if (nsText === 'cluster-level' ) {
+                    nsText = '< Cluster Level >'
+                }
+                htm = htm + '<tr><td>&nbsp;</td><td class="pl-4">' + data[keys[i]][cKeys[c]] + '</td><td class="pl-2">' + nsText + '</td></tr>'
+            }
+        }
+    };
+
+    htm = htm + '</tbody></table>';
+
+    $("#statContents").empty();
+    $("#statContents").html('');
+    $("#statContents").html(htm);
+    $("#statsModal").modal();
+}
+
+function buildNamespaceStats(stats) {
+    dsToggle = 'ns';
+    data = dsCounts.ns;
+    let keys = Object.keys(data);
+    keys.sort();
+    let total = dsCounts.kind._total._cnt;  // get overall total from the kinds stats
+    let cKeys;
+    let nsText = '';
+    let htm = '<table class="vpkfont-md"><thead><tr class="bg-secondary text-light">' 
+        + '<th>-Namespace-</th><th class="pl-2">-Count-</th><th class="pl-2">-Kind-</th>'
+        + '</tr></thead><tbody>';
+    // add overall total line
+    htm = htm + '<tr><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
+
+
+    for (let i = 0; i < keys.length; i++) {
+        if ( keys[i].startsWith('_') ) {
+            continue;
+        }
+        htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
+        
+        htm = htm + '<tr><td class="vpkcount">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+
+        cKeys = Object.keys(data[keys[i]]);
+        cKeys.sort();
+        for (let c = 0; c < cKeys.length; c++) {
+            if (cKeys[c].startsWith('_') ) {
+                continue;
+            } else {
+                nsText = cKeys[c];
+                if (nsText === 'cluster-level' ) {
+                    nsText = '< Cluster Level >'
+                }
+                htm = htm + '<tr><td>&nbsp;</td><td class="pl-4">' + data[keys[i]][cKeys[c]] + '</td><td class="pl-2">' + nsText + '</td></tr>'
+            }
+        }
     };
 
     htm = htm + '</tbody></table>';
@@ -1465,6 +1593,22 @@ function bldProviders(options) {
     }
     return listitems;
 }
+
+//----------------------------------------------------------
+// sort and build the selection list option entries
+//----------------------------------------------------------
+function bldClusterDir(dirs) {
+    var listitems = '<option></option>';
+    if (dirs === null) {
+        listitems = '<option value="none">no previous instances exist</option>';
+        return;
+    }
+    for (var i = 0; i < dirs.length; i++) {
+        listitems += '<option value="' + dirs[i] + '">' + dirs[i] + '</option>';
+    }
+    return listitems;
+}
+
 
 
 //----------------------------------------------------------

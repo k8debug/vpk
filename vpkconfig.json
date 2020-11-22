@@ -56,6 +56,12 @@
 						"value": "{{protocol}}://{{ip}}",
 						"default": "http, localhost",
 						"sal": true
+					},
+					{
+						"key": "dirName",
+						"value": "{{datasource_prefix}}",
+						"default": "kube",
+						"sal": true
 					}				
 				],
 				"test": "",

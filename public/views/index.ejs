@@ -18,14 +18,15 @@
                 </div>
             </div> <!-- end of id="header-bar" -->
 
+            <!-- remove all old logic for d-n-d of files -->
+
             <div id="datasource" class="header vpkfont-md">
                 <select id="pickDataSource" 
-                    class="js-example-basic-multiple  vpkfont-md"
+                    class="vpkfont-md"
                     style="width: 200px; vertical-align:middle;">
                     <option></option>
-                    <option>Running K8 Cluster</option>
-                    <option>Previous K8 Snapshot</option>
-                    <option>Upload K8 files</option>
+                    <option>Running cluster</option>
+                    <option>Previous captured instance</option>
                 </select>
                 <div class="pl-3" style='vertical-align:middle; display:inline;'>
                     <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md "
@@ -348,6 +349,33 @@
         </div>
 
         <!-- ==================================== -->
+        <!-- Decode secret Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="decodeModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="dirHeader">
+                            <span class="vpkfont">Decoded content for secret:&nbsp;&nbsp;</span>
+                            <span class="vpkfontI" id="decodeName"></span>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                       
+                        <textarea id="decode" rows="37" cols="125" class="vpkfont-decode">
+                            <!-- content here -->
+                        </textarea>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================================== -->
         <!-- Change directory Modal section       -->
         <!-- ==================================== -->
         <div class="modal fade" id="chgDirModal" tabindex="-1" role="dialog">
@@ -355,21 +383,33 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <div id="dirHeader">
-                            <h6 class="modal-title">Change Directory</h6>
+                            <h6 class="modal-title">Previous captured instance</h6>
                         </div>
                     </div>
                     <div class="modal-body">
-                        <div class="input-group"> 
-                            <input id="newDir" type="text" class="form-control form-control-sm" placeholder="New full directory path">
+
+                        <!-- Drop down for exiting saved cluster info instances -->
+                        <div class="form-group col-4 mt-3" style="margin: -15px; padding-bottom: 15px;">
+                            <!-- <label for="dsInstances" class="vpkfont-md">Previous instances</label> -->
+                            <select id="dsInstances" 
+                                class="js-example-basic-singleXXX vpkfont-md"
+                                style="width: 500px; height: 30px; vertical-align:middle;">
+                            </select>
+                        </div>
+
+                        <div class="mt-2 float-left"> 
                             <button id="validateBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="reload()" style="margin: 5px;">
-                            Validate/Load
+                            Load instance
                             </button>
+
+                            <span id="loadStatus" class="mt-2 ml-4 ">
+                            </span>                            
                         </div>
-                        <div id="loadStatus">
-                        </div>
+
                     </div>
+
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="closeChgDir()">Close</button>
                     </div>
                 </div>
             </div>
@@ -495,6 +535,7 @@
         <!-- ==================================== -->
         <!-- File upload Modal section            -->
         <!-- ==================================== -->
+        <!-- 
         <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" >
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -530,6 +571,7 @@
                 </div>
             </div>
         </div>
+        -->
 
         <!-- ==================================== -->
         <!-- Directory stats Modal section        -->
@@ -539,7 +581,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <div id="statsHeader">
-                            <h5 class="modal-title vpkfont">K8 data source stats</h5>
+                            <h5 class="modal-title vpkfont">Data source stats</h5>
+                            <div class="float-right">
+                                <button type="button" class="btn btn-sm btn-outline-primary float-right" onclick="buildStatsToggle()">Toggle Kind/Namespace</button>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-body">

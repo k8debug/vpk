@@ -123,7 +123,7 @@ function initAceEditor(rtn) {
     editor.setOptions(
         {
             cursorStyle: "wide",
-            fontSize: 12,
+            fontSize: 11,
             printMargin: false,
             tabSize: 2,
             scrollPastEnd: 0.10,
@@ -147,7 +147,7 @@ function initAceEditor(rtn) {
     editor.focus();
     editor.gotoLine(1,0, true);
     editor.renderer.scrollToRow(1);  
-    editor.execCommand("find");  
+    //editor.execCommand("find");  
 }
 
 //----------------------------------------------------------

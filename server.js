@@ -559,11 +559,30 @@ io.on('connection', client => {
         vpkReset.resetAll();
     });
 
+    client.on('clusterDir', () => {
+        utl.logMsg('vpkMNL676 - Get cluster directory request' );
+        var result = {
+            'dirs': utl.getClusterDir()
+        };
+        utl.logMsg('vpkMNL021 - Emit cluster directory' );
+        client.emit('clusterDirResult', result);
+
+    });
 
     client.on('dynamic', (data) => {
         utl.logMsg('vpkMNL699 - Dynamic request' );
         var dynDir = process.cwd();
         var tmpDir = data.ip;
+        if (typeof data.datasource_prefix !== 'undefined') {
+            var dTmp = data.datasource_prefix;
+            dTmp.trim();
+            var fs = dTmp.indexOf(' ');
+            if (fs > -1 ){
+                dTmp = dTmp.substring(0,fs);
+            }
+            tmpDir = dTmp;
+        }
+        tmpDir = tmpDir + '-' + utl.dirDate();
         var kga;       // Kubernetes Get Array
         var slp = tmpDir.lastIndexOf('/');
 
@@ -610,6 +629,54 @@ io.on('connection', client => {
         client.emit('colorsResult', result);
     });
 
+    client.on('decode', parm => {
+        // save the key for use when results are returned
+        var def = parm.file;
+        var secret = parm.secret;
+        var parts = def.split('::');
+        var fn = parts[0] + '::' + parts[1];
+        var rtn;
+        var data;
+        var tmp;
+
+        utl.logMsg('vpkMNL173 - Decode secret from file: ' + fn );
+            
+        // decode base64 data in secret
+        try {
+            tmp = vpk.fileContent[fn];
+            tmp = tmp[0].content;
+            data = tmp.data;
+            console.log(typeof data);
+            if (typeof data === 'object') {
+                let keys = Object.keys(data);
+                let key;
+                for (let d = 0; d < keys.length; d++) {
+                    key = keys[d];
+                    console.log(key + ' :: ');
+                    let buff = new Buffer.from(data[key], 'base64');
+                    text = buff.toString('ascii');
+                    if (text.startsWith('{')) {
+                        rtn = JSON.parse(text);
+                        break;
+                    } else {
+                        rtn = text;
+                    }
+                }
+            }
+            var result = {
+                'value': rtn,
+                'secret': secret
+            };
+            utl.logMsg('vpkMNL005 - Emit decodeDef' );
+            client.emit('decodeDef', result);
+        } catch (err) {
+            utl.logMsg('vpkMNL174 - Error processing decode, message: ' + err );
+        }
+    });
+
+
+
+
     client.on('getDef', data => {
         // save the key for use when results are returned
         var parts = data.split('::');
@@ -647,7 +714,9 @@ io.on('connection', client => {
     client.on('getDirStats', data => {
         utl.logMsg('vpkMNL006 - DirStats request' );
         utl.logMsg('vpkMNL007 - Emit dirStatsResults' );
-        client.emit('dirStatsResult', statMessages);
+        var result = {'kind': vpk.fileCnt, 'ns': vpk.namespaceCnt}
+        //client.emit('dirStatsResult', statMessages);
+        client.emit('dirStatsResult', result);
     });
 
     client.on('getSelectLists', () => {

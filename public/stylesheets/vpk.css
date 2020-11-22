@@ -10,8 +10,18 @@
 .vpkfont-md {
     font-size: 0.75rem;
 }
+.vpkfont-decode {
+    font-size: 0.75rem;
+    background-color: #dddddd;
+    color: black;
+}
 .vpkfont {
     font-size: 0.90rem;
+}
+.vpkfontI {
+    font-size: 0.90rem;
+    font-style: normal;
+    background-color:#ddd;
 }
 .vpkfont-lg {
     font-size: 1.25rem;
@@ -30,8 +40,18 @@
     font-weight: 700;
     font-size: .60rem;
 }
+.vpkcount {
+    background-color: green;
+    color: white;
+}
 
 
+.vpkunderline {
+    text-decoration: underline;
+}
+.vpkhr {
+    padding: 0px;
+}
 
 .text-vm {
     vertical-align: middle;
