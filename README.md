@@ -3,21 +3,21 @@
 
 <b>VpK</b> was created as the result of needing a tool to understand what is defined in Kubernetes.
 
-<b>VpK</b> is comprised of a server and browser features.  The server portion is a node.js application that reads and parses Kubernetes definition 'yaml' files.  The 'yaml' files are created by getting each resource type from the Kubernetes cluster. 
-<br><br>The browser portion uses javascript and BootStrap.  Communication between the browser and server use both http and web sockets. 
+<b>VpK</b> is comprised of a server and browser features.  The server portion is a node.js application that reads and parses Kubernetes definition 'yaml' files.  The 'yaml' files are created by getting each resource type from the Kubernetes cluster. This collection of yaml files is stored in a directory that is created by this application.  The directory storing the files is available offline.  To populate the directory a running Kubernetes cluster must be accessed.
+
+
+The user interface (browser portion) communicates with the server using both http and web sockets. The UI provides multple views, both graphical and tabular to help understand Kubernetes.
 
 
 (insert arch pic here)
 
 Application features include:
 
-- Access a running instance of Kubernetes and create configuration files for all resources.
-
-- Read and parse resource files from a directory.  These files where created when an instance of Kubernetes was accessed.  
- 
-- View and filter resource files.
-
-- Render schematics of workloads an associated resources. 
+- Access a running instance of Kubernetes and obtain configuration information for all defined resources. 
+- Create individual yaml file for each unique resource. 
+- Read and parse yaml resource files to produce data structures that are used by the user interface. 
+- View and filter resources.
+- Render schematics of workloads with associated resources. 
  
 - ADD MORE HERE
 
