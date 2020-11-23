@@ -1415,7 +1415,7 @@ function buildKindStats() {
         }
         htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
         
-        htm = htm + '<tr><td  class="vpkcount">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+        htm = htm + '<tr><td  class="bg-primary text-light">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
@@ -1460,8 +1460,12 @@ function buildNamespaceStats(stats) {
             continue;
         }
         htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
+        nsText = keys[i];
+        if (nsText === 'cluster-level' ) {
+            nsText = '< Cluster Level >'
+        }
         
-        htm = htm + '<tr><td class="vpkcount">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+        htm = htm + '<tr><td class="bg-primary text-light">' + nsText + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
@@ -1469,11 +1473,7 @@ function buildNamespaceStats(stats) {
             if (cKeys[c].startsWith('_') ) {
                 continue;
             } else {
-                nsText = cKeys[c];
-                if (nsText === 'cluster-level' ) {
-                    nsText = '< Cluster Level >'
-                }
-                htm = htm + '<tr><td>&nbsp;</td><td class="pl-4">' + data[keys[i]][cKeys[c]] + '</td><td class="pl-2">' + nsText + '</td></tr>'
+                htm = htm + '<tr><td>&nbsp;</td><td class="pl-4">' + data[keys[i]][cKeys[c]] + '</td><td class="pl-2">' + cKeys[c] + '</td></tr>'
             }
         }
     };
