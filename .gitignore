@@ -3,6 +3,7 @@ logs
 *.log
 npm-debug.log*
 
+public/.DS_Store
 
 # Dependency directories
 node_modules
