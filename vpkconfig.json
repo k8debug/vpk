@@ -138,7 +138,7 @@
 						"key": "-r",
 						"value": "{{region}}",
 						"default": "us-south",
-						"example": "ibmcloud login -a https://cloud.ibm.com -r us-south -u daveweilert@us.ibm.com -p fox1fire -c 454281ed68a2b7060c0589887fe0dad3 -g default --skip-ssl-validation"
+						"example": "ibmcloud login -a https://cloud.ibm.com -r us-south -u daveweilert@ibm.com -p mypass -c 454281ed68a2b7060c0589887fe0dad3 -g default --skip-ssl-validation"
 					},
 					{
 						"key": "-u",
