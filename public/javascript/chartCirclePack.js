@@ -1,7 +1,7 @@
 // Build circle pack chart
 const chartCirclePack = (input, ns) => {
     const render = (data, ns) => {
-        ns = ':default:openshift:';
+        
         let leafCnt = 0;
         let clipCnt = 0;
 
@@ -15,6 +15,8 @@ const chartCirclePack = (input, ns) => {
                 (d3.hierarchy(data)
                     .sum(d => d.value)
                     .sort((a, b) => b.value - a.value));
+            $("#chartInfo").empty();
+            $("#chartInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over circles and pausing<span>');        
             return tmp;
         }
 

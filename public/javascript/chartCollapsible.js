@@ -12,6 +12,9 @@ const chartCollapsible = (input) => {
             .y(d => { return d.x } );
 
         const tree = (root) => {
+            $("#chartInfo").empty();
+            $("#chartInfo").html('<span class="vpkfont-md pl-3">Click blue dot to expand or collapse.  Red dot is final point of branch.</span>');
+
             return d3.tree().nodeSize([dx, dy])(root);
         }
 
@@ -36,7 +39,7 @@ const chartCollapsible = (input) => {
             .attr("fill", "none")
             .attr("stroke", "#755")
             .attr("stroke-opacity", 0.4)
-            .attr("stroke-width", 1.0);
+            .attr("stroke-width", 0.50);
     
         const gNode = svg.append("g")
             .attr("cursor", "pointer")
@@ -83,7 +86,7 @@ const chartCollapsible = (input) => {
                     d.children = d.children ? null : d._children;
                     update(d);
                 });
-        
+         
             nodeEnter.append("circle")
                 .attr("r", 4)
                 .attr("fill", d => d._children ? "#29f" : "#f33")

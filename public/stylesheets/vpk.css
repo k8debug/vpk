@@ -252,3 +252,44 @@ body {
     font-size: 0.75rem;
     color: rgb(0, 123, 255);
 }
+
+.btn-toggle {
+	color: #000;
+	background-color: #dfe6ed;
+	border-color: #3d7eba
+}
+
+.btn-toggle:hover {
+	color: #000;
+	background-color: #dfe6ed;
+	border-color: #3d7eba
+}
+
+.btn-toggle.focus,
+.btn-toggle:focus {
+	color: #000;
+	background-color: #dfe6ed;
+	border-color: #3d7eba;
+	box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .5)
+}
+
+.btn-toggle.disabled,
+.btn-toggle:disabled {
+	color: #fff;
+	background-color: #007bff;
+	border-color: #3d7eba
+}
+
+.btn-toggle:not(:disabled):not(.disabled).active,
+.btn-toggle:not(:disabled):not(.disabled):active,
+.show>.btn-toggle.dropdown-toggle {
+	color: #fff;
+	background-color: #0062cc;
+	border-color: #3d7eba
+}
+
+.btn-toggle:not(:disabled):not(.disabled).active:focus,
+.btn-toggle:not(:disabled):not(.disabled):active:focus,
+.show>.btn-toggle.dropdown-toggle:focus {
+	box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .5)
+}

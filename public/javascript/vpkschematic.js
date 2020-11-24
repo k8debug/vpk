@@ -80,30 +80,36 @@ function initVars() {
 	cLevel = '';
 }
 
-function schematic(baseDir) {
-
+function schematic() {
+	//Clear and initialize the variables
 	initVars();
-
+	//Clear the browse DOM elements
     $("#schematicDetail").hide();
     $("#schematicDetail").empty();
     $("#schematicDetail").html('');
 
+	//Build Cluster Level list of all resources
 	cLevel = buildClusterLevel();
 
+	//Build the SVG workload images
 	let html = buildCSVG();	
 
+	//If no images were built display message to inform user
 	if (wCnt === 0) {
 		html = '<div class="vpkfont"><br><p>No workload schematics generated for the selected datasource</p></div>'
 	}
 
+	//Update the browser DOM
 	$("#schematicDetail").html(cLevel + html);
     $("#schematicDetail").show();
 }
 
+//Force building the Cluster Level name change
 function buildClusterLevel() {
 	return nsChange('clusterLevel')
 }
 
+//
 function buildCSVG() {
 	svgInfo = {};
 	let keys = Object.keys(k8cData);
@@ -176,24 +182,20 @@ function nsChange(ns) {
 	
 	let nsKey = '0000-' + ns;
 	let titleNS = '';
-	let indent;
 	if (ns === 'clusterLevel') {
 		titleNS = 'Cluster <hr>'
-		indent = '';
 	} else {
 		titleNS = 'namespace'; 
-		indent = '&nbsp;&nbsp;';
 	}
 	partsCnt++;
 	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">' + indent + 'Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;Resources in ' + titleNS
+	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
+	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;Resources in ' + titleNS
 	+ '</div>'
 	+ '<div id="parts-' + partsCnt + '" class="collapse">'
-
-	let bottomButton = '&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;&nbsp;&nbsp;Close Resource list&nbsp;&nbsp;</button>'
+	let bottomButton = '<button type="button" ' 
+	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
+	+ partsCnt + '">&nbsp;Close above Resource list&nbsp;</button>'
 
 	let divSection = '<div class="events" ><hr><table style="width:100%">'
 	let header = '<tr class="partsList"><th>API Version</th><th>Kind</th><th>Resource Name</th><th>ID # (click ID # to view)</th></tr>'
@@ -258,38 +260,6 @@ function nsChange(ns) {
 		
 		rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
 	}
-
-	//if (ns !== 'clusterLevel') {
-	// build the role and roleBinding sections
-	let bRoles = buildRoles(ns);
-	if (typeof bRoles !== 'undefined') {
-		rtn = rtn + bRoles;
-		bRoles = null;
-	}
-
-
-		
-	if (ns !== 'clusterLevel') {
-		let bBindings = buildRoleBindings(ns);
-		if (typeof bBindings !== 'undefined') {
-			rtn = rtn + bBindings;
-			bBindings = null;
-		}
-
-		// let saData = buildSA(ns);
-		// if (typeof saData !== 'undefined') {
-		// 	rtn = rtn + saData;
-		// 	saData = null;
-		// }
-
-		let subsData = buildSubjects(ns);
-		if (typeof subsData !== 'undefined') {
-			rtn = rtn + subsData;
-			subsData = null;
-		}
-
-
-	}	
 	return rtn;
 }
 
@@ -305,414 +275,8 @@ function parseArray(data) {
 	return nData;
 }
 
-function parseRBSubject(data) {
-	nData = '';
-	if (typeof data === 'undefined' || data === '') {
-		return nData;
-	}
-	let hl = data.length;
 
-	for (let i = 0; i < hl; i++) {
-		if (typeof data[i].name !== 'undefined' ) {
-			if (typeof data[i].kind !== 'undefined' ) {
-				if (data[i].kind === 'ServiceAccount' ) {
-					nData = nData + 'Name: <span class=" text-light bg-info">' + data[i].name + '</span><br>';
-				} else if (data[i].kind === 'Group' ) {
-					nData = nData + 'Name: <span class=" bg-warning">' + data[i].name + '</span><br>';
-				} else if (data[i].kind === 'User' ) {
-					nData = nData + 'Name: <span class=" text-light bg-danger">' + data[i].name + '</span><br>';
-				} else if (data[i].kind === 'SystemGroup' ) {
-					nData = nData + 'Name: <span class=" text-light bg-primary">' + data[i].name + '</span><br>';
-				} else if (data[i].kind === 'SystemUser' ) {
-					nData = nData + 'Name: <span class=" text-light bg-secondary">' + data[i].name + '</span><br>';
-				} else {
-					nData = nData + 'Name: ' + data[i].name + '<br>';
-					console.log('Unmanaged kind for Subject: ' + data[i].kind)
-				}
-			} else {
-				nData = nData + 'Name: ' + data[i].name + '<br>';
-			}
-		}
-		if (typeof data[i].kind !== 'undefined' ) {
-			nData = nData + 'Kind: ' + data[i].kind + '<br>';
-		}
-		if (hl === 1 || i === (hl - 1) ) {
-			//
-		} else {
-			nData = nData + '<hr>';
-		}
-	}
-	return nData;
-}
-
-//Build Subjects from 0000-@subjects@
-
-function buildSubjects(ns) {
-	let nsKey = '0000-@subjects@';
-	// check if there are any role entries to process
-	if (typeof k8cData[nsKey] === 'undefined') {
-		return
-	}
-	let subsData = k8cData[nsKey];
-	let keys = Object.keys(subsData);
-	keys.sort();
-
-	partsCnt++;
-	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;RoleBinding Subjects'
-	+ '</div>'
-	+ '<div id="parts-' + partsCnt + '" class="collapse">';
-	let bottomButton = '&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;&nbsp;&nbsp;Close Subjects list&nbsp;&nbsp;</button>';
-	let divSection = '<div class="events" ><hr><table style="width:100%">';
-	let header = '<tr class="partsList"><th>Subject Kind</th><th>Bind Level</th><th>Subject Name</th><th>ID # (click to view)</th></tr>';
-
-
-	let subs;
-	let sKeys;
-	let hl;
-	let nsHtml = '';
-	let item;
-	let rtn = '';
-	let name;
-	let fnum;
-	let parm;
-	let elem;
-	 
-	let fParts;
-
-	rtn = partsBar + divSection + header;
-
-	for (let k = 0; k < keys.length; k++) {
-		subs = subsData[keys[k]]
-		sKeys = Object.keys(subs);
-		sKeys.sort();
-		sKeys.sort((a, b) => (a.name > b.name) ? 1 : (a.name === b.name) ? ((a.roleKind > b.roleKind) ? 1 : -1) : -1 );
-
-
-		for (r = 0; r < sKeys.length; r++) {
-			elem = subs[sKeys[r]];
-			if (elem.namespace !== ns) {
-				continue;
-			}
-
-			fParts = elem.fnum.split('.');
-			fname = baseDir + '/config' + fParts[0] + '.yaml';
-			parm = fname + '::' + fParts[1] + '::' + name;
-	
-			item = '<tr>' 
-			+ '<td width="25%">' + elem.kind + '</td>' 
-			+ '<td width="15%">' + elem.roleKind + '</td>' 
-			+ '<td width="45%">' + elem.name + '</td>' 
-			+ '<td width="15%"><span onclick="getDef(\'' + parm + '\')">' + elem.fnum + '</span></td>'
-			+ '</tr>';
-			nsHtml = nsHtml + item
-			item = '<tr>' 
-			+ '<td width="25%"><hr></td>' 
-			+ '<td width="15%"><hr></td>' 
-			+ '<td width="45%"><hr></td>' 
-			+ '<td width="15%"><hr></td>' 
-			+ '</tr>';
-			nsHtml = nsHtml + item		
-
-		}
-
-	}
-	if (nsHtml !== header) {
-		rtn = rtn + nsHtml;
-	}
-	
-	
-	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
-	return rtn;
-}
-
-// Build list of ServiceAccounts
-// function buildSA(ns) {
-	
-// 	let nsKey = '0000-' + ns;
-// 	// check if there are any role entries to process
-// 	if (typeof k8cData[nsKey].ServiceAccount === 'undefined') {
-// 		return
-// 	}
-// 	partsCnt++;
-// 	let partsBar = '<div class="partsBar"><button type="button" ' 
-// 	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-// 	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing the ServiceAccounts&nbsp;&nbsp;</button>'
-// 	+ '</div>'
-// 	+ '<div id="parts-' + partsCnt + '" class="collapse">';
-// 	let bottomButton = '&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" ' 
-// 	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-// 	+ partsCnt + '">&nbsp;&nbsp;&nbsp;&nbsp;Close ServiceAccount list&nbsp;&nbsp;</button>';
-// 	let divSection = '<div class="events" ><hr><table style="width:100%">';
-// 	let header = '<tr class="partsList"><th>Service Account name</th><th>ID # (click to view)</th></tr>';
-
-// 	//data to show
-// 	let accounts = k8cData[nsKey].ServiceAccount;
-// 	accounts.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
-
-// 	let account;
-// 	let hl = accounts.length;
-// 	let nsHtml = '';
-// 	let item;
-// 	let rtn = '';
-// 	let name;
-// 	let fnum;
-// 	let parm;
-// 	let fname;
-// 	rtn = partsBar + divSection + header;
-
-
-// 	for (r = 0; r < hl; r++) {
-// 		account = accounts[r];
-// 		name = account.name;
-
-// 		fnum = account.fnum;
-// 		let fParts = fnum.split('.');
-// 		fname = baseDir + '/config' + fParts[0] + '.yaml';
-// 		parm = fname + '::' + fParts[1] + '::' + name;
-
-// 		item = '<tr>' 
-// 		+ '<td width="50%"  class="align-top"> <span class=" text-light bg-info">' + name + '</span></td>' 
-// 		+ '<td width="50%"  class="align-top" ><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
-// 		+ '</tr>';
-// 		nsHtml = nsHtml + item
-// 		item = '<tr>' 
-// 		+ '<td width="50%"><hr></td>' 
-// 		+ '<td width="50%"><hr></td>' 
-// 		+ '</tr>';
-// 		nsHtml = nsHtml + item		
-
-// 	}
-// 	if (nsHtml !== header) {
-// 		rtn = rtn + nsHtml;
-// 	}
-	
-	
-// 	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
-
-// 	if (rtn.indexOf('undefined') > -1) {
-// 		console.log(rtn);
-// 	}
-
-// 	return rtn;
-// }
-
-
-// role bindings 
-function buildRoleBindings(ns) {
-	
-	let nsKey = '0000-' + ns;
-	// check if there are any role entries to process
-	if (typeof k8cData[nsKey].RoleBinding === 'undefined') {
-		return
-	}
-	partsCnt++;
-	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbspRoleBindings'
-	+ '</div>'
-	+ '<div id="parts-' + partsCnt + '" class="collapse">';
-	let bottomButton = '&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;&nbsp;&nbsp;Close RoleBinding list&nbsp;&nbsp;</button>';
-	let divSection = '<div class="events" ><hr><table style="width:100%">';
-	let header = '<tr class="partsList"><th>RoleBinding name</th><th>Role name</th><th>Subject Info</th><th>ID # (click to view)</th></tr>';
-
-	//data to show
-	let bindings = k8cData[nsKey].RoleBinding;
-	bindings.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
-
-	let bind;
-	let hl = bindings.length;
-	let nsHtml = '';
-	let item;
-	let rtn = '';
-	let name;
-	let fnum;
-	let subject;
-	let roleName;
-	let parm;
-	let fname;
-	rtn = partsBar + divSection + header;
-
-
-	for (r = 0; r < hl; r++) {
-		bind = bindings[r];
-		name = bind.name;
-		subject = '';
-		roleName = '';
-		if (typeof bind.roleRef !== 'undefined') {
-			if (typeof bind.roleRef.name !== 'undefined') {
-				roleName = bind.roleRef.name;
-			}
-		}
-
-		fnum = bind.fnum;
-		let fParts = fnum.split('.');
-		fname = baseDir + '/config' + fParts[0] + '.yaml';
-		parm = fname + '::' + fParts[1] + '::' + name;
-
-		subject = parseRBSubject(bind.subjects);
-
-
-		item = '<tr>' 
-		+ '<td width="27%"  class="align-top" >' + name + '</td>' 
-		+ '<td width="30%"  class="align-top"><span class=" text-light bg-success">' + roleName + '<span></td>' 
-		+ '<td width="30%"  class="align-top" >' + subject + '</td>' 
-		+ '<td width="13%"  class="align-top" ><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
-		+ '</tr>';
-		nsHtml = nsHtml + item
-		item = '<tr>' 
-		+ '<td width="25%"><hr></td>' 
-		+ '<td width="25%"><hr></td>' 
-		+ '<td width="25%"><hr></td>' 
-		+ '<td width="25%"><hr></td>' 
-		+ '</tr>';
-		nsHtml = nsHtml + item		
-
-	}
-	if (nsHtml !== header) {
-		rtn = rtn + nsHtml;
-	}
-	
-	
-	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
-
-	if (rtn.indexOf('undefined') > -1) {
-		console.log(rtn);
-	}
-
-	return rtn;
-}
-
-
-
-// roles
-function buildRoles(ns) {
-	
-	let nsKey = '0000-' + ns;
-	// check if there are any role entries to process
-	if (typeof k8cData[nsKey].Role === 'undefined') {
-		return
-	}
-	partsCnt++;
-	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;Roles'
-	+ '</div>'
-	+ '<div id="parts-' + partsCnt + '" class="collapse">';
-	let bottomButton = '&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" ' 
-	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;&nbsp;&nbsp;Close Role list&nbsp;&nbsp;</button>';
-	let divSection = '<div class="events" ><hr><table style="width:100%">';
-	let header = '<tr class="partsList"><th>Role name</th><th>API Groups</th><th>Resource Names</th><th>Resources</th><th>Verbs</th><th>ID # (click to view)</th></tr>';
-
-	//data to show
-	let roles = k8cData[nsKey].Role;
-	roles.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
-
-	let role;
-	let hl = roles.length;
-	let nsHtml = '';
-	let item;
-	let rtn = '';
-	let name;
-	let apiG ;
-	let fnum;
-	let resourceNames;
-	let resources;
-	let verbs;
-	let parm;
-	let fname;
-	rtn = partsBar + divSection + header;
-
-	for (r = 0; r < hl; r++) {
-		apiG = '';
-		resourceNames = '';
-		resources = '';
-		verbs = '';
-		role = roles[r];
-		name = role.name;
-
-		fnum = role.fnum;
-		let fParts = fnum.split('.');
-		fname = baseDir + '/config' + fParts[0] + '.yaml';
-		parm = fname + '::' + fParts[1] + '::' + name;
-		item = '<tr>' 
-		+ '<td width="20%" class="top"><span class=" text-light bg-success">' + name + '</span></td>' 
-		+ '<td width="20%">&nbsp;</td>' 
-		+ '<td width="20%">&nbsp;</td>' 
-		+ '<td width="20%">&nbsp;</td>' 
-		+ '<td width="7%">&nbsp;</td>' 
-		+ '<td width="13%"><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
-		+ '</tr>';
-		nsHtml = nsHtml + item
-		item = '<tr>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="7%"><hr></td>' 
-		+ '<td width="13%"><hr></td>'
-		+ '</tr>';
-		nsHtml = nsHtml + item		
-
-		for (let c = 0; c < role.rules.length; c++) {
-			if (typeof role.rules[c].apiGroup !== 'undefined') {
-				apiG = parseArray(role.rules[c].apiGroup);
-			}
-			if (typeof role.rules[c].resourceNames !== 'undefined') {
-				apiG = parseArray(role.rules[c].resourceNames);
-			}
-			if (typeof role.rules[c].resources !== 'undefined') {
-				resources = parseArray(role.rules[c].resources);
-			}
-			if (typeof role.rules[c].verbs !== 'undefined') {
-				verbs = parseArray(role.rules[c].verbs);
-			}
-
-			item = '<tr>' 
-			+ '<td width="20%">&nbsp;</td>' 
-			+ '<td width="20%" class="align-top ">' + apiG + '</td>' 
-			+ '<td width="20%" class="align-top ">' + resourceNames + '</td>' 
-			+ '<td width="20%" class="align-top ">' + resources + '</td>' 
-			+ '<td width="10%" class="align-top">' + verbs + '</td>' 
-			+ '<td width="10%">&nbsp;</td>'
-			+ '</tr>';
-			nsHtml = nsHtml + item
-
-			item = '<tr>' 
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="10%"><hr></td>' 
-			+ '<td width="10%"><hr></td>'
-			+ '</tr>';
-			nsHtml = nsHtml + item
-
-		}
-
-	}
-	if (nsHtml !== header) {
-		rtn = rtn + nsHtml;
-	}
-	
-	
-	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
-	// build the roleBinding sections
-	if (rtn.indexOf('undefined') > -1) {
-		console.log(rtn);
-	}
-
-	return rtn;
-}
-
-
-
+//Builder for the Workloads
 function process(fnum) {
 	cBar = false;
 	genS = 0;
@@ -981,10 +545,16 @@ function process(fnum) {
 	html = html + outterBox;	
 
 	let nBar = '<div class="eventBar"><button type="button" ' 
-	+ ' class="btn btn-warning btn-sm vpkButtons" data-toggle="collapse" data-target="#events-' 
+	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#events-' 
 	+ evtCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;Events'
 	+ '&nbsp;&nbsp;</div>'
 	+ '<div id="events-' + evtCnt + '" class="collapse">'
+
+	let bottomButton = '<button type="button" ' 
+	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#events-' 
+	+ evtCnt + '">&nbsp;Close above Events list&nbsp;</button>';
+
+
 
 	if (typeof k8cData[fnum].Events !== 'undefined') {
 		let evts = k8cData[fnum].Events;
@@ -1009,10 +579,12 @@ function process(fnum) {
 			}
 			k8cData[fnum].Events = evts;
 
-			evtHtml = evtHtml + '</table><hr></div>';
+			evtHtml = evtHtml + '</table><hr>' + bottomButton + '</div>';
 			rdata = rdata + nBar + evtHtml + '</div>'
 		}
 	}
+
+
 
 	iCnt++;
 	height = height + 50;  // adding visual space between svg
@@ -1237,6 +809,9 @@ function svgGenerators(data, fnum) {
 			if (typeof data.creationChain.level2Kind !== 'undefined') {
 				kind = data.creationChain.level2Kind;
 				image = checkImage(kind);
+				if (image === 'unk') {
+					console.log('No icon form resouce kind: ' + kind + ' fnum: ' + fnum)
+				}
 				width = width + 100;
 				x = 0;
 				bnds.width = width;
@@ -1777,6 +1352,8 @@ function buildTipContent(data, type, fnum) {
 			}
 		}
 
+	} else {
+		content = type + '<br>Image icon not available';
 	}
 	content = '<div class="vpkfont-xsm">' + content + '</div>'
 	return content;	

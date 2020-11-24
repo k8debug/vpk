@@ -22,7 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //------------------------------------------------------------------------------
 // Software version
 //------------------------------------------------------------------------------
-var softwareVersion = '3.1.0';
+var softwareVersion = '5.0.0';
 
 //------------------------------------------------------------------------------
 // Require statements
@@ -32,7 +32,7 @@ var utl = require('./lib/utl');
 var vpkReset = require('./lib/vpkReset');
 var fileio = require('./lib/fileio');
 var search = require('./lib/search');
-var gensvg = require('./lib/svgGenDrv');
+//var gensvg = require('./lib/svgGenDrv');
 var kube = require('./lib/kube');
 var hier = require('./lib/hierarchy');
 var schematic = require('./lib/svgSchematic');
@@ -94,28 +94,28 @@ app.set('view engine', 'ejs');
 // Application variables
 //------------------------------------------------------------------------------
 var colors = '';
-var dest = './uploads'
-var zips = [];
-var targz = [];
+// var dest = './uploads'
+// var zips = [];
+// var targz = [];
 
-var storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, dest)
-    },
-    filename: function(req, file, cb) {
-        cb(null, file.originalname)
-        var ext = path.extname(file.originalname).toUpperCase();
-        if (ext === '.ZIP') {
-            zips.push(file.originalname);
-        }
-        if (ext === '.GZ') {
-            targz.push(file.originalname);
-        }
-        if (ext === '.TAR') {
-            targz.push(file.originalname);
-        }
-    }
-});
+// var storage = multer.diskStorage({
+//     destination: function(req, file, cb) {
+//         cb(null, dest)
+//     },
+//     filename: function(req, file, cb) {
+//         cb(null, file.originalname)
+//         var ext = path.extname(file.originalname).toUpperCase();
+//         if (ext === '.ZIP') {
+//             zips.push(file.originalname);
+//         }
+//         if (ext === '.GZ') {
+//             targz.push(file.originalname);
+//         }
+//         if (ext === '.TAR') {
+//             targz.push(file.originalname);
+//         }
+//     }
+// });
 
 var resetReq = false;
 var statMessages;
@@ -736,12 +736,12 @@ io.on('connection', client => {
         client.emit('selectListsResult', result);
     });
 
-    client.on('getSvg', data => {
-        utl.logMsg('vpkMNL997 - Build SVG requests received' );
-        var result = gensvg.build(data);
-        utl.logMsg('vpkMNL048 - Emit svgResult' );
-        client.emit('svgResult', result);
-    });
+    // client.on('getSvg', data => {
+    //     utl.logMsg('vpkMNL997 - Build SVG requests received' );
+    //     var result = gensvg.build(data);
+    //     utl.logMsg('vpkMNL048 - Emit svgResult' );
+    //     client.emit('svgResult', result);
+    // });
 
     client.on('getVersion', data => {
         utl.logMsg('vpkMNL091 - Get software version request ' );
@@ -789,6 +789,11 @@ io.on('connection', client => {
         client.emit('schematicResult', {'data': vpk.containers, 'messages': vpk.svgMsg} );
     });
 
+    client.on('security', data => {
+        utl.logMsg('vpkMNL091 - Get security request ' );
+        schematic.parse(data);
+        client.emit('securityResult', {'data': vpk.containers, 'messages': vpk.svgMsg} );
+    });
 
     client.on('search', data => {
         var msg = 'Search for ' + data.kindFilter + ' in ' + data.namespaceFilter;

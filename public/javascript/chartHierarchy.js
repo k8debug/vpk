@@ -9,7 +9,10 @@ const chartHierarchy = (input) => {
         const root = d3.hierarchy(data);
         root.dx = 16;
         root.dy = width / (root.height + 1);
+        $("#chartInfo").empty();
+        $("#chartInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
         return d3.tree().nodeSize([root.dx, root.dy])(root);
+    
     }
 
     const render = data => { 
@@ -36,9 +39,9 @@ const chartHierarchy = (input) => {
 
         const link = g.append("g")
             .attr("fill", "none")
-            .attr("stroke", "#d8b365")
+            .attr("stroke", "#755")
             .attr("stroke-opacity", 0.4)
-            .attr("stroke-width", 1.5)
+            .attr("stroke-width", 0.5)
             .selectAll("path")
             .data(root.links())
             .join("path")
@@ -55,7 +58,7 @@ const chartHierarchy = (input) => {
             .attr("transform", d => `translate(${d.y},${d.x})`);
 
         node.append("circle")
-            .attr("fill", d => d.children ? "#5ab4ac" : "#8c510a")
+            .attr("fill", d => d.children ? "#29f" : "#f33")
             .attr("r", 2.5);
 
         node.append("text")

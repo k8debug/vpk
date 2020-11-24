@@ -70,6 +70,8 @@ $(document).ready(function() {
     $("#graphic").removeClass("show");
     $("#schematic").removeClass("active");
     $("#schematic").removeClass("show");
+    $("#security").removeClass("active");
+    $("#security").removeClass("show");
 
     // get the name of selected tab and process
     $( 'a[data-toggle="tab"]' ).on( 'shown.bs.tab', function( evt ) {
@@ -77,45 +79,37 @@ $(document).ready(function() {
         // take action based on what tab was shown
         if(currentTab === "#instructions") {
             $('#svgResults').hide();
-            $('#chartInfo').hide();
             $('#charts').hide();
             $('#schematic').hide();
+            $('#security').hide();
         } else if (currentTab === "#searchR") {
             $('#svgResults').show();
-            $('#chartInfo').hide();
             $('#charts').hide();
             $('#schematic').hide();
+            $('#security').hide();
         } else if (currentTab === "#schematic") {
             $('#svgResults').hide();
-            $('#chartInfo').hide();
             $('#charts').hide();
             $('#schematic').show();
+            $('#security').hide();
         } else if (currentTab === "#graphic") {
             $('#svgResults').hide();
-            $('#chartInfo').hide();
             $('#charts').show();
             $('#schematic').hide();
-        } else {
-            $('#svgResults').show();
-            $('#chartInfo').show();
-            $('#charts').show();
-            $('#schematic').show();
+            $('#security').hide();
+        } else if (currentTab === "#security") {
+            $('#svgResults').hide();
+            $('#charts').hide();
+            $('#schematic').hide();
+            $('#security').show();
         }
     });
 
-    // $("#clusterModal").on("hidden.bs.modal", function () {
-    //     console.log('clusterModal hidden')
-    //     //$('#pickDataSource').val(null).trigger('change');
-    // });
+    $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
+        selectedDef = $el.src + '::' + $el.part + '::' + $el.value;
+        getDef(selectedDef);
+     });
 
-    // $("#chgDirModal").on("hidden.bs.modal", function () {
-    //     console.log('chgDirModal hidden')
-    //     //$('#pickDataSource').val(null).trigger('change');
-    // });  
-    
-    // $("#fileModal").on("hidden.bs.modal", function () {
-    //     $('#pickDataSource').val(null).trigger('change');
-    // })
 
     $('#pickDataSource').select2({
         dropdownCssClass: "vpkfont-md",
@@ -143,7 +137,14 @@ $(document).ready(function() {
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select instance"
-    });    
+    }); 
+
+    $('#graphic-ns-filter').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "select namespace(s)"
+    }); 
+
     $("#searchBtn").click(function(e) {
         e.preventDefault();
         searchObj();
@@ -310,33 +311,27 @@ socket.on('logResult', function(data) {
 });
 
 socket.on('hierarchyResult', function(data) {
-    //$("#svgResults").empty();
-    //$("#svgResults").html('');
     $("#charts").empty();
     $("#charts").html('<svg width="50" height="50"></svg>');
-    $(".chartInfo").empty();
-    $(".chartInfo").html('Processing chart data');
+    //$("#chartInfo").empty();
+    $("#chartInfo").html('Click blue dot to expand or collapse.  Red dot is final point of branch.');
 
     if (chartType === 'hierarchy') {
         $("#charts").empty();
         $("#charts").html('<svg width="50" height="50"></svg>');
         chartHierarchy(data);
-        $(".chartInfo").html('');
     } else if (chartType === 'collapsible') {
         $("#charts").empty();
         $("#charts").html('<svg></svg>');
         chartCollapsible(data);
-        $(".chartInfo").html('Click blue dot to expand or collapse.  Red dot is final point of branch.');
     } else if (chartType === 'circlePack') {
         $("#charts").empty();
         $("#charts").html('<svg></svg>');
         chartCirclePack(data);
-        $(".chartInfo").html('');
     } else if (chartType === 'tree') {
         $("#charts").empty();
         $("#charts").html('<svg></svg>');
         chartTree(data);
-        $(".chartInfo").html('');
     }
 });
 
@@ -386,9 +381,15 @@ socket.on('resetResults', function(data) {
 });
               
 socket.on('schematicResult', function(data) {
-    //console.log(JSON.stringify(data, null, 4))
     k8cData = data.data;
-    outputSchematic();
+    hideMessage();
+    schematic();       
+});
+
+socket.on('securityResult', function(data) {
+    k8cData = data.data;
+    hideMessage();
+    security();       
 });
 
 socket.on('selectListsResult', function(data) {
@@ -431,6 +432,10 @@ socket.on('clusterDirResult', function(data) {
 //----------------------------------------------------------
 // socket io definitions for out-bound
 //----------------------------------------------------------
+function showConfig() {
+    $("#configModal").modal('show')
+}
+
 function closeChgDir() {
     $("#chgDirModal").modal('hide')
 }
@@ -467,47 +472,41 @@ function hideMessage() {
 }
 
 
-// loop and check for rows with checkbox checked and get SVG data
-function showSvg() {
-    hideMessage();
-    var selected = [];
-    var items = $("#tableL").bootstrapTable('getAllSelections');
-    // var junk = dixArray;
-    if (typeof items[0] !== 'undefined') {
-        for (var c = 0; c < items.length; c++) {
-            var key = items[c].id;
-            var fname = items[c].src;
-            var data = dixArray[key];
-            selected.push(data);
-            if (data.indexOf(fname) < 0) {
-                console.log('ERROR Selected: ' + fname + ' Loaded: ' + data);
-            }
-        }
-        if (selected.length > 0) {
-            socket.emit('getSvg', selected);
-        }
-    }
-}
+// // loop and check for rows with checkbox checked and get SVG data
+// function showSvg() {
+//     hideMessage();
+//     var selected = [];
+//     var items = $("#tableL").bootstrapTable('getAllSelections');
+//     // var junk = dixArray;
+//     if (typeof items[0] !== 'undefined') {
+//         for (var c = 0; c < items.length; c++) {
+//             var key = items[c].id;
+//             var fname = items[c].src;
+//             var data = dixArray[key];
+//             selected.push(data);
+//             if (data.indexOf(fname) < 0) {
+//                 console.log('ERROR Selected: ' + fname + ' Loaded: ' + data);
+//             }
+//         }
+//         if (selected.length > 0) {
+//             socket.emit('getSvg', selected);
+//         }
+//     }
+// }
 
 // pass data to relations 
 function bldSchematic() {
     hideMessage();
-    // if (typeof newData === 'undefined' || newData.length === 0) {
-    //     showMessage('No data has been retrieved from data source','fail');
-    // } else {
-    //     socket.emit('schematic', newData);
-    // }
-
-    socket.emit('schematic', newData);
+    socket.emit('schematic');
 }
 
-// data from schematic 
-function outputSchematic() {
+// pass data to relations 
+function bldSecurity() {
     hideMessage();
-    //clearDisplay();
-    schematic(baseDir);       // data used to populate the table in the UI
-    //$("#schematic").show();
+    socket.emit('security');
 }
+
+
 
 // request to clear directory stats
 function clearStats() {
@@ -704,6 +703,10 @@ function partChain(type, data) {
     try {
         if (type === 'level1') {
             fnum = data.level1Fnum
+            if (fnum === 'missing') {
+                showMessage('Unable to locate data source yaml...','fail');
+                return;
+            }
             fn = fnum.split('.');
             if (fn.length === 2) {
                 selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data.level1Kind;
@@ -712,6 +715,10 @@ function partChain(type, data) {
         }
         if (type === 'level2') {
             fnum = data.level2Fnum
+            if (fnum === 'missing') {
+                showMessage('Unable to locate data source yaml...','fail');
+                return;
+            }
             fn = fnum.split('.');
             if (fn.length === 2) {
                 selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data.level2Kind;
@@ -804,15 +811,39 @@ function multiList(type, data) {
 
 // send request to server to get hierarchy data
 function getChart(type) {
+
+    var processingChart = '<div class="row">'
+        + '<div class="col mt-1 ml-1">'
+        + '<img style="float:left" src="images/indicator3.gif"/>'
+        + '<div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing chart request</span></div>'
+        + '</div>'
+        + '</div>'
+
     hideMessage();
     chartType = type;
     $("#charts").empty();
     $("#charts").html('<svg width="950" height="5000"></svg>');
     $("#chartInfo").empty();
-    $("#chartInfo").html('Retrieving chart');
+    $("#chartInfo").html(processingChart);
 
-    var data = getHierFilter();
-    socket.emit('getHierarchy', data);
+    var namespaces = '';
+    var tmp;
+    var options = $('#graphic-ns-filter').select2('data');
+    for (var i = 0; i < options.length; i++) {
+        tmp = options[i].text;
+        tmp = tmp.trim();
+        if (tmp.length === 0) {
+            namespaces = namespaces + ':all-namespaces:';
+        } else {
+            namespaces = namespaces + ':' + tmp + ':';
+        }
+    };
+
+    if (namespaces === '') {
+        namespaces = ':all-namespaces:';
+    }
+
+    socket.emit('getHierarchy', {"namespaceFilter": namespaces });
 }
 
 
@@ -863,8 +894,6 @@ function clearSvg() {
     $("#svgResults").html('');
     $("#charts").empty();
     $("#charts").html('<svg width="50" height="50"></svg>');
-    $("#chartInfo").empty();
-    $("#shartInfo").html('');
     $("#schematicDetail").empty();
     $("#schematicDetail").html('');
     $("#loadStatus").empty();
@@ -880,8 +909,6 @@ function reload() {
 
     $("#charts").empty();
     $("#charts").html('<svg width="950" height="5000"></svg>');
-    $("#chartInfo").empty();
-    $("#shartInfo").html('');
 
     $("#loadStatus").empty();
     $("#loadStatus").html('');
@@ -896,65 +923,65 @@ function reload() {
 }
 
 
-// set hierarchy filters
-function getHierFilter() {
-    var namespaces = '::';
-    var kinds = '::'; 
-    var kindnameValue = '';
-    var labels = '::';
-    var filter;
-    var tmp;
-    var nsKey = false;
-    var kindKey = false;
-    var kindnameKey = false;
-    var labelKey = false;
+// // set hierarchy filters
+// function getHierFilter() {
+//     var namespaces = '::';
+//     var kinds = '::'; 
+//     var kindnameValue = '';
+//     var labels = '::';
+//     var filter;
+//     var tmp;
+//     var nsKey = false;
+//     var kindKey = false;
+//     var kindnameKey = false;
+//     var labelKey = false;
 
-    filter = $('#ns-filter').select2('data');
-    for (var i = 0; i < filter.length; i++) {
-        tmp = filter[i].text;
-        tmp.trim();
-        namespaces = namespaces + tmp + '::';
-        // if (tmp.length === 0) {
-        //     namespaces = namespaces + '-blank-' + '::';
-        // } else {
-        //     namespaces = namespaces + tmp + '::';
-        // }
-    };
+//     filter = $('#ns-filter').select2('data');
+//     for (var i = 0; i < filter.length; i++) {
+//         tmp = filter[i].text;
+//         tmp.trim();
+//         namespaces = namespaces + tmp + '::';
+//         // if (tmp.length === 0) {
+//         //     namespaces = namespaces + '-blank-' + '::';
+//         // } else {
+//         //     namespaces = namespaces + tmp + '::';
+//         // }
+//     };
 
-    filter = $('#kind-filter').select2('data');
-    for (var i = 0; i < filter.length; i++) {
-        tmp = filter[i].text;
-        tmp.trim();
-        kinds = kinds + tmp + '::';
-    };
+//     filter = $('#kind-filter').select2('data');
+//     for (var i = 0; i < filter.length; i++) {
+//         tmp = filter[i].text;
+//         tmp.trim();
+//         kinds = kinds + tmp + '::';
+//     };
 
-    filter = $('#label-filter').select2('data');
-    for (var i = 0; i < filter.length; i++) {
-        tmp = filter[i].text;
-        tmp.trim();
-        labels = labels + tmp + '::';
-    };    
+//     filter = $('#label-filter').select2('data');
+//     for (var i = 0; i < filter.length; i++) {
+//         tmp = filter[i].text;
+//         tmp.trim();
+//         labels = labels + tmp + '::';
+//     };    
 
-    kindnameValue = $("#kind-name").val();
-    if (typeof kindnameValue === 'undefined' || kindnameValue.length === 0) {
-        kindnameValue = '';
-    } 
+//     kindnameValue = $("#kind-name").val();
+//     if (typeof kindnameValue === 'undefined' || kindnameValue.length === 0) {
+//         kindnameValue = '';
+//     } 
 
-    // if all are blank set some defaults
-    if (namespaces === '::' && kinds === '::' && labels === '::' && kindnameValue === '') {
-        namespaces = '::all-namespaces::';
-        kinds = '::all-kinds';
-    }
+//     // if all are blank set some defaults
+//     if (namespaces === '::' && kinds === '::' && labels === '::' && kindnameValue === '') {
+//         namespaces = '::all-namespaces::';
+//         kinds = '::all-kinds';
+//     }
 
-    var data = {
-        "namespaceFilter": namespaces,
-        "kindsFilter": kinds,
-        "kindnameValue": kindnameValue,
-        "labelFilter": labels
-    }
+//     var data = {
+//         "namespaceFilter": namespaces,
+//         "kindsFilter": kinds,
+//         "kindnameValue": kindnameValue,
+//         "labelFilter": labels
+//     }
 
-    return data;
-}
+//     return data;
+// }
 
 
 function getPdf() {
@@ -1358,6 +1385,13 @@ function populateSelectLists(data) {
             containerCssClass: "vpkfont-md"
         });
 
+        $("#graphic-ns-filter").empty();
+        $("#graphic-ns-filter").select2({ 
+            data: options,
+            dropdownCssClass: "vpkfont-md",
+            containerCssClass: "vpkfont-md"
+        });        
+
         // filter bar2 (resource kinds)
         options = bldOptions(data.kinds, 'K', 'select2');
         $("#kind-filter").empty();
@@ -1653,7 +1687,6 @@ function buildSearchResults(data) {
 
     // hide the graphics tabs 
     $('#svgResults').hide();
-    $('#chartInfo').hide();
     $('#charts').hide();
     $('#charts').empty();
     

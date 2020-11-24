@@ -5,20 +5,21 @@
   </head>
   <body>
     <div class="wrapper">
+    
         <div id="main">
             <div id="header-bar" class="header">
-                <img style='vertical-align:middle;' src='images/vpk.png' width='30' height='30'>
+                <span onclick="about()">
+                <img style='vertical-align:middle;' src='images/vpk.png' width='30' height='30'  >
                 <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont-lg pl-2'>
                     Visual parsed Kubernetes
                 </div>
+                </span>
                 <div class="header-right">
-                    <a href="javascript:showMessage('build the gear code', 'fail')">
+                    <a href="javascript:showConfig()">
                         <i class="fas fa-cog fa-lg"></i>
                     </a>
                 </div>
-            </div> <!-- end of id="header-bar" -->
-
-            <!-- remove all old logic for d-n-d of files -->
+            </div> 
 
             <div id="datasource" class="header vpkfont-md">
                 <select id="pickDataSource" 
@@ -34,20 +35,7 @@
                         <span id="baseDir" class="float-left"></span>
                     </button>
                 </div>                    
-                <div class="float-right">
-                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
-                        onclick="searchObj()">
-                        Show data
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
-                        data-toggle="collapse" data-target="#filterdata">
-                        Filter data
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
-                        onclick="clearData()">
-                        Clear data
-                    </button>                </div>
-            </div> <!-- end of id="datasource" -->
+            </div> 
 
             <div id="messageDiv" class="collapse hide mt-1 mb-0">
                 <div id="messageType" class="alert alert-warning fade show" role="alert">
@@ -58,137 +46,143 @@
                 </div>
             </div>
 
-            <!-- ==================================== -->
-            <!-- Filtered data results section        -->
-            <!-- ==================================== -->
-            <div class="grid">
-                <div id="filterdata" class="border rounded mt-1 collapse hide vpkcolor">
-                    <div id="filter-bar-1" class="row filterBack pl-1 mt-1">
-                        <div class="vpkfont-md mt-2" style="width: 250px;">
-                            Namespace(s) 
-                        </div>                       
-                        <div id="bar1-select" class="ml-1 mr-1 mt-1 vpkfont-md">
-                            <select id="ns-filter" class="js-example-basic-multiple" 
-                                multiple="multiple" 
-                                style="width: 550px"
-                                id="bar1-options" >
-                                <option>all-namespaces</option>
-                                <option>&lt;cluster-level&gt;</option>
-                                <option>openshift</option>
-                                <option>default</option>
-                                <option>team01</option>
-                                <option>team02</option>
-                            </select>
-                        </div>
-                        
-                    </div>
-
-                    <div id="filter-bar-2" class="row filterBack pl-1">
-                        <div class="vpkfont-md mt-2" style="width: 250px;">
-                            Kind(s) 
-                        </div>
-                        <div id="bar2-select" class="ml-1 mr-1 mt-1 vpkfont-md">
-                            <select id="kind-filter" class="js-example-basic-multiple" 
-                                multiple="multiple" 
-                                style="width: 550px"
-                                id="bar2-options" >
-                                <option>all-kinds</option>
-                                <option>Pod</option>
-                                <option>Deployment</option>
-                                <option>ConfigMap</option>
-                            </select>
-                        </div>
-                    </div>
-
-
-                    <div id="filter-bar-3" class="row filterBack pl-1">
-                        <div class="vpkfont-md mt-2" style="width: 250px;">
-                            Labels(s) 
-                        </div>
-                        <div id="bar3-select" class="ml-1 mr-1 mt-1 vpkfont-md">
-                            <select id="label-filter" class="js-example-basic-multiple" 
-                                multiple="multiple" 
-                                style="width: 550px"
-                                id="bar3-options" >
-                                <option>key1 : value1</option>
-                                <option>key2 : value2</option>
-                                <option>key3 : value3</option>
-                                <option>key4 : value4</option>
-                                <option>key5 : value5</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="filter-bar-4" class="row filterBack pl-1">
-                        <div class="vpkfont-md mt-2" style="width: 250px;">
-                            Annotation(s) 
-                        </div>
-                        <div id="bar4-select" class="ml-1 mr-1 mt-1 vpkfont-md">
-                            <select id="anno-filter" class="js-example-basic-multiple" 
-                                multiple="multiple" 
-                                style="width: 550px"
-                                id="bar4-options" >
-                                <option>key1 : value1</option>
-                                <option>key2 : value2</option>
-                                <option>key3 : value3</option>
-                                <option>key4 : value4</option>
-                                <option>key5 : value5</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="filter-bar-5" class="row filterBack pl-1">
-                        <div class="vpkfont-md mt-2" style="width: 250px;">
-                            K8 resource kind name
-                        </div>
-                        <div id="bar5-select" class="ml-1 mr-1 mt-1 vpkfont-md" style="width: 550px;">
-                            <input type="text" class="form-control vpkfont-md" id="kind-name" placeholder="enter resource name">
-                        </div>
-                    </div>
-
-                    <div id="filterTheData" class="row filterBack">
-                        <div class="col-9">
-                            <span>
-                                &nbsp;
-                            </span>
-                        </div>
-                        <div class="col-3 mt-1 mb-1">
-                            <button type="button" class="btn btn-sm btn-primary vpkfont-md float-right vpkwhite" onclick="searchObj()">
-                            Apply filters
-                        </button>
-                        </div>
-                    </div>
-                </div>  <!-- end of id="filterdata" -->
-
-                <div class="row">
-                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                    <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                </div>
-            </div>
-
             <ul id="tabs" class="nav nav-tabs">
                 <li class="nav-item"><a id="instTab"      href="#instructions" data-target="#instructions" data-toggle="tab" class="nav-link small text-uppercase active">Instructions</a></li>
                 <li class="nav-item"><a id="tableTab"     href="#searchR"      data-target="#searchR"      data-toggle="tab" class="nav-link small text-uppercase">Table View</a></li>
                 <li class="nav-item"><a id="graphicTab"   href="#graphic"      data-target="#graphic"      data-toggle="tab" class="nav-link small text-uppercase">Graphic View</a></li>
                 <li class="nav-item"><a id="schematicTab" href="#schematic"    data-target="#schematic"    data-toggle="tab" class="nav-link small text-uppercase">Schematics</a></li>
+                <li class="nav-item"><a id="securityTab"  href="#security"     data-target="#security"     data-toggle="tab" class="nav-link small text-uppercase">Security</a></li>
             </ul>
             <br>
-            <div id="tabsContent" class="tab-content">
 
+            <div id="tabsContent" class="tab-content">
                 <div id="instructions" class="tab-pane active show">
-                    <div id="instDetail" class="vpkfont">
-                        Instructions should be placed here.
+                    <div id="instDetail" class="vpkfont vpkcolor">
+                        <ul>
+                            <li class="pt-1">From dropdown select datasource and connect.&nbsp;&nbsp;The message 'No data loaded' button 
+                                will be updated with the connected datasource after connecting. </li>
+                            <li class="pt-2">Once datasource is connected, optionally click the displayed datasource name button 
+                                to view statistics of the connected data source.</li>
+                            <li class="pt-2">Select the desired tab, Table, Graphics, Schematics to view cluster information.</li>
+                        </ul>
+                    </div>
+
+                    <div class="row ml-1">
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
                     </div>
                 </div>
 
                 <div id="searchR" class="tab-pane">
+                    <!-- ==================================== -->
+                    <!-- Filtered data results section        -->
+                    <!-- ==================================== -->
+                    <div class="grid">
+                        <div id="filterdata" class="border rounded mt-1 collapse hide vpkcolor">
+                            <div id="filter-bar-1" class="row filterBack pl-1 mt-1">
+                                <div class="vpkfont-md mt-2" style="width: 250px;">
+                                    Namespace(s) 
+                                </div>                       
+                                <div id="bar1-select" class="ml-1 mr-1 mt-1 vpkfont-md">
+                                    <select id="ns-filter" class="js-example-basic-multiple" 
+                                        multiple="multiple" 
+                                        style="width: 550px"
+                                        id="bar1-options" >
+                                        <option>all-namespaces</option>
+                                        <option>&lt;cluster-level&gt;</option>
+                                        <option>openshift</option>
+                                        <option>default</option>
+                                        <option>team01</option>
+                                        <option>team02</option>
+                                    </select>
+                                </div>
+                            </div>
+        
+                            <div id="filter-bar-2" class="row filterBack pl-1">
+                                <div class="vpkfont-md mt-2" style="width: 250px;">
+                                    Kind(s) 
+                                </div>
+                                <div id="bar2-select" class="ml-1 mr-1 mt-1 vpkfont-md">
+                                    <select id="kind-filter" class="js-example-basic-multiple" 
+                                        multiple="multiple" 
+                                        style="width: 550px"
+                                        id="bar2-options" >
+                                        <option>all-kinds</option>
+                                        <option>Pod</option>
+                                        <option>Deployment</option>
+                                        <option>ConfigMap</option>
+                                    </select>
+                                </div>
+                            </div>
+        
+        
+                            <div id="filter-bar-3" class="row filterBack pl-1">
+                                <div class="vpkfont-md mt-2" style="width: 250px;">
+                                    Labels(s) 
+                                </div>
+                                <div id="bar3-select" class="ml-1 mr-1 mt-1 vpkfont-md">
+                                    <select id="label-filter" class="js-example-basic-multiple" 
+                                        multiple="multiple" 
+                                        style="width: 550px"
+                                        id="bar3-options" >
+                                        <option>key1 : value1</option>
+                                        <option>key2 : value2</option>
+                                        <option>key3 : value3</option>
+                                        <option>key4 : value4</option>
+                                        <option>key5 : value5</option>
+                                    </select>
+                                </div>
+                            </div>
+        
+                            <div id="filter-bar-5" class="row filterBack pl-1">
+                                <div class="vpkfont-md mt-2" style="width: 250px;">
+                                    K8 resource kind name
+                                </div>
+                                <div id="bar5-select" class="ml-1 mr-1 mt-1 vpkfont-md" style="width: 550px;">
+                                    <input type="text" class="form-control vpkfont-md" id="kind-name" placeholder="enter resource name">
+                                </div>
+                            </div>
+        
+                            <div id="filterTheData" class="row filterBack">
+                                <div class="col-9">
+                                    <span>
+                                        &nbsp;
+                                    </span>
+                                </div>
+                                <div class="col-3 mt-1 mb-1">
+                                    <button type="button" class="btn btn-sm btn-primary vpkfont-md float-right vpkwhite" onclick="searchObj()">
+                                    Apply filters
+                                </button>
+                                </div>
+                            </div>
+                        </div>  <!-- end of id="filterdata" -->
+        
+                        <div class="row">
+                            <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                            <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                            <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                            <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        </div>
+                    </div>
+                    <!--  -->
+
+                    <div class="float-right">
+                        <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
+                            onclick="searchObj()">
+                            Populate table
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
+                            data-toggle="collapse" data-target="#filterdata">
+                            Filter data
+                        </button>
+                    </div>
+
                     <div id="searchResults">
                         <table id="tableL" class="table table-bordered table-sm"
                             data-buttons-class="primary"
                             data-buttons-prefix="btn-sm btn"
-                            data-click-to-select="true"
                             data-icon-size="sm"
                             data-loading-template="loadingTemplate"
                             data-maintain-meta-data="true"
@@ -211,8 +205,8 @@
                             >
                             <thead class='thead-light'>
                             <tr>
-                                <th data-field="cbox" data-checkbox="true"></th>
-                                <th data-field="id"  data-sortable="true">ID </th>
+                                <!-- <th data-field="cbox" data-checkbox="true"></th> -->
+                                <!-- <th data-field="id"  data-sortable="true">ID </th> -->
                                 <th data-field="namespace"  data-sortable="true">Namespace</th>
                                 <th data-field="kind"  data-sortable="true">Kind</th>
                                 <th data-field="value" data-sortable="true">Kind Name</th>
@@ -222,22 +216,9 @@
                             </thead>
                         </table>
                     </div>
-
                     <div class="col-md-12 mt-2 mb-3 p-0">
-                        <button type="button" class="btn btn-outline-primary btn-sm vpkButtons mr-1 pl-2 pr-2" id="viewsvg" onclick="showSvg()">
-                        View
-                        </button>
-                        <span class="mr-2 vpkfont-md">
-                            Select one or more items from the above table and press the view button to visualize item(s).  Once displayed click the item to view the yaml.
-                        </span>
-                    </div>
-
-                    <div class="col-md-12 mb-3 p-0">
-                        <button type="button" class="btn btn-outline-primary btn-sm vpkButtons mr-1 pl-2 pr-2" id="clearsvg" onclick="clearSvg()">
-                        Clear
-                        </button>
-                        <span class="mr-2 vpkfont-md">
-                            Once images are shown press button to clear images.
+                        <span class="mr-2 vpkfont-md vpkcolor">
+                            Click table row to view the resource yaml
                         </span>
                     </div>
 
@@ -245,53 +226,109 @@
                         <div id="svgResults">
                         </div>
                     </div>
-
                 </div>
 
                 <div id="graphic" class="tab-pane">
-                    <div class="container row vpkButtons">
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart01" onclick="getChart('hierarchy')">
-                            &nbsp;Hierarchy&nbsp;
-                            </button>
+                    <div class="grid mt-0 border rounded">
+                        <div id="filterC" class="mb-1 vpkcolor">
+                            <div id="filter-chart" class="row filterBack pl-1 ml-2 mt-1">
+                                <div class="vpkfont-md" style="width: 250px;">
+                                    Select namespaces to filter 
+                                </div>                       
+                                <div id="grachic-ns-select" class="ml-1 mr-1 vpkfont-md">
+                                    <select id="graphic-ns-filter" class="js-example-basic-multiple" 
+                                        multiple="multiple" 
+                                        style="width: 650px">
+                                        <option>all-namespaces</option>
+                                        <option>&lt;cluster-level&gt;</option>
+                                        <option>kube-systemt</option>
+                                        <option>default</option>
+                                        <option>team01</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart02" onclick="getChart('collapsible')">
-                                &nbsp;Collapsible&nbsp;
-                            </button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart03" onclick="getChart('circlePack')">
-                                &nbsp;Circle Pack&nbsp;
-                            </button>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart04" onclick="getChart('tree')">
-                                &nbsp;Tree&nbsp;
-                            </button>
-                        </div>
+                    
 
-                        <div id="chartInfo">
+                        <div class="row vpkButtons mb-1 ml-1">
+                            <div class="vpkcolor vpkfont-md ml-2" style="width: 240px;">
+                                Select graphic to view
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart01" onclick="getChart('hierarchy')">
+                                &nbsp;Hierarchy&nbsp;
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart02" onclick="getChart('collapsible')">
+                                    &nbsp;Collapsible&nbsp;
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart03" onclick="getChart('circlePack')">
+                                    &nbsp;Circle Pack&nbsp;
+                                </button>
+                            </div>
+                            <!-- <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart04" onclick="getChart('tree')">
+                                    &nbsp;Tree&nbsp;
+                                </button>
+                            </div> -->
                         </div>
+                    </div>
 
-                        <div id="charts" class="container" >
-                            <svg width="950" height="50"></svg>
-                        </div>
+                    <div class="row ml-1">
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                    </div>
 
 
+                    <div class="mt-2 vpkfont vpkcolor" id="chartInfo">
+                        
+                    </div>
+
+                    <div id="charts" class="container mb-4 mt-4" >
+                        <svg width="950" height="50"></svg>
                     </div>
                 </div>
 
                 <div id="schematic" class="tab-pane">
-                    <div class="col-md-2">
+                    <div class="float-left">
                         <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSchematic()">
                         &nbsp;Workload Schematics&nbsp;
                         </button>
                     </div>
-
                     <div id="schematicDetail" class="vpkfont">
                     </div>
+
+                    <div class="row">
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                    </div>
                 </div>
+
+                <div id="security" class="tab-pane">
+                    <div class="float-left">
+                        <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSecurity()">
+                        &nbsp;RBAC Info&nbsp;
+                        </button>
+                    </div>
+                    <div id="securityDetail" class="vpkfont">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                    </div>
+                </div>
+
 
             </div>
 
@@ -310,6 +347,53 @@
                 <!-- ??? -->
             </div>
 
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- Configuration Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="configHeader">
+                            <h6 class="modal-title">VpK Configuration</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+
+                        <div id="size-sm" class="container  p-1 mb-1">
+                            <div class="row mb-1">
+                                <div class="col-10 px-3 py-1 vpkfont vpkcolor">
+                                    <p>Display the <b>"managedFields"</b> portion of resource metadata.  
+                                       &nbsp;Set to 'On' the "managedFields" will be shown.</p>
+                                </div>
+                                <!-- <div class="col-2 px-3 py-1 vpkfont vpkcolor">
+                                    <p>&nbsp;</p>
+                                </div> -->
+                                <div class="col-2 px-3 py-2 col-md-auto">
+                                    <input id="mgmFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" checked>
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <div class="col-10 px-3 py-1 vpkfont vpkcolor ">
+                                    <p>Display the <b>"status"</b> section of resource metadata.  
+                                        &nbsp;Set to 'On' the status information will be shown.</p>
+                                 </div>
+                                <div class="col-2 py-2">
+                                    <input id="statusFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" checked>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -422,7 +506,9 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Visual parsed Kubernetes<br>
+                        <img style='vertical-align:middle;' src='images/vpk.png' width='40' height='40'  >
+
+                        <h4 class="ml-4 modal-title">Visual parsed Kubernetes<br>
                             <span id="version" style="font-size: 60%""></span>
                         </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -431,20 +517,29 @@
                     </div>
                     <div style="background-color: #eee;">
                         <div class="align-middle">
-                            <div style="font-size: 80%; text-align: center; margin-top: 25px; margin-bottom: 25px;">TECHNOLOGIES USED</div>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <img src="images/bootstrap-stack.png" style="height:40px; width:auto;" class="mx-auto d-block">
-                                </div>
-                                <div class="col-sm-3" style="margin-top: 10px;">
-                                    <img src="images/dropzone.svg" style="height:22px; width:auto;" class="mx-auto d-block">
-                                </div>
-                                <div class="col-sm-3" style="margin-top: 15px;">
-                                    <img src="images/jQuery.png" style="height:18px; width:auto;" class="mx-auto d-block">
-                                </div>
-                                <div class="col-sm-3" style="margin-top: 5px;">
-                                    <img src="images/nodejs.png" style="height:25px; width:auto;" >
-                                </div>
+                            <div class="ml-1 mr-1 mt-4 mb-4 vpkfont vpkcolor text-center" >
+                                <P>An application hoping to bring understanding and insight to the Kubernetes universe.</P>
+                                
+
+                                <P>FREE to use.</P>
+                            </div>
+                            <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-sm vpkcolor" >
+                                Copyright 2020 Dave Weilert
+                                <br><br>
+                                Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+                                and associated documentation files (the "Software"), to deal in the Software without restriction, 
+                                including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+                                and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+                                subject to the following conditions:
+                                <br><br>
+                                The above copyright notice and this permission notice shall be included in all copies or substantial 
+                                portions of the Software.
+                                <br><br>
+                                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+                                LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+                                IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+                                WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+                                SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                             </div>
                         </div>
                     </div>
@@ -584,6 +679,7 @@
                             <h5 class="modal-title vpkfont">Data source stats</h5>
                             <div class="float-right">
                                 <button type="button" class="btn btn-sm btn-outline-primary vpkfont-sm" onclick="buildStatsToggle()">Toggle Kind/Namespace</button>
+                                &nbsp;&nbsp;<span class="vpkfont-sm">Press button to toggle views between resource Kind and Namespace groupings. </span>
                             </div>
                         </div>
                     </div>
