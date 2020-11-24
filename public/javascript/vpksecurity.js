@@ -175,6 +175,82 @@ function parseArray(data) {
 	return nData;
 }
 
+
+
+
+//Build list of ServiceAccounts
+// function buildSA(ns) {
+	
+// 	let nsKey = '0000-' + ns;
+// 	// check if there are any role entries to process
+// 	if (typeof k8cData[nsKey].ServiceAccount === 'undefined') {
+// 		return
+// 	}
+// 	partsCnt++;
+// 	let partsBar = '<div class="partsBar"><button type="button" ' 
+// 	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
+// 	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing the ServiceAccounts&nbsp;&nbsp;</button>'
+// 	+ '</div>'
+// 	+ '<div id="parts-' + partsCnt + '" class="collapse">';
+// 	let bottomButton = '&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" ' 
+// 	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
+// 	+ partsCnt + '">&nbsp;&nbsp;&nbsp;&nbsp;Close ServiceAccount list&nbsp;&nbsp;</button>';
+// 	let divSection = '<div class="events" ><hr><table style="width:100%">';
+// 	let header = '<tr class="partsList"><th>Service Account name</th><th>ID # (click to view)</th></tr>';
+
+// 	//data to show
+// 	let accounts = k8cData[nsKey].ServiceAccount;
+// 	accounts.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
+
+// 	let account;
+// 	let hl = accounts.length;
+// 	let nsHtml = '';
+// 	let item;
+// 	let rtn = '';
+// 	let name;
+// 	let fnum;
+// 	let parm;
+// 	let fname;
+// 	rtn = partsBar + divSection + header;
+
+
+// 	for (r = 0; r < hl; r++) {
+// 		account = accounts[r];
+// 		name = account.name;
+
+// 		fnum = account.fnum;
+// 		let fParts = fnum.split('.');
+// 		fname = baseDir + '/config' + fParts[0] + '.yaml';
+// 		parm = fname + '::' + fParts[1] + '::' + name;
+
+// 		item = '<tr>' 
+// 		+ '<td width="50%"  class="align-top"> <span class=" text-light bg-info">' + name + '</span></td>' 
+// 		+ '<td width="50%"  class="align-top" ><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
+// 		+ '</tr>';
+// 		nsHtml = nsHtml + item
+// 		item = '<tr>' 
+// 		+ '<td width="50%"><hr></td>' 
+// 		+ '<td width="50%"><hr></td>' 
+// 		+ '</tr>';
+// 		nsHtml = nsHtml + item		
+
+// 	}
+// 	if (nsHtml !== header) {
+// 		rtn = rtn + nsHtml;
+// 	}
+	
+	
+// 	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
+
+// 	if (rtn.indexOf('undefined') > -1) {
+// 		console.log(rtn);
+// 	}
+
+// 	return rtn;
+// }
+
+
+
 //Build the RoleBinding Subjects information
 function parseRBSubject(data, both) {
 	if (typeof both === 'undefined' || both === null) {

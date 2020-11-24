@@ -205,8 +205,6 @@
                             >
                             <thead class='thead-light'>
                             <tr>
-                                <!-- <th data-field="cbox" data-checkbox="true"></th> -->
-                                <!-- <th data-field="id"  data-sortable="true">ID </th> -->
                                 <th data-field="namespace"  data-sortable="true">Namespace</th>
                                 <th data-field="kind"  data-sortable="true">Kind</th>
                                 <th data-field="value" data-sortable="true">Kind Name</th>
@@ -296,7 +294,7 @@
                 </div>
 
                 <div id="schematic" class="tab-pane">
-                    <div class="float-left">
+                    <div class="col-md-2">
                         <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSchematic()">
                         &nbsp;Workload Schematics&nbsp;
                         </button>
@@ -313,7 +311,7 @@
                 </div>
 
                 <div id="security" class="tab-pane">
-                    <div class="float-left">
+                    <div class="col-md-2">
                         <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSecurity()">
                         &nbsp;RBAC Info&nbsp;
                         </button>
@@ -373,7 +371,7 @@
                                     <p>&nbsp;</p>
                                 </div> -->
                                 <div class="col-2 px-3 py-2 col-md-auto">
-                                    <input id="mgmFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" checked>
+                                    <input id="mgmFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" >
                                 </div>
                             </div>
 
@@ -383,11 +381,18 @@
                                         &nbsp;Set to 'On' the status information will be shown.</p>
                                  </div>
                                 <div class="col-2 py-2">
-                                    <input id="statusFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" checked>
+                                    <input id="statusFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" >
                                 </div>
                             </div>
-
                         </div>
+
+                        <div class="mt-2 float-left"> 
+                        <button id="configBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="saveConfig()" style="margin: 5px;">
+                            Save settings
+                        </button>   
+                        </div>
+
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

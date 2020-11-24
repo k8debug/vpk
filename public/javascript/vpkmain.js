@@ -26,7 +26,7 @@ var svgE = 0;
 var baseDir;
 var validDir;
 var newDir;
-var colors;
+//var colors;
 var clusterProviders;
 var files;
 var inputFlds;
@@ -78,26 +78,31 @@ $(document).ready(function() {
         currentTab = $( evt.target ).attr( 'href' );
         // take action based on what tab was shown
         if(currentTab === "#instructions") {
+            checkIfDataLoaded();
             $('#svgResults').hide();
             $('#charts').hide();
             $('#schematic').hide();
             $('#security').hide();
         } else if (currentTab === "#searchR") {
+            checkIfDataLoaded();
             $('#svgResults').show();
             $('#charts').hide();
             $('#schematic').hide();
             $('#security').hide();
         } else if (currentTab === "#schematic") {
+            checkIfDataLoaded();
             $('#svgResults').hide();
             $('#charts').hide();
             $('#schematic').show();
             $('#security').hide();
         } else if (currentTab === "#graphic") {
+            checkIfDataLoaded();
             $('#svgResults').hide();
             $('#charts').show();
             $('#schematic').hide();
             $('#security').hide();
         } else if (currentTab === "#security") {
+            checkIfDataLoaded();
             $('#svgResults').hide();
             $('#charts').hide();
             $('#schematic').hide();
@@ -236,7 +241,7 @@ $(document).ready(function() {
 
     clearDisplay();
     getSelectLists();
-    getColors();
+    getConfig();
 
 });
 
@@ -252,9 +257,9 @@ function printObject(o) {
 //----------------------------------------------------------
 // socket io definitions for incoming 
 //----------------------------------------------------------
-socket.on('colorsResult', function(data) {
-    colors = data;
-});
+// socket.on('colorsResult', function(data) {
+//     colors = data;
+// });
 
 socket.on('connect', function(data) {
     socket.emit('join', 'Session connected');
@@ -306,10 +311,6 @@ socket.on('dynstat', function(data) {
     //console.log(JSON.stringify(data, null, 4));
 });
 
-socket.on('logResult', function(data) {
-    showLogFile(data, 'L');
-});
-
 socket.on('hierarchyResult', function(data) {
     $("#charts").empty();
     $("#charts").html('<svg width="50" height="50"></svg>');
@@ -335,15 +336,6 @@ socket.on('hierarchyResult', function(data) {
     }
 });
 
-socket.on('importResult', function(data) {
-    $('#importModal').modal('hide');
-    showLogFile(data, 'I');
-});
-
-socket.on('cmdResult', function(data) {
-    showLogFile(data, 'C');
-});
-
 // retrieve object definition
 socket.on('objectDef', function(data) {
     // always edit, no longer provide browse 
@@ -362,12 +354,18 @@ socket.on('decodeDef', function(data) {
 socket.on('resetResults', function(data) {
     $("#loadStatus").empty();
     $("#loadStatus").html('');
+    var resultMsg = '';
+    var resultStatus = '';
     var resp;
     if (data.validDir === false) {
         resp = '<br><div><img style="float: left;" src="images/checkMarkRed.png" height="40" width="40">' +
             '&nbsp;&nbsp;&nbsp;&nbsp;Provided directory name does not exist.  Please provide a valid directory to continue.</div>';
         $("#loadStatus").html(resp);
         setBaseDir('Invalid directory: ' + newDir);
+        $("#chgDirModal").modal('hide');
+        resultMsg = 'Failed to connect to datasource';
+        resultStatus = 'fail';
+        showMessage(resultMsg, resultStatus);
     } else {
         resp = '<br><div><img style="float: left;" src="images/checkMarkGreen.png" height="40" width="40">' +
             '&nbsp;&nbsp;&nbsp;&nbsp;Directory parsed and loaded.</div>';
@@ -375,9 +373,15 @@ socket.on('resetResults', function(data) {
         setBaseDir(data.baseDir);
         rootDir = data.baseDir;
         baseDir = data.baseDir;
+        resultMsg = 'Datasource connected';
+        resultStatus = 'pass';
+        showMessage(resultMsg, resultStatus);
         getSelectLists();
+        $("#chgDirModal").modal('hide');
     }
-    clearDisplay();
+    //clearDisplay();
+    //$("#chgDirModal").modal('hide');
+    //showMessage(resultMsg, resultStatus);
 });
               
 socket.on('schematicResult', function(data) {
@@ -421,6 +425,32 @@ socket.on('version', function(data) {
     version = data.version;
 });
 
+socket.on('saveConfigResult', function(data) {
+    $("#configModal").modal('hide'); 
+    if (data.result.status === 'PASS') {
+        showMessage(data.result.message, 'pass')
+    } else {
+        showMessage(data.result.message, 'fail')
+    }
+});
+
+socket.on('getConfigResult', function(data) {
+    
+    if (data.config.managedFields === true) {
+        $('#mgmFlds').bootstrapToggle('on');
+    } else {
+        $('#mgmFlds').bootstrapToggle('off');
+    }
+
+    if (data.config.statusSection === true) {
+        $('#statusFlds').bootstrapToggle('on');
+    } else {
+        $('#statusFlds').bootstrapToggle('off');
+    }
+    $("#configModal").modal('show');    
+});
+    
+
 socket.on('clusterDirResult', function(data) {
     //build the drop down of existing directories
     var items = bldClusterDir(data.dirs);
@@ -429,11 +459,27 @@ socket.on('clusterDirResult', function(data) {
 
 });
 
+
 //----------------------------------------------------------
 // socket io definitions for out-bound
 //----------------------------------------------------------
+function saveConfig() {
+    let sFlds = document.getElementById('statusFlds').checked;
+    let mFlds = document.getElementById('mgmFlds').checked;
+
+    if (typeof sFlds === 'undefined') {
+        sFlds = false;
+    }
+    if (typeof mFlds === 'undefined') {
+        mFlds = false;
+    }
+    socket.emit('saveConfig', { "managedFields": mFlds, "statusSection": sFlds} );
+}
+
+
 function showConfig() {
-    $("#configModal").modal('show')
+    socket.emit('getConfig');
+    //$("#configModal").modal('show')
 }
 
 function closeChgDir() {
@@ -464,35 +510,13 @@ function showMessage(msg, type) {
 
     $("#messageDiv").addClass(msgClass);
     $("#messageDiv").addClass("show");
+    $("#messageDiv").addClass("vpkfont-md");
 }
 
 function hideMessage() {
     $("#messageDiv").removeClass("show");
     $("#messageDiv").addClass("hide");
 }
-
-
-// // loop and check for rows with checkbox checked and get SVG data
-// function showSvg() {
-//     hideMessage();
-//     var selected = [];
-//     var items = $("#tableL").bootstrapTable('getAllSelections');
-//     // var junk = dixArray;
-//     if (typeof items[0] !== 'undefined') {
-//         for (var c = 0; c < items.length; c++) {
-//             var key = items[c].id;
-//             var fname = items[c].src;
-//             var data = dixArray[key];
-//             selected.push(data);
-//             if (data.indexOf(fname) < 0) {
-//                 console.log('ERROR Selected: ' + fname + ' Loaded: ' + data);
-//             }
-//         }
-//         if (selected.length > 0) {
-//             socket.emit('getSvg', selected);
-//         }
-//     }
-// }
 
 // pass data to relations 
 function bldSchematic() {
@@ -505,8 +529,6 @@ function bldSecurity() {
     hideMessage();
     socket.emit('security');
 }
-
-
 
 // request to clear directory stats
 function clearStats() {
@@ -571,9 +593,9 @@ function processSA() {
     }
 }
 
-// send request to server to get colors
-function getColors() {
-    socket.emit('getColors');
+// send request to server to get config info
+function getConfig() {
+    socket.emit('getConfigData');
 }
 
 // send request to server to get object definition
@@ -620,10 +642,7 @@ function getDef2(def) {
                 showMessage('Unable to locate data source yaml...','fail');
                 return;
             }
-        } //else {
-          //  showMessage('Unable to locate data source yaml...','fail');
-          //  return;
-        //}
+        } 
         type = parts[0];
         fParts = parts[1].split('.');
         src = rootDir + '/config' + fParts[0] + '.yaml';
@@ -883,10 +902,10 @@ function getSvg(obj) {
 }
 
 // send request to server to clear data
-function clearData() {
-    console.log('clearData sent')
-    socket.emit('clearData');
-}
+// function clearData() {
+//     console.log('clearData sent')
+//     socket.emit('clearData');
+// }
 
 function clearSvg() {
     hideMessage();
@@ -902,23 +921,35 @@ function clearSvg() {
 
 // send request to load new directory
 function reload() {
-    //var newDir = $("#newDir").val();
-    var newDir = $('#dsInstances').select2('data');
-    newDir = newDir[0].text;
-    socket.emit('reload', newDir);
+    var processingRequest = 
+          
+        //     '<div class="col">'
+        // +     '<img style="float:left" src="images/indicator3.gif"/>' 
+        // +   '</div>' 
+           '<div class="col mt-2">'
+        +     '<div class="vpkfont vpkcolor">' 
+        +        'Processing request to retrieve datasource'
+        +     '</div>'
+        +   '</div>'
 
-    $("#charts").empty();
-    $("#charts").html('<svg width="950" height="5000"></svg>');
 
     $("#loadStatus").empty();
     $("#loadStatus").html('');
-    $("#loadStatus").html('<br><p>Processing request to retrieve datasource.</p>');
+    $("#loadStatus").html(processingRequest);
+
+    var newDir = $('#dsInstances').select2('data');
+    newDir = newDir[0].text;
+
+    $("#charts").empty();
+    $("#charts").html('<svg width="950" height="5000"></svg>');
 
     $("#svgResults").empty();
     $("#svgResults").html('');
 
     $("#schematicDetail").empty();
     $("#schematicDetail").html('');
+
+    socket.emit('reload', newDir);
 
 }
 
@@ -1534,16 +1565,21 @@ function clearDisplay() {
     $("#svgResults").html('');
     $("#statsData").empty();
     $("#statsData").html('');
-
 }
 
+function checkIfDataLoaded() {
+    if (rootDir === 'No data loaded' || rootDir === '-none-') {
+        showMessage('No datasource has been selected', 'fail');
+    } else {
+        hideMessage();
+    }
+}
 
 function setBaseDir(dir) {
     var htm;
     if (dir === '-none-') {
         dir = 'No data loaded';
     }
-    //htm = '<input type="text" class="form-control" placeholder="' + dir + '"  disabled="true">';
     htm = dir;
     rootDir = dir;
     $("#baseDir").empty();
@@ -1669,7 +1705,6 @@ function buildSearchResults(data) {
         dix++;
         dixArray.push(a + '::' + b + '::' + c + '::' + d + '::' + e);
         newData.push({
-            id: id++,
             namespace: a,
             kind: b,
             value: c,
@@ -1683,7 +1718,6 @@ function buildSearchResults(data) {
     $("#tableL").bootstrapTable('load', newData)
     $("#tableL").bootstrapTable('hideColumn', 'src');
     $("#tableL").bootstrapTable('hideColumn', 'part');
-    $("#tableL").bootstrapTable('hideColumn', 'id');
 
     // hide the graphics tabs 
     $('#svgResults').hide();
