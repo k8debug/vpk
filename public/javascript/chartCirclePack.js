@@ -4,6 +4,7 @@ const chartCirclePack = (input, ns) => {
         
         let leafCnt = 0;
         let clipCnt = 0;
+        let eCount = 0;
 
         const width = 975;
         const height = width;
@@ -53,12 +54,31 @@ const chartCirclePack = (input, ns) => {
                     } 
                 }
                 return rtn;                
-            });
+            })
+            .attr("cid", d => {
+                let cid = eCount++;
+                let text = d.ancestors().map(d => d.data.name).reverse().join('::')
+                return 'cid' + cid + '$' + text;
+            })
+            .on("mouseover", handleMouseOver)
+            .on("mouseout", handleMouseOut)
+            .on("click", handleClick);
+            
+            
+            
 
         const leaf = node.filter(d => !d.children);
 
         leaf.select("circle")
             .attr("id", d => (d.leafUid = "leaf" + leafCnt++ ));
+
+
+        leaf.select("circle")
+            .attr("id", d => (d.leafUid = "leaf" + leafCnt++ ))
+            .on("mouseover", handleMouseOver)
+            .on("mouseout", handleMouseOut)
+            .on("click", handleClick);
+
 
         leaf.append("clipPath")
             .attr("id", d => d.clipUid = "clip" + clipCnt++);
@@ -71,8 +91,8 @@ const chartCirclePack = (input, ns) => {
             .attr("x", 0)
             .attr("y", (d, i, nodes) => `${i - nodes.length / 2 + 0.8}em`);
 
-        node.append("title")
-            .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")} Cnt: ${d.value.toLocaleString()}`);
+        // node.append("title")
+        //     .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")} Cnt: ${d.value.toLocaleString()}`);
 
         return svg.node();
     }
@@ -82,3 +102,72 @@ const chartCirclePack = (input, ns) => {
     render(input, ns);
 
 }
+
+var lastMove;
+var elapsed;
+
+function handleMouseOver(d, i) {            
+    // elapsed = Date.now() - lastMove;
+    if ( elapsed < 200 ) { 
+        return;
+    }
+
+    let cid;
+    if (typeof this.attributes['cid'] !== 'undefined') {
+        cid = this.attributes['cid'].nodeValue;
+        //console.log('cid: ' + cid + ' @ x;' + d.x + ' y:' + d.y)
+        cid = cid.split('$');
+        let text = cid[1];
+        text = text.split('::');
+        let tip = '<div class="vpkfont-md">';
+        let i = 0;
+        if (text.length > 2) {
+            for (i = 1; i < text.length; i++) {
+                let v1 = '';
+                if (text[i] === 'Namespaces') {
+                    v1 = 'Namespace'
+                } else {
+                    v1 = text[i]
+                }
+                tip = tip + v1;
+                i++;
+                if (typeof text[i] !== 'undefined') {
+                    tip = tip + ': ' + text[i] + '<br>';
+                } else (
+                    tip = tip + '(s)'
+                )
+            }
+
+            console.log('location: ' + 'X:' + d.x + ' Y:' + d.y)
+
+
+            // horizontal scrolling amount
+            // let xOff = window.pageXOffset;
+            // vertical scrolling amount
+            let yOff = window.pageYOffset  
+            let yPos = d.clientY + yOff ;
+            yPos = yPos - (i * 10);
+            yPos = yPos - 40;
+
+            tip = tip + '</div>';
+            tooltip.innerHTML = tip;
+            tooltip.style.display = "block";
+            tooltip.style.left = d.clientX - 100 + 'px';
+            tooltip.style.top = yPos + 'px';
+        }
+    }
+    
+    lastMove = Date.now();
+
+}
+function handleMouseOut(d, i) {
+    hideTooltip();
+}
+
+function handleClick(d, i) {
+
+    console.log('CLICKED : ' + d.name);
+}
+// onmousemove="showTooltip(evt, \'' 
+// 		+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'PersistentVolumeClaim') 
+// 		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'PVC@' +  fnum +'\')"/>'

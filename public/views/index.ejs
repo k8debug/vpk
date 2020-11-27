@@ -59,11 +59,12 @@
                 <div id="instructions" class="tab-pane active show">
                     <div id="instDetail" class="vpkfont vpkcolor">
                         <ul>
-                            <li class="pt-1">From dropdown select datasource and connect.&nbsp;&nbsp;The message 'No data loaded' button 
-                                will be updated with the connected datasource after connecting. </li>
-                            <li class="pt-2">Once datasource is connected, optionally click the displayed datasource name button 
-                                to view statistics of the connected data source.</li>
-                            <li class="pt-2">Select the desired tab, Table, Graphics, Schematics to view cluster information.</li>
+                            <li class="pt-1">From dropdown select datasource and connect.
+                                &nbsp;&nbsp;The message 'No datasource connected' button 
+                                will be updated with the connected datasource once completed. </li>
+                            <li class="pt-2">Once a datasource is connected, optionally click the datasource name button 
+                                to view statistics for the datasource.</li>
+                            <li class="pt-2">Select the desired tab, Table, Graphics, Schematics, Security to view related information.</li>
                         </ul>
                     </div>
 
@@ -173,9 +174,10 @@
                             onclick="searchObj()">
                             Populate table
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
-                            data-toggle="collapse" data-target="#filterdata">
-                            Filter data
+                        <button id="filterButton" type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
+                            data-toggle="collapse" data-target="#filterdata"
+                            onclick="toggleFilterPanel()">
+                            Open filter panel
                         </button>
                     </div>
 
@@ -391,8 +393,6 @@
                             Save settings
                         </button>   
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
@@ -416,7 +416,7 @@
                     <div class="modal-body">
 
                         <!-- Drop down for cluster type is dynamically built -->
-                        <div class="form-group col-4" style="margin: -15px; padding-bottom: 15px;">
+                        <div class="form-group col-4 vpkcolor" style="margin: -15px; padding-bottom: 15px;">
                             <label for="clusterType">Cluster type</label>
                             <select class="form-control form-control-sm" id="clusterType">
                                 <option value="none">select cluster type</option>
@@ -426,11 +426,18 @@
                         <div id="clusterInfo">
                         </div>
 
+                        <div id="clusterRunning"class="row ml-4 mt-2">
+                            <img style="float:left" src="images/loading.gif"/>
+                            <div class="vpkfont vpkcolor ml-2 mt-2">
+                                <span >&nbsp;&nbsp;Processing</span>
+                            </div>
+                        </div>
+
                         <div id="clusterStatus">
                         </div>
 
                     </div>
-                    <div class="modal-footer">
+                    <div id="clusterModalFooter" class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="closeGetCluster()">Close</button>
                     </div>
                 </div>
@@ -488,17 +495,21 @@
 
                         <div class="mt-2 float-left"> 
                             <button id="validateBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="reload()" style="margin: 5px;">
-                            Load instance
+                                Connect
                             </button>
-
-                            <span id="loadStatus" class="mt-2 ml-4 ">
-                            </span>                            
+                            <div id="loadStatus"class="row ml-4 mt-2">
+                                <!-- <div class="col mt-1 ml-1"> -->
+                                    <img style="float:left" src="images/loading.gif"/>
+                                    <div class="vpkfont-md vpkcolor ml-2 mt-2">
+                                        <span>&nbsp;&nbsp;Processing datasource connect request </span>
+                                    <!-- </div> -->
+                                </div>
+                            </div>
                         </div>
-
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="closeChgDir()">Close</button>
+                    <div id="chgDirFooter" class="modal-footer">
+                        <button id="closeChgDir" type="button" class="btn btn-primary" onclick="closeChgDir()">Close</button>
                     </div>
                 </div>
             </div>
@@ -514,22 +525,25 @@
                         <img style='vertical-align:middle;' src='images/vpk.png' width='40' height='40'  >
 
                         <h4 class="ml-4 modal-title">Visual parsed Kubernetes<br>
-                            <span id="version" style="font-size: 60%""></span>
                         </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div style="background-color: #eee;">
+                        <div class="ml-1 vpkfont vpkcolor"><span id="version" class="ml-1 vpkfont-md vpkcolor"></span>
+                        </div>
                         <div class="align-middle">
                             <div class="ml-1 mr-1 mt-4 mb-4 vpkfont vpkcolor text-center" >
-                                <P>An application hoping to bring understanding and insight to the Kubernetes universe.</P>
+                                <P> An application working to bring understanding and insight to the Kubernetes universe. 
+                                    <br><br>
+                                    <span class="vpkfont">Free and Open Source Software</span>
+                                </P>
                                 
-
-                                <P>FREE to use.</P>
                             </div>
-                            <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-sm vpkcolor" >
-                                Copyright 2020 Dave Weilert
+                            <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-md vpkcolor" >
+                                <hr>
+                                Copyright 2018-2020 David A. Weilert
                                 <br><br>
                                 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
                                 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -548,9 +562,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer" style="background-color: #eee;">
+                    <!-- <div class="modal-footer" style="background-color: #eee;">
                         &nbsp;
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -582,25 +596,21 @@
         </div>
 
         <!-- ==================================== -->
-        <!-- Color Palette Modal section          -->
+        <!-- Missing YAML Modal section           -->
         <!-- ==================================== -->
-        <div class="modal fade" id="colorModal" tabindex="-1" role="dialog" >
+        <div class="modal fade" id="yamlModal" tabindex="-1" role="dialog" >
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <div id="colorHeader">
-                            <h6 class="modal-title">Color Palette</h6>
+                        <div id="yamlHeader">
+                            <h6 class="modal-title">No Resource Found</h6>
                         </div>
                     </div>
                     <div class="modal-body">
-						<div style="font-size: 80%;">
-						    <p>To modify the color palette edit the configuration file <span style="color: green; font-style: italic; font-weight: bold;">colors.json</span>.  This file is located in the directory where you started VpK. 
-						       After editing save the file and restart the VpK server and refresh the browser session.
+						<div class="vpkfont vpkcolor">
+						    <p>Unable to display resource definition. Yaml for the selected resource was not located.  
 						    </p>
-						    
 						</div>
-                        <div id="colorContents" style="text-align: center;">
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
@@ -608,70 +618,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- ==================================== -->
-        <!-- Server log Modal section             -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="logModal" tabindex="-1" role="dialog" >
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="logHeader">
-                            <h6 class="modal-title">Results</h6>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                        <div id="logContents" style="font-size: 70%;">
-                            <p>Log file data</P>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- ==================================== -->
-        <!-- File upload Modal section            -->
-        <!-- ==================================== -->
-        <!-- 
-        <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" >
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="logHeader">
-                            <h5 class="modal-title">File upload</h5>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                        <div style="margin-left: 35px; margin-right: 25px;">
-                            <p>Specify the server target directory for file upload.  If it does not exist it will be created</p>
-                        </div>
-                        <div class="input-group col-10" style="margin-bottom:20px; margin-left: 25px;">
-                            <input id="uploadDir" type="text" class="form-control form-control-sm" placeholder="Target directory">
-                            <button id="fileDirBtn" type="button" class="btn btn-outline-primary btn-sm" style="margin: 5px;">
-                            Process
-                            </button>
-                        </div>
-                        <div id="uploadStatus" style="margin-left: 35px; margin-right: 25px; margin-bottom: 15px;">
-                        </div>
-                        <div id="filedropzone">
-                            <form action="/upload" class="dropzone needsclick" id="file-upload-dropzone">
-                                <div class="dz-message needsclick">
-                                    Drop files here or click to upload.<br />
-                                    <span class="note needsclick"></span>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
 
         <!-- ==================================== -->
         <!-- Directory stats Modal section        -->

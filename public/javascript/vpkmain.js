@@ -52,13 +52,6 @@ var dsToggle = 'kind';
 //----------------------------------------------------------
 $(document).ready(function() {
 
-    // dynamically change height of Ace edit 
-    //cHeight=  document.body.clientHeight;
-    //if (cHeight > 600) {
-    //    cHeight = cHeight - 250;
-    //}
-    //$("#editor").css('height', cHeight );
-
     // get version from server
     getVersion();
 
@@ -155,14 +148,9 @@ $(document).ready(function() {
         searchObj();
     });
 
-    $("#validateBtn").click(function(e) {
-        e.preventDefault();
-        reload();
-    });
-
-    // $("#fileDirBtn").click(function(e) {
+    // $("#validateBtn").click(function(e) {
     //     e.preventDefault();
-    //     uploadDir();
+    //     reload();
     // });
 
 	// 
@@ -170,13 +158,6 @@ $(document).ready(function() {
 		var selected = $('#clusterType option:selected').val();
         buildClusterUI(selected);
 	});
-
-    // 
-
-	// $("#pickDataSource").change(function(){
-    //     var selected = $('#pickDataSource option:selected').val();
-    //     pickData(selected);
-	// });
 
     editor = ace.edit("editor");
 
@@ -198,48 +179,7 @@ $(document).ready(function() {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    // $(function() {
-    //     Dropzone.options.fileUploadDropzone = {
-    //         maxFilesize: 1,
-    //         maxFiles: 500,
-    //         addRemoveLinks: true,
-    //         dictResponseError: 'Server not Configured',
-    //         url: '/upload',
-    //         uploadMultiple: true,
-    //         parallelUploads: 5,
-    //         addRemoveLinks: true,
-    //         dictRemoveFile: 'Delete',
-    //         init: function() {
-
-    //             var cd;
-    //             this.on("success", function(file, response) {
-    //                 $('.dz-progress').hide();
-    //                 $('.dz-size').hide();
-    //                 $('.dz-error-mark').hide();
-    //                 cd = response;
-    //             });
-    //             this.on("addedfile", function(file) {
-    //                 var removeButton = Dropzone.createElement("<a href=\"#\">Remove file</a>");
-    //                 var _this = this;
-    //                 removeButton.addEventListener("click", function(e) {
-    //                     e.preventDefault();
-    //                     e.stopPropagation();
-    //                     _this.removeFile(file);
-    //                     var name = "largeFileName=" + cd.pi.largePicPath + "&smallFileName=" + cd.pi.smallPicPath;
-    //                     $.ajax({
-    //                         type: 'POST',
-    //                         url: 'DeleteImage',
-    //                         data: name,
-    //                         dataType: 'json'
-    //                     });
-    //                 });
-    //                 file.previewElement.appendChild(removeButton);
-    //             });
-    //         }
-    //     };
-    // })
-
-    clearDisplay();
+    //clearDisplay();
     getSelectLists();
     getConfig();
 
@@ -275,28 +215,41 @@ socket.on('dirStatsResult', function(data) {
 });
 
 socket.on('dynamicResults', function(data) {
-    $("#clusterStatus").empty();
-    $("#clusterStatus").html('');
+    //$("#clusterStatus").empty();
+    //$("#clusterStatus").html('');
+    if (typeof data === 'undefined') {
+        data = {'status': 'unknown', 'message': 'Status unknown'}
+    } else {
+        if (typeof data.status === 'undefined') {
+            data.status = 'unknown';
+        }  
+        if (typeof data.message === 'undefined') {
+            data.status = 'Status unknown';
+        } 
+    }
     var resp = '';
     if (data.status === 'PASS') {
-        resp = '<br><div><img style="float: left;" src="images/checkMarkGreen.png" height="40" width="40">' +
-            '&nbsp;&nbsp;&nbsp;&nbsp;Cluster processed.</div>';
-        $("#clusterStatus").html(resp);
+        showMessage('Datasource connection completed', 'pass')
+        $("#clusterModal").modal('hide');
+        $("#clusterModalFooter").show();
+        $("#clusterRunning").hide();
     } else {
-        //resp = '<br><div><img style="float: left;" src="images/checkMarkRed.png" height="40" width="40">' +
-        //    '&nbsp;&nbsp;&nbsp;&nbsp;'  + data.message + '</div>';
-        resp = '<br><div>&nbsp;&nbsp;&nbsp;&nbsp;'  + data.message + '</div>';
-
+        var message = data.message;
+        resp = '<br><div>&nbsp;&nbsp;&nbsp;&nbsp;'  + message + '</div>';
+        //$("#clusterModalFooter").show();
+        $("#clusterRunning").hide();
         $("#clusterStatus").html(resp);
     }
 });
 
 socket.on('getKStatus', function(data) {
+    $("#clusterModalFooter").hide();
     $("#clusterStatus").empty();
     $("#clusterStatus").html('');
     var resp;
-    resp = '<br><div>' + data + '</div>';
+    resp = '<br><div class="vpkfont vpkcolor">' + data + '</div>';
     $("#clusterStatus").html(resp); 
+
 });
 
 socket.on('saveFileResults', function(data) {
@@ -352,36 +305,22 @@ socket.on('decodeDef', function(data) {
 });
 
 socket.on('resetResults', function(data) {
-    $("#loadStatus").empty();
-    $("#loadStatus").html('');
-    var resultMsg = '';
-    var resultStatus = '';
-    var resp;
     if (data.validDir === false) {
-        resp = '<br><div><img style="float: left;" src="images/checkMarkRed.png" height="40" width="40">' +
-            '&nbsp;&nbsp;&nbsp;&nbsp;Provided directory name does not exist.  Please provide a valid directory to continue.</div>';
-        $("#loadStatus").html(resp);
-        setBaseDir('Invalid directory: ' + newDir);
+        setBaseDir(data.baseDir);
         $("#chgDirModal").modal('hide');
-        resultMsg = 'Failed to connect to datasource';
-        resultStatus = 'fail';
+        var resultMsg = 'Failed to connect to datasource';
+        var resultStatus = 'fail';
         showMessage(resultMsg, resultStatus);
     } else {
-        resp = '<br><div><img style="float: left;" src="images/checkMarkGreen.png" height="40" width="40">' +
-            '&nbsp;&nbsp;&nbsp;&nbsp;Directory parsed and loaded.</div>';
-        $("#loadStatus").html(resp);
         setBaseDir(data.baseDir);
         rootDir = data.baseDir;
         baseDir = data.baseDir;
-        resultMsg = 'Datasource connected';
-        resultStatus = 'pass';
-        showMessage(resultMsg, resultStatus);
-        getSelectLists();
+        $("#loadStatus").hide();
+        $("#chgDirFooter").show();
         $("#chgDirModal").modal('hide');
+        showMessage('Existing datasource connected', 'pass');
+        getSelectLists('y');
     }
-    //clearDisplay();
-    //$("#chgDirModal").modal('hide');
-    //showMessage(resultMsg, resultStatus);
 });
               
 socket.on('schematicResult', function(data) {
@@ -409,17 +348,6 @@ socket.on('searchResult', function(data) {
 socket.on('svgResult', function(data) {
     svgResult(data);
 });
-
-// socket.on('uploadDirResult', function(data) {
-//     $("#uploadStatus").empty();
-//     $("#uploadStatus").html('');
-//     $("#uploadStatus").html(data.msg);
-
-//     if (data.status === 'PASS') {
-//         $("#uploadDir").val(data.dir);
-//         $("div#filedropzone").show();
-//     }
-// });
 
 socket.on('version', function(data) {
     version = data.version;
@@ -452,8 +380,9 @@ socket.on('getConfigResult', function(data) {
     
 
 socket.on('clusterDirResult', function(data) {
-    //build the drop down of existing directories
+    //build the drop down of existing directories, hide messages, open modal
     var items = bldClusterDir(data.dirs);
+    hideMessage();
     $('#dsInstances').html(items);
     $("#chgDirModal").modal('show');
 
@@ -479,7 +408,6 @@ function saveConfig() {
 
 function showConfig() {
     socket.emit('getConfig');
-    //$("#configModal").modal('show')
 }
 
 function closeChgDir() {
@@ -502,6 +430,8 @@ function showMessage(msg, type) {
             msgClass = 'alert-warning'
         }  else if (type === 'fail') {
             msgClass = 'alert-danger'
+        } else {
+            msgClass = 'alert-secondary'
         }
 
     $("#messageText").html(msg)
@@ -566,10 +496,29 @@ function cancelSA() {
     $("#saFooter").show();
 }
 
+function showEvents(what) {
+    what = '#' + what;
+    // (\'events-' + evtCnt +'\')
+    if($(what).is('.collapse:not(.show)')) {
+        $(what).collapse("show");
+    } else {
+        $(what).collapse("hide");
+    }
+}
+
+function toggleFilterPanel() {
+    if($('#filterdata').is('.collapse:not(.show)')) {
+        // not open, open it
+        $("#filterButton").html('Close filter panel');
+        $("#filterdata").collapse("show");
+    } else {
+        $("#filterButton").html('Open filter panel');
+        $("#filterdata").collapse("hide");
+    }
+}
 
 function closeGetCluster() {
-    clearDisplay();
-    console.log('closeGetCluster request to getSelectLists')
+    //clearDisplay();
     getSelectLists();
     $("#clusterModal").modal('hide');
 }
@@ -623,9 +572,7 @@ function getDef4(def, secret) {
     } else {
         data = {"file": selectedDef, "secret": secret}
         socket.emit('decode', data);
-    
     }
-
 }
 
 
@@ -647,7 +594,6 @@ function getDef2(def) {
         fParts = parts[1].split('.');
         src = rootDir + '/config' + fParts[0] + '.yaml';
         selectedDef = src + '::' + fParts[1] + '::editfile';
-
     } else {
         return;
     }
@@ -723,7 +669,7 @@ function partChain(type, data) {
         if (type === 'level1') {
             fnum = data.level1Fnum
             if (fnum === 'missing') {
-                showMessage('Unable to locate data source yaml...','fail');
+                $("#yamlModal").modal('show');
                 return;
             }
             fn = fnum.split('.');
@@ -735,7 +681,7 @@ function partChain(type, data) {
         if (type === 'level2') {
             fnum = data.level2Fnum
             if (fnum === 'missing') {
-                showMessage('Unable to locate data source yaml...','fail');
+                $("#yamlModal").modal('show');
                 return;
             }
             fn = fnum.split('.');
@@ -833,7 +779,7 @@ function getChart(type) {
 
     var processingChart = '<div class="row">'
         + '<div class="col mt-1 ml-1">'
-        + '<img style="float:left" src="images/indicator3.gif"/>'
+        + '<img style="float:left" src="images/loading.gif"/>'
         + '<div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing chart request</span></div>'
         + '</div>'
         + '</div>'
@@ -901,41 +847,13 @@ function getSvg(obj) {
     socket.emit('getSvg', gArray);
 }
 
-// send request to server to clear data
-// function clearData() {
-//     console.log('clearData sent')
-//     socket.emit('clearData');
-// }
-
-function clearSvg() {
-    hideMessage();
-    $("#svgResults").empty();
-    $("#svgResults").html('');
-    $("#charts").empty();
-    $("#charts").html('<svg width="50" height="50"></svg>');
-    $("#schematicDetail").empty();
-    $("#schematicDetail").html('');
-    $("#loadStatus").empty();
-    $("#loadStatus").html('');
-}
 
 // send request to load new directory
 function reload() {
-    var processingRequest = 
-          
-        //     '<div class="col">'
-        // +     '<img style="float:left" src="images/indicator3.gif"/>' 
-        // +   '</div>' 
-           '<div class="col mt-2">'
-        +     '<div class="vpkfont vpkcolor">' 
-        +        'Processing request to retrieve datasource'
-        +     '</div>'
-        +   '</div>'
+    $("#validateBtn").hide();
+    $("#chgDirFooter").hide();
 
-
-    $("#loadStatus").empty();
-    $("#loadStatus").html('');
-    $("#loadStatus").html(processingRequest);
+    $("#loadStatus").show();
 
     var newDir = $('#dsInstances').select2('data');
     newDir = newDir[0].text;
@@ -950,69 +868,7 @@ function reload() {
     $("#schematicDetail").html('');
 
     socket.emit('reload', newDir);
-
 }
-
-
-// // set hierarchy filters
-// function getHierFilter() {
-//     var namespaces = '::';
-//     var kinds = '::'; 
-//     var kindnameValue = '';
-//     var labels = '::';
-//     var filter;
-//     var tmp;
-//     var nsKey = false;
-//     var kindKey = false;
-//     var kindnameKey = false;
-//     var labelKey = false;
-
-//     filter = $('#ns-filter').select2('data');
-//     for (var i = 0; i < filter.length; i++) {
-//         tmp = filter[i].text;
-//         tmp.trim();
-//         namespaces = namespaces + tmp + '::';
-//         // if (tmp.length === 0) {
-//         //     namespaces = namespaces + '-blank-' + '::';
-//         // } else {
-//         //     namespaces = namespaces + tmp + '::';
-//         // }
-//     };
-
-//     filter = $('#kind-filter').select2('data');
-//     for (var i = 0; i < filter.length; i++) {
-//         tmp = filter[i].text;
-//         tmp.trim();
-//         kinds = kinds + tmp + '::';
-//     };
-
-//     filter = $('#label-filter').select2('data');
-//     for (var i = 0; i < filter.length; i++) {
-//         tmp = filter[i].text;
-//         tmp.trim();
-//         labels = labels + tmp + '::';
-//     };    
-
-//     kindnameValue = $("#kind-name").val();
-//     if (typeof kindnameValue === 'undefined' || kindnameValue.length === 0) {
-//         kindnameValue = '';
-//     } 
-
-//     // if all are blank set some defaults
-//     if (namespaces === '::' && kinds === '::' && labels === '::' && kindnameValue === '') {
-//         namespaces = '::all-namespaces::';
-//         kinds = '::all-kinds';
-//     }
-
-//     var data = {
-//         "namespaceFilter": namespaces,
-//         "kindsFilter": kinds,
-//         "kindnameValue": kindnameValue,
-//         "labelFilter": labels
-//     }
-
-//     return data;
-// }
 
 
 function getPdf() {
@@ -1040,7 +896,11 @@ function getPdf() {
 
 function showTooltip(evt, text) {
     let tooltip = document.getElementById("tooltip");
-    let info = svgInfo[text]
+    let info = 'No information available';
+    if (typeof svgInfo[text] !== 'undefined') {
+        info = svgInfo[text]
+    }
+
     tooltip.innerHTML = info;
     tooltip.style.display = "block";
     tooltip.style.left = evt.pageX + 10 + 'px';
@@ -1067,9 +927,6 @@ function pickData(tmp) {
 
 // send request to server to search for data
 function searchObj() {
-    // get the skipU checkbox value
-    //var skipU = $('#skipU').prop('checked');    
-    //Force skipping of "U" user types
 
     hideMessage();
 
@@ -1163,59 +1020,22 @@ function searchObj() {
 // navigation functions
 //----------------------------------------------------------
 
-function openNav() {
-    document.getElementById("sideNavigation").style.width = "250px";
-}
-
-function closeNav() {
-    //document.getElementById("sideNavigation").style.width = "0";
-}
-
-
-// get cmd history server
-function viewCmds() {
-    closeNav();
-    socket.emit('getCmds');
-}
-
-// show color palette
-function viewPalette() {
-    closeNav();
-    buildColorTable();
-    $("#colorModal").modal();
-}
-
 // show change directory modal 
 function changeDir() {
-    closeNav();
     socket.emit('clusterDir');
-    $("#loadStatus").empty();
-    $("#loadStatus").html('&nbsp');
-    // results are processing in returning payload
+    $("#validateBtn").show();
+    $("#loadStatus").hide();
+    $("#chgDirFooter").show();
 }
-
-// // show file upload modal 
-// function fileUpload() {
-//     $("div#filedropzone").hide();
-//     closeNav();
-//     $("#fileModal").modal();
-// }
-
-// // show change directory modal 
-// function uploadDir() {
-//     var upDir = $('#uploadDir').val();
-//     socket.emit('uploadDir', upDir);
-// }
 
 // show server parse statistics
 function dirStats() {
-    closeNav();
     socket.emit('getDirStats');
 }
 
 // get Cluster information 
 function getCluster() {
-    closeNav();
+    hideMessage();
     // generate the UI base on selected cluster
     $('#clusterType').val('none');
     $("#clusterInfo").hide();
@@ -1225,11 +1045,12 @@ function getCluster() {
         backdrop: 'static',
         keyboard: false        
     }); 
+    $("#clusterRunning").hide();
+    console.log('4-5')
+    $("#clusterModalFooter").show();
     $("#clusterModal").modal('show');
     $("#clusterStatus").empty();
     $("#clusterStatus").html('&nbsp');
-   
-    //$("#clusterModal").modal();
 }
 
 function buildClusterUI(selected) {
@@ -1239,18 +1060,18 @@ function buildClusterUI(selected) {
     var bttn = '<div id="clusterButton">'
         + '<div style="padding-top: 20px;">'
         + '<button id="clusterBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="dynamic()" style="margin: 5px;">'
-        + 'Validate/Load'
+        + 'Connect'
         + '</button>'
         + '</div></div>';
     // values to be used in building the UI    
     var tmp00 = '<dir class="form-row">';
-    var tmp01 = '<label class="col-sm-4 col-form-label" for="';       //add name
-    var tmp02 = '" style="padding-top: 15px;">';                      //add name
+    var tmp01 = '<label class="col-sm-4 col-form-label vpkcolor" for="';       //add name part 1
+    var tmp02 = '" style="padding-top: 15px;">';                               //add name part 2
     var tmp03 = '</label>';
-    var tmp04 = '<input id="'                                         //add name
-    var tmp05t = '" type="text" class="form-control col-sm-8" ';     //plain text input 
-    var tmp05p = '" type="password" class="form-control col-sm-8" '; //password input
-    var tmp06a = 'value="';                                           // if default value is provided add the value
+    var tmp04 = '<input id="'                                                  //add ???
+    var tmp05t = '" type="text" class="form-control col-sm-8" ';               //plain text input 
+    var tmp05p = '" type="password" class="form-control col-sm-8" ';           //password input
+    var tmp06a = 'value="';                                                    //if default value is provided add the value
     var tmp06b = '"';
     var tmp07 = ' style="margin-bottom: 5px;"></div>';
     var fields = [];
@@ -1315,6 +1136,9 @@ function getProvider(selected) {
 // process cluster info input and pass to server 
 function dynamic() {
     $("#clusterButton").hide();
+    $("#clusterRunning").show();
+    $("#clusterModalFooter").hide();
+
     var kinfo = {};
     var kStr = '';
     if (inputFlds.length > 0) {
@@ -1327,7 +1151,6 @@ function dynamic() {
                 kStr = kStr + '"' + fld + '":"' + content + '" '
             } else {
                 kStr = kStr + ', "' + fld + '":"' + content + '" '
-
             }
         }
         kStr = '{' + kStr + '}';
@@ -1335,13 +1158,9 @@ function dynamic() {
 
     kinfo = JSON.parse(kStr);
     kinfo.ctype = $("#clusterType option:selected").val();
-    socket.emit('dynamic', kinfo);
-    // clear the display table
-    //stable.clear();
-    //stable.draw()
-    // show the processing status message
+    socket.emit('connectK8', kinfo);
     $("#clusterStatus").empty();
-    var resp = '<br><div><span style="vertical-align: middle;">Processing will take several seconds to complete</span></div>';
+    var resp = '<br><div><span class="vkpfont vpkcolor" style="vertical-align: middle;">Request will take several seconds to complete</span></div>';
     $("#clusterStatus").html(resp);
 }
 
@@ -1353,61 +1172,23 @@ function dynamic() {
 // populate drop down selections with server provided data
 //----------------------------------------------------------
 
-function buildColorTable() {
-	var html = '<table>';
-	var p1 = '<td width="120px" height="60px" style="background-color:#';
-	var p2 = '; border: 4px solid white; color: #';
-	var p3 = '; font-family: sans-serif; font-size: 11px; ">&nbsp;';
-	var p4 = '</td>';
-	var row = 1;
-	var item = '';
-	var data = colors.colors
-	var bg,tc, tx
-	for (c in data) {
-		if (row === 1) {
-			html = html + '<tr>';
-		}
-		bg = data[c][0].backgroundColor;
-		tc = data[c][0].textColor;
-		tx = data[c][0].title;
-		
-		item = p1 + bg + p2 + tc + p3 + c  + '<br>&nbsp' + bg + '<br>&nbsp';
-		if (tx !== "") {
-			item = item + tx + p4;
-		} else {
-			item = item + p4;
-		}
-		html = html + item;
-		item = '';
-		row++
-		if (row === 6) {
-			html = html + '</tr>';
-			row = 1;
-		}
-	}
-	if (row !== 1) {
-		html = html + '</tr></table>';
-	} else {
-		html = html + '</table>';
-	}
-	$("#colorContents").empty();
-    $("#colorContents").html(html);
-    
-}
-
 function populateSelectLists(data) {
     popCnt++;
     var options;
 
+    // populate providers always
+    options = bldProviders(data.providers, 'P', 'no');
+    $("#clusterType").html(options);
+
+    // populate only if valid datasource
     if (data.validDir === false) {
-        setBaseDir('Invalid directory: ' + data.baseDir);
+        setBaseDir(data.baseDir);
     } else {
         setBaseDir(data.baseDir);
         rootDir = data.baseDir;
         baseDir = data.baseDir;
 
         // filter bar1 (namespaces)
-
         options = bldOptions(data.namespaces, 'N', 'select2');
         $("#ns-filter").empty();
         $("#ns-filter").select2({ 
@@ -1442,11 +1223,6 @@ function populateSelectLists(data) {
                 containerCssClass: "vpkfont-md"
             });
         }
-        
-        options = bldProviders(data.providers, 'P', 'no');
-        // cluster 
-        $("#clusterType").html(options);
-
     }
 }
 function buildStatsToggle() {
@@ -1461,17 +1237,29 @@ function buildStatsToggle() {
 
 function buildKindStats() {
     dsToggle = 'kind';
+    if (typeof dsCounts === 'undefined') {
+        return;
+    }
+    if (typeof dsCounts.kind === 'undefined') {
+        return;
+    }
     data = dsCounts.kind;
+
+    if (typeof data._total === 'undefined') {
+        return;
+    }
+
     let keys = Object.keys(data);
     keys.sort();
+
     let total = data._total._cnt;
     let cKeys;
     let nsText = '';
-    let htm = '<table class="vpkfont-md"><thead><tr class="bg-secondary text-light">' 
+    let htm = '<table class="vpkfont-md"><thead><tr class="statsHeader" style="text-align:center">' 
         + '<th>-Kind-</th><th class="pl-2">-Count-</th><th class="pl-2">-Namespace-</th>'
         + '</tr></thead><tbody>';
     // add overall total line
-    htm = htm + '<tr><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
+    htm = htm + '<tr style="text-align:center"><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
 
 
     for (let i = 0; i < keys.length; i++) {
@@ -1480,7 +1268,7 @@ function buildKindStats() {
         }
         htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
         
-        htm = htm + '<tr><td  class="bg-primary text-light">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+        htm = htm + '<tr><td  class="statsBreak">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
@@ -1506,6 +1294,12 @@ function buildKindStats() {
 }
 
 function buildNamespaceStats(stats) {
+    if (typeof dsCounts === 'undefined') {
+        return;
+    }
+    if (typeof dsCounts.ns === 'undefined') {
+        return;
+    }
     dsToggle = 'ns';
     data = dsCounts.ns;
     let keys = Object.keys(data);
@@ -1513,11 +1307,11 @@ function buildNamespaceStats(stats) {
     let total = dsCounts.kind._total._cnt;  // get overall total from the kinds stats
     let cKeys;
     let nsText = '';
-    let htm = '<table class="vpkfont-md"><thead><tr class="bg-secondary text-light">' 
+    let htm = '<table class="vpkfont-md"><thead><tr class="statsHeader" style="text-align:center">' 
         + '<th>-Namespace-</th><th class="pl-2">-Count-</th><th class="pl-2">-Kind-</th>'
         + '</tr></thead><tbody>';
     // add overall total line
-    htm = htm + '<tr><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
+    htm = htm + '<tr style="text-align:center"><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
 
 
     for (let i = 0; i < keys.length; i++) {
@@ -1530,7 +1324,7 @@ function buildNamespaceStats(stats) {
             nsText = '< Cluster Level >'
         }
         
-        htm = htm + '<tr><td class="bg-primary text-light">' + nsText + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+        htm = htm + '<tr><td class="statsBreak">' + nsText + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
@@ -1555,7 +1349,7 @@ function buildNamespaceStats(stats) {
 function about() {
     $("#version").empty();
     $("#version").html('');
-    $("#version").html('VERSION <span style="color: blue;">' + version + '</span>');
+    $("#version").html('VERSION&nbsp;' + version  );
     $("#aboutModal").modal();
 }
 
@@ -1568,25 +1362,26 @@ function clearDisplay() {
 }
 
 function checkIfDataLoaded() {
-    if (rootDir === 'No data loaded' || rootDir === '-none-') {
-        showMessage('No datasource has been selected', 'fail');
+    if (rootDir === 'No datasource connected' || rootDir === '-none-') {
+        showMessage('No datasource has been connected', 'fail');
     } else {
         hideMessage();
     }
 }
 
 function setBaseDir(dir) {
-    var htm;
-    if (dir === '-none-') {
-        dir = 'No data loaded';
+    if (dir === '-none-' || dir === '' ) {
+        dir = 'No datasource connected';
     }
-    htm = dir;
     rootDir = dir;
     $("#baseDir").empty();
     $("#baseDir").html('');
-    $("#baseDir").html(htm);
+    $("#baseDir").html(dir);
     $("#tableL").bootstrapTable('removeAll')
-    clearSvg();
+    //clearSvg();
+    if (dir !== 'No datasource connected') {
+        showMessage('Datasource connected', 'pass');
+    }
 }
 
 

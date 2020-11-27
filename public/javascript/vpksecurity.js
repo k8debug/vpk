@@ -114,7 +114,7 @@ function buildRBACs() {
 			if (secFirst) {
 				secFirst = false;
 				rdata = rdata + '<span class="breakBar vpkcolor"><hr>' 
-				+ '&nbsp;&nbsp;Press the buttons below to show or hide the RBAC information for the listed namespaces or cluster level' 
+				+ '&nbsp;&nbsp;Press the buttons below to view the RBAC information for listed namespaces or cluster level' 
 				+ '<hr><span>';
 			} else {
 				rdata = rdata + '</div>'
@@ -423,10 +423,6 @@ function buildRoleBindings(ns) {
 	if (ns === '0000-@subjects@' || ns === '0000-@clusterRoles@') {
 		return;
 	}
-
-	if (ns === '0000-@clusterRoleBinding@') {
-		console.log('dbg')
-	}
 	let used = {};
 	let nsKey = ns;
 	// check if there are any role entries to process
@@ -482,17 +478,17 @@ function buildRoleBindings(ns) {
 					bKind = bind.subjects[0].kind
 				} else {
 					console.log('RoleBinding ns: ' + ns)
-					console.log('Did not find complete subject info skipping roleBinding: ' + JSON.stringify(bind, null, 2))
+					console.log('No bind.subjects[0].kind, skipping: ' + JSON.stringify(bind, null, 2))
 					bKind = '<blank>';
 				}		
 			} else {
 				console.log('RoleBinding ns: ' + ns)
-				console.log('Did not find complete subject info skipping roleBinding: ' + JSON.stringify(bind, null, 2))
+				console.log('No bind.subjects[0], skipping: ' + JSON.stringify(bind, null, 2))
 				bKind = '<blank>';
 			}
 		} else {
 			console.log('RoleBinding ns: ' + ns)
-			console.log('Did not find complete subject info skipping roleBinding: ' + JSON.stringify(bind, null, 2))
+			console.log('No bind.subjects, skipping: ' + JSON.stringify(bind, null, 2))
 			bKind = '<blank>';
 		}
 
@@ -665,6 +661,24 @@ function buildRoles(ns) {
 			} 
 		} else {
 			console.log('No Role rules located for ns: ' + ns + ' content:' + JSON.stringify(role))
+			item = '<tr>' 
+			+ '<td width="20%">&nbsp;</td>' 
+			+ '<td width="20%" class="align-top ">&lt;blank&gt;</td>' 
+			+ '<td width="20%" class="align-top ">&lt;blank&gt;</td>' 
+			+ '<td width="20%" class="align-top ">&lt;blank&gt;</td>' 
+			+ '<td width="10%" class="align-top">&lt;blank&gt;</td>' 
+			+ '<td width="10%">&nbsp;</td>'
+			+ '</tr>';
+			nsHtml = nsHtml + item
+
+			item = '<tr>' 
+			+ '<td width="20%"><hr></td>' 
+			+ '<td width="20%"><hr></td>' 
+			+ '<td width="20%"><hr></td>' 
+			+ '<td width="20%"><hr></td>' 
+			+ '<td width="10%"><hr></td>' 
+			+ '<td width="10%"><hr></td>'
+			+ '</tr>';
 		}
 
 	}

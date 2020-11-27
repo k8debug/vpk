@@ -24,11 +24,11 @@ let svgInfo = {};            // array of information for tool tips
 let iCnt = 1;
 let oldNS = '@';
 let first = true;
-let evtCnt = 1000;
-let partsCnt = 1000;
+let evtCnt = 0;
+let partsCnt = 0;
 let rdata = '';
 let breakData = '';
-let breakID = 100;
+let breakID = 0;
 let height = 0;
 let fnum;
 let genS;
@@ -48,17 +48,20 @@ let outterName = '';
 let cBar = false;
 let wCnt = 0;
 let cLevel = '';
+let countContainer = 0;
+let countInitContainer = 0;
+let countUnkImage = 0;
 
-function initVars() {
+function initSchematicVars() {
 	svgInfo = {};            // array of information for tool tips
     iCnt = 1;
     oldNS = '@';
     first = true;
-    evtCnt = 1000;
-    partsCnt = 1000;
+    evtCnt = 0;
+    partsCnt = 0;
     rdata = '';
     breakData = '';
-    breakID = 100;
+    breakID = 0;
     height = 0;
     fnum;
     genS;
@@ -78,18 +81,22 @@ function initVars() {
     cBar = false;
 	wCnt = 0;
 	cLevel = '';
+	countContainer = 0;
+	countInitContainer = 0;
+	countUnkImage = 0;
 }
 
 function schematic() {
 	//Clear and initialize the variables
-	initVars();
+	initSchematicVars();
 	//Clear the browse DOM elements
     $("#schematicDetail").hide();
     $("#schematicDetail").empty();
     $("#schematicDetail").html('');
 
 	//Build Cluster Level list of all resources
-	cLevel = buildClusterLevel();
+	//cLevel = buildClusterLevel();
+	cLeve = '';
 
 	//Build the SVG workload images
 	let html = buildCSVG();	
@@ -154,7 +161,7 @@ function buildCSVG() {
 			if (first) {
 				first = false;
 				rdata = rdata + '<span class="breakBar vpkcolor"><hr>' 
-				+ '&nbsp;&nbsp;Press the buttons below to show or hide the schematics for the listed namespaces' 
+				+ '&nbsp;&nbsp;Press the buttons below to view the schematics for the listed namespace' 
 				+ '<hr><span>';
 			} else {
 				rdata = rdata + '</div>'
@@ -182,8 +189,9 @@ function nsChange(ns) {
 	
 	let nsKey = '0000-' + ns;
 	let titleNS = '';
-	if (ns === 'clusterLevel') {
+	if (ns === 'clusterLevel') { 
 		titleNS = 'Cluster <hr>'
+		return;
 	} else {
 		titleNS = 'namespace'; 
 	}
@@ -544,47 +552,51 @@ function process(fnum) {
 	+ '</g>'
 	html = html + outterBox;	
 
-	let nBar = '<div class="eventBar"><button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#events-' 
-	+ evtCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;Events'
-	+ '&nbsp;&nbsp;</div>'
+	let nBar = '<div class="eventBar" data-toggle="collapse" data-target="#events-' + evtCnt + '"></div>'
 	+ '<div id="events-' + evtCnt + '" class="collapse">'
 
-	let bottomButton = '<button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#events-' 
-	+ evtCnt + '">&nbsp;Close above Events list&nbsp;</button>';
-
-
-
+	// build the table of Event messages
 	if (typeof k8cData[fnum].Events !== 'undefined') {
 		let evts = k8cData[fnum].Events;
 		let hl = evts.length;
 		if (hl > 0) {
 			let msg;
-			let evtHtml = '<div class="events" ><hr><table style="width:100%"><tr><th>Type</th><th>Reason</th><th>Object</th>' 
+			let evtHtml = '<div class="events" ><hr><table style="width:100%">' 
+			+ '<tr style="text-align:center"><th>Type</th><th>Reason</th><th>Object</th>' 
 			+ '<th>Message</th><th>Occurences</th></tr>'
 			for (let e = 0; e < hl; e++) {
-
-
-
-				msg = '<tr>' 
+				msg = '<tr>'
+				+ '<td width="5%"><hr></td>'
+				+ '<td width="10%"><hr></td>'
+				+ '<td width="20%"><hr></td>'
+				+ '<td width="45%"><hr></td>'
+				+ '<td width="20%"><hr></td></tr>'
+				+ '<tr>' 
 				+ '<td width="5%">'  + evts[e].type + '</td>' 
-				+ '<td width="5%">' + evts[e].reason + '</td>' 
+				+ '<td width="10%">' + evts[e].reason + '</td>' 
 				+ '<td width="20%">' + evts[e].kind+'/'+evts[e].name + '</td>' 
-				+ '<td width="50%">' + evts[e].message + '</td>'
-				+ '<td width="20%">First time: ' + formatDate(evts[e].firstTime) + '<br>Last time: ' + formatDate(evts[e].lastTime) + '<br>' + 'Count: ' + evts[e].count + '</td>' 
-				+ '</tr>'
+				+ '<td width="45%">' + evts[e].message + '</td>'
+				+ '<td width="20%"><b>First:</b> ' + formatDate(evts[e].firstTime) + '<br><b>Last:</b>&nbsp;' + formatDate(evts[e].lastTime) + '<br>' + '<b>Count:</b> ' + evts[e].count + '</td>' 
+				+ '</tr>';
 				evtHtml = evtHtml + msg
 				evts[e].used = true;
 			}
 			k8cData[fnum].Events = evts;
-
-			evtHtml = evtHtml + '</table><hr>' + bottomButton + '</div>';
+			evtHtml = evtHtml + '</table><hr></div>';
 			rdata = rdata + nBar + evtHtml + '</div>'
 		}
+
+		if (hl > 0) {
+			// Place button inside the schematic border to view Events
+			let evtBtn = '<rect  x="640" y="9" width="160" height="25" ' 
+			+ ' rx="3" stroke-width="1.0" stroke="#3d7eba" fill="#dfe6ed"' 
+			+ ' onclick="showEvents(\'events-' + evtCnt +'\')"/>'
+			+ '<text x="650" y="25" class="pickIcon" '
+			+ ' onclick="showEvents(\'events-' + evtCnt +'\')">Toggle viewing workload events</text>'
+
+			html = html + evtBtn;
+		}
 	}
-
-
 
 	iCnt++;
 	height = height + 50;  // adding visual space between svg
@@ -605,13 +617,7 @@ function formatDate(data) {
 			fDate = fDate.substring(0, fDate.length - 1) + ' GMT'
 		}	
 	}
-
 	return fDate;
-}
-
-function show(what, cfg, gen, net, iam, pvc, pod) {
-	console.log(what + ' ::  cfg: ' + cfg + '  gen: ' + gen + '  net: ' + net + '  iam: ' + iam
-					 +    '  pvc: ' + pvc + '  pod: ' + pod ) ;
 }
 
 
@@ -633,9 +639,9 @@ function svgPVC(data, fnum) {
 		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/pvc.svg" onmousemove="showTooltip(evt, \'' 
 		+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'PersistentVolumeClaim') 
 		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'PVC@' +  fnum +'\')"/>' 
-		+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-		+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-		+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="2" stroke-linecap="round"/>';
+		+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
 
 		if (data.PersistentVolumeClaim[0].pvName !== '') {
 			rectW = rectW + 200;
@@ -644,9 +650,9 @@ function svgPVC(data, fnum) {
 			+ '<image x="250"  y="25" width="50"  height="50" href="images/k8/pv.svg" onmousemove="showTooltip(evt, \'' 
 			+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'PersistentVolume') 
 			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'PersistentVolume@' +  data.PersistentVolumeClaim[0].pvFnum +'\')"/>' 
-			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="2" stroke-linecap="round"/>';
+			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
 		}
 
 		if (data.PersistentVolumeClaim[0].storageClassName !== '') {
@@ -656,9 +662,9 @@ function svgPVC(data, fnum) {
 			+ '<image x="350"  y="25" width="50"  height="50" href="images/k8/sc.svg" onmousemove="showTooltip(evt, \'' 
 			+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'StorageClass') 
 			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'StorageClass@' +  data.PersistentVolumeClaim[0].storageClassFnum +'\')"/>' 
-			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="2" stroke-linecap="round"/>';
+			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
 		}
 
 		if (bnds.show = true) {
@@ -685,10 +691,16 @@ function svgIAM(data, fnum) {
 		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/sa.svg" onmousemove="showTooltip(evt, \'' 
 		+ buildSvgInfo(data.ServiceAccount, fnum, 'ServiceAccount') 
 		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'ServiceAccount@' +  fnum +'\')"/>' 
-		+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-		+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-		+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="2" stroke-linecap="round"/>';
-		
+		+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+
+		+ '<line  x1="75" x2="75"   y1="25"    y2="-100" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="75" x2="-100" y1="-100"  y2="-100" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+
+		+ '<line  x1="-100" x2="-95" y1="-100"  y2="-105" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="-100" x2="-95" y1="-100"  y2="-95"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+
 		if (bnds.show = true) {
 			rtn = rectP1 + rectH + rectP2 + rtn;
 		};
@@ -723,9 +735,9 @@ function svgNetwork(data, fnum) {
 					+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/eps.svg" onmousemove="showTooltip(evt, \'' 
 					+ buildSvgInfo(data.Services, fnum, 'EndPointSlice') 
 					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'EndPointSlice@' + fnum +'\')"/>' 
-					+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-					+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-					+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="2" stroke-linecap="round"/>';
+					+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+					+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+					+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
 				}
 			}
 			if (typeof data.Services[0].ep !== 'undefined') {
@@ -734,9 +746,9 @@ function svgNetwork(data, fnum) {
 					+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/ep.svg" onmousemove="showTooltip(evt, \'' 
 					+ buildSvgInfo(data.Services, fnum, 'EndPoint') 
 					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'EndPoint@' + fnum +'\')"/>' 
-					+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-					+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-					+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="2" stroke-linecap="round"/>';
+					+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+					+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+					+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
 				} 
 			}
 			if (data.Services[0].eps !== '' && data.Services[0].ep !== '') {
@@ -744,8 +756,6 @@ function svgNetwork(data, fnum) {
 				+ '<text x="120" y="12" class="pickIcon">(ep and eps both located</text>'
 				+ '<text x="124" y="20" class="pickIcon">only showing one item)</text>'
 			}
-
-
 		}
 		if (bnds.show = true) {
 			rtn = rectP1 + rectH + rectP2 + rtn;
@@ -771,10 +781,6 @@ function svgGenerators(data, fnum) {
 		let kind;
 		let image;
 
-		if (fnum === '1640.0') {
-			console.log('k')
-		}
-
 		if (typeof data.creationChain.level0 !== 'undefined') {
 			if (data.creationChain.level0 === 'NoCreationChain') {
 				bnds.show = true;
@@ -790,7 +796,6 @@ function svgGenerators(data, fnum) {
 			}
 		}
 
-
 		if (typeof data.creationChain.level1Kind !== 'undefined') {
 			bnds.show = true;
 			bnds.height = bnds.height + 100;
@@ -802,7 +807,7 @@ function svgGenerators(data, fnum) {
 			+ 'onmousemove="showTooltip(evt, \'' 
 			+ buildSvgInfo(data, fnum, kind) 
 			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'level1@' + fnum +'\')"/>' 
-			+ '<line  x1="200" x2="300" y1="50" y2="50"  stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
+			+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
 			+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round"/>'
 			+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="red" stroke-width="2" stroke-linecap="round"/>'
 
@@ -810,7 +815,8 @@ function svgGenerators(data, fnum) {
 				kind = data.creationChain.level2Kind;
 				image = checkImage(kind);
 				if (image === 'unk') {
-					console.log('No icon form resouce kind: ' + kind + ' fnum: ' + fnum)
+					countUnkImage++
+					console.log('No icon for resouce kind: ' + kind + ' fnum: ' + fnum)
 				}
 				width = width + 100;
 				x = 0;
@@ -824,8 +830,6 @@ function svgGenerators(data, fnum) {
 				+ '<line  x1="150" x2="145" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round"/>'
 				+ '<line  x1="150" x2="145" y1="50" y2="55" stroke="red" stroke-width="2" stroke-linecap="round"/>'
 			};
-
-			// when adding the HPA increase the bnds.height
 		}
 
 		if (typeof data.ControllerRevision !== 'undefined') {
@@ -852,6 +856,7 @@ function svgGenerators(data, fnum) {
 		}
 
 		if (typeof data.HPA !== 'undefined') {
+			// when adding the HPA increase the bnds.height
 			rectH = rectH + 75;
 			let hPos = 50;
 			if (typeof data.spec !== 'undefined') {
@@ -875,14 +880,14 @@ function svgGenerators(data, fnum) {
 
 					if (hPos === 50) {  // Deployment 
 						rtn = rtn
-						+ '<line  x1="75" x2="75" y1="75" y2="100"  stroke="black" stroke-width="2" stroke-linecap="round" />'
-						+ '<line  x1="75" x2="70" y1="75" y2="80" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-						+ '<line  x1="75" x2="80" y1="75" y2="80" stroke="black" stroke-width="2" stroke-linecap="round"/>'
+						+ '<line  x1="75" x2="75" y1="75" y2="100" stroke="black" stroke-width="1" stroke-linecap="round" />'
+						+ '<line  x1="75" x2="70" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+						+ '<line  x1="75" x2="80" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					} else {            // Other
 						rtn = rtn
-						+ '<line  x1="175" x2="175" y1="75" y2="100"  stroke="black" stroke-width="2" stroke-linecap="round" />'
-						+ '<line  x1="175" x2="170" y1="75" y2="80" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-						+ '<line  x1="175" x2="180" y1="75" y2="80" stroke="black" stroke-width="2" stroke-linecap="round"/>'
+						+ '<line  x1="175" x2="175" y1="75" y2="100" stroke="black" stroke-width="1" stroke-linecap="round" />'
+						+ '<line  x1="175" x2="170" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+						+ '<line  x1="175" x2="180" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					}
 				}
 			} 
@@ -898,10 +903,10 @@ function svgGenerators(data, fnum) {
 					+ 'onmousemove="showTooltip(evt, \'' 
 					+ action1
 					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'CRD@' + cFnum1 +'\')"/>' 
-					+ '<line  x1="175" x2="175" y1="20" y2="26" stroke="black" stroke-width="2" stroke-linecap="round"/>' 
-					+ '<line  x1="175" x2="147" y1="20" y2="20"  stroke="black" stroke-width="2" stroke-linecap="round"/>' 
-					+ '<line  x1="147" x2="151" y1="20" y2="15"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
-					+ '<line  x1="147" x2="151" y1="20" y2="25"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
+					+ '<line  x1="175" x2="175" y1="20" y2="26"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
+					+ '<line  x1="175" x2="147" y1="20" y2="20"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
+					+ '<line  x1="147" x2="151" y1="20" y2="15"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+					+ '<line  x1="147" x2="151" y1="20" y2="25"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					rtn = rtn + what1;
 				}
 			}
@@ -914,10 +919,10 @@ function svgGenerators(data, fnum) {
 					+ 'onmousemove="showTooltip(evt, \'' 
 					+ action2
 					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'CRD@' + cFnum2 +'\')"/>' 
-					+ '<line  x1="75" x2="75" y1="20" y2="26" stroke="black" stroke-width="2" stroke-linecap="round"/>' 
-					+ '<line  x1="75" x2="47" y1="20" y2="20"  stroke="black" stroke-width="2" stroke-linecap="round"/>' 
-					+ '<line  x1="47" x2="51" y1="20" y2="15"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
-					+ '<line  x1="47" x2="51" y1="20" y2="25"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
+					+ '<line  x1="75" x2="75" y1="20" y2="26"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
+					+ '<line  x1="75" x2="47" y1="20" y2="20"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
+					+ '<line  x1="47" x2="51" y1="20" y2="15"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+					+ '<line  x1="47" x2="51" y1="20" y2="25"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					rtn = rtn + what2;
 				}
 			}
@@ -937,22 +942,6 @@ function svgConfig(data, fnum) {
 	let rectH = 0;
 	let rtn = '';
 	let bnds = {'height': 0, 'width': 250, 'show': false};
-	// config secrets
-	if (typeof data.Secret !== 'undefined') {
-		rectH = 100;
-		bnds.height = 100;
-		bnds.show = true;	
-		rtn = rtn
-		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/secret.svg" onmousemove="showTooltip(evt, \'' 
-		+ buildSvgInfo(data.Secret, fnum, 'Secret') 
-		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'Secret@' + fnum +'\')"/>' 
-		+ '<line  x1="75" x2="75" y1="75" y2="150" stroke="black" stroke-width="2" stroke-linecap="round"/>' 
-		+ '<line  x1="75" x2="70" y1="75" y2="80"  stroke="black" stroke-width="2" stroke-linecap="round"/>' 
-		+ '<line  x1="75" x2="80" y1="75" y2="80"  stroke="black" stroke-width="2" stroke-linecap="round"/>';
-		if (data.Secret.length > 0) {
-			rtn = rtn + '<text x="95" y="80" class="small">(' + data.Secret.length + ')</text>'
-		}
-	}
 
 	// config configMaps
 	if (typeof data.ConfigMap !== 'undefined') {
@@ -960,16 +949,34 @@ function svgConfig(data, fnum) {
 		bnds.height = 100;
 		bnds.show = true;	
 		rtn = rtn
-		+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/cm.svg" onmousemove="showTooltip(evt, \''
+		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/cm.svg" onmousemove="showTooltip(evt, \''
 		+ buildSvgInfo(data.ConfigMap, fnum, 'ConfigMap')
 		+ '\');" onmouseout="hideTooltip()"  onclick="getDef2(\'ConfigMap@' + fnum +'\')"/>'
-		+ '<line  x1="175" x2="175" y1="75" y2="150" stroke="black" stroke-width="2" stroke-linecap="round"/>'
-		+ '<line  x1="175" x2="170" y1="75" y2="80"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
-		+ '<line  x1="175" x2="180" y1="75" y2="80"  stroke="black" stroke-width="2" stroke-linecap="round"/>'
+		+ '<line  x1="75" x2="75" y1="75" y2="150" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="75" x2="70" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="75" x2="80" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		if (data.ConfigMap.length > 0) {
-			rtn = rtn + '<text x="195" y="80" class="small">(' + data.ConfigMap.length + ')</text>'
+			rtn = rtn + '<text x="95" y="80" class="small">(' + data.ConfigMap.length + ')</text>'
 		}
 	}
+
+	// config secrets
+	if (typeof data.Secret !== 'undefined') {
+		rectH = 100;
+		bnds.height = 100;
+		bnds.show = true;	
+		rtn = rtn
+		+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/secret.svg" onmousemove="showTooltip(evt, \'' 
+		+ buildSvgInfo(data.Secret, fnum, 'Secret') 
+		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'Secret@' + fnum +'\')"/>' 
+		+ '<line  x1="175" x2="175" y1="75" y2="150" stroke="black" stroke-width="1" stroke-linecap="round"/>' 
+		+ '<line  x1="175" x2="170" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
+		+ '<line  x1="175" x2="180" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>';
+		if (data.Secret.length > 0) {
+			rtn = rtn + '<text x="195" y="80" class="small">(' + data.Secret.length + ')</text>'
+		}
+	}
+
 	if (bnds.show === true) {
 		rtn = rectP1 + rectH + rectP2 + rtn;
 	}
@@ -983,163 +990,216 @@ function svgPod(data, fnum, podH) {
 	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="' + bkgFill + '"/>';
 	let rectH = 0;
 	let rtn = '';
-	let eS = '';
-	let y = 0;
-	let yT = 0;
 	let yS = 0;
+	let evtV;
 	let bnds = {'height': 0, 'width': 250, 'show': false};
 	let outterName = 'No located workload information';
-	if (data.typeCcnt > 0 || data.typeIcnt > 0) {
-		outterName = data.name;
-		bnds.height = bnds.height + 100;
-		bnds.show = true;
-		rectH = 100;
-		rtn = rtn 
-		+ '<image x="100"  y="25" width="50"  height="50" href="images/k8/pod.svg" onmousemove="showTooltip(evt, \'' 
-		+ buildSvgInfo(data, fnum, 'Pod') 
-		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'workload@' + fnum + '\')"/>';
-		let cy;
 
-		if (data.typeCcnt > 0) { 
-			rectH = rectH + 50;
-			y = y + 80;
-			yT = y + 13;
-			if (data.typeCcnt > 1) { 
-				eS = 's';
-			} else {
-				eS = '';
-			}
-			rtn = rtn
-			+ '<rect x="50" y="' + y + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="white" '
-			+ ' onmousemove="showTooltip(evt, \'' 
-			+ buildSvgInfo(data, fnum, 'Container') 
-			+ '\');" onmouseout="hideTooltip()" />'
-			+ '<text x="60" y="' + yT + '" class="small">' + data.typeCcnt + ' Container' + eS + '</text>'
-		}
+	outterName = data.name;
+	bnds.height = bnds.height + 100;
+	bnds.show = true;
+	rectH = 100;
+	rtn = rtn 
+	+ '<image x="100"  y="25" width="50"  height="50" href="images/k8/pod.svg" onmousemove="showTooltip(evt, \'' 
+	+ buildSvgInfo(data, fnum, 'Pod') 
+	+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'workload@' + fnum + '\')"/>';
+	let cy;
 
-		if (data.typeIcnt > 0) { 
-			rectH = rectH + 50;
-			y = y + 50;
-			yT = y + 15;
-			if (data.typeCcnt > 1) { 
-				eS = 's';
-			} else {
-				eS = '';
-			}
-			rtn = rtn
-			+ '<rect x="50" y="' + y + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="white" ' 
-			+ ' onmousemove="showTooltip(evt, \'' 
-			+ buildSvgInfo(data, fnum, 'Container') 
-			+ '\');" onmouseout="hideTooltip()" />'
-			+ '<text x="60" y="' + yT + '" class="small">' + data.typeCcnt + ' Init Container' + eS + '</text>'
-		}
-	}
+	rtn = rtn 
+	+ '<line x1="0" x2="250" y1="80" y2="80"  stroke="black" stroke-width="0.5" stroke-linecap="round"/>';
+	
+	rtn = rtn 
+	+ '<text x="5" y="95" class="small">Pod Information:</text>';
 
-	// Phase 
+	// ============= Pod Phase 
 	let statusFill = 'white'
+	let phaseContent = 'No Phase found';
+	let errInfo = ''
 	if (typeof data.phase !== 'undefined') {
 		if (data.phase === 'Pending') {
 			statusFill = "#fa7373";
-		}if (data.phase === 'Failed') {
+			if (typeof data.status.reason !== 'undefined') {
+				errInfo = ' - ' +data.status.reason
+			}
+		} else if (data.phase === 'Failed') {
 			statusFill = "#fa7373";
+			if (typeof data.status.reason !== 'undefined') {
+				errInfo = ' - ' +data.status.reason
+			}
+		} else if (data.phase === 'Running') {
+			statusFill = "lightgreen";
 		}
-	}
-	let phaseReason = '';
-	if (typeof data.status !== 'undefined') {
-		if (typeof data.status.reason !== 'undefined') {
-			phaseReason = ' : ' + data.status.reason;
-		}
-	}
+		phaseContent = data.phase + errInfo;
+	} 
 
-	yS = yT + 15;
-	rtn = rtn
-	+ '<rect x="50" y="' + yS + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
+	evtV = buildSvgInfo(data, fnum, 'Phase');
+
+	rtn = rtn 
+	+ '<text x="44" y="118" class="small" '
 	+ ' onmousemove="showTooltip(evt, \'' 
-	+ buildSvgInfo(data, fnum, 'Phase') 
-	+ '\');" onmouseout="hideTooltip()" />'
-	yS = yS + 13;
+	+ evtV
+	+ '\');" onmouseout="hideTooltip()" >Phase</text>'
+
 	rtn = rtn
-	+ '<text x="60" y="' + (yS + 0)  + '" class="small">'
-	+ data.phase + '</text>'
-	+ '<text x="90" y="' + (yS + 0)  + '" class="small">'
-	+ phaseReason
-	+ '</text>'
+	+ '<rect x="75" y="105" width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
+	+ ' onmousemove="showTooltip(evt, \'' 
+	+ evtV
+	+ '\');" onmouseout="hideTooltip()" />';
 
-	// Conditions
-	let contFill = 'white'
-	let contText = '';
-	let skip = false;
-	if (typeof data.status !== 'undefined') {
-		if (typeof data.status.conditions === 'undefined') {
-			contFill = "#fa7373";
-			contText = ' - None located'
-			skip = true;
-		}
-	}	
+	rtn = rtn 
+	+ '<text x="90" y="118" class="small" '
+	+ ' onmousemove="showTooltip(evt, \'' 
+	+ evtV
+	+ '\');" onmouseout="hideTooltip()" >'
+	+ phaseContent 
+	+ '</text>';
 
-	if (skip === false) {
-		rectH = rectH + 25;
-		yS = yS + 15;
-		rtn = rtn
-		+ '<rect x="50" y="' + yS + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + contFill + '" '
+	// ============= Pod Conditions
+	
+	if (typeof data.status.conditions !== 'undefined') {
+
+		rectH = rectH + 50;
+		evtV = buildSvgInfo(data.status, fnum, 'Conditions') 
+
+		rtn = rtn 
+		+ '<text x="25" y="148" class="small" '
 		+ ' onmousemove="showTooltip(evt, \'' 
-		+ buildSvgInfo(data.status, fnum, 'Conditions') 
-		+ '\');" onmouseout="hideTooltip()" />'
-		yS = yS + 13;
-		rtn = rtn
-		+ '<text x="60" y="' + yS + '" class="small" >'
-		+ 'Pod Conditions' + contText
-		+ '</text>'
-	}
+		+ evtV
+		+ '\');" onmouseout="hideTooltip()">Conditions</text>'
 
-	rectH = rectH + 25;
-	yS = yS + 15;
-	statusFill = 'white';
-	let statusMsg = 'Container Statuses';
-	if (typeof data.status !== 'undefined') {
-		if (typeof data.status.containerStatuses !== 'undefined') {
-			if (typeof data.status.containerStatuses[0] !== 'undefined') {
-				if (typeof data.status.containerStatuses[0].state !== 'undefined') {
-					bnds.height = bnds.height + 25;
-					if (typeof data.status.containerStatuses[0].state.waiting !== 'undefined') {
-						if (typeof data.status.containerStatuses[0].state.waiting.reason !== 'undefined') {
-							let reason = data.status.containerStatuses[0].state.waiting.reason;
-							if (reason === 'CrashLoopBackOff') {
-								statusFill = '#fa7373'
-								statusMsg = statusMsg + ': CrashLoopBackOff'
-							} else if (reason === 'ImagePullBackOff') {
-								statusFill = '#fa7373';
-								statusMsg = statusMsg + ': ImagePullBackOff'
-							} else if (reason === 'ContainerCreating') {
-								statusFill = '#fa7373';
-								statusMsg = statusMsg + ': ContainerCreating'
-							} else {
-								statusFill = 'grey'
-								console.log(data.status.containerStatuses[0].state.waiting.reason)
-							}
-						}
-					} else if (typeof data.status.containerStatuses[0].state.running !== 'undefined') {
-						statusFill = '#66ed8a';
-						statusMsg = statusMsg + ': Running'
+		rtn = rtn
+		+ '<rect x="75" y="135"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="white" '
+		+ ' onmousemove="showTooltip(evt, \'' 
+		+ evtV
+		+ '\');" onmouseout="hideTooltip()" />'
+
+		let pStatus = [];
+		pStatus[0] = 'none';
+		pStatus[1] = 'none';
+		pStatus[2] = 'none';
+		pStatus[3] = 'none';
+
+		if (typeof data.status !== 'undefined') {
+			if (typeof data.status.conditions !== 'undefined') {
+				if (typeof data.status.conditions[0] !== 'undefined') {
+					for (let s = 0; s < data.status.conditions.length; s++) {
+						if (typeof data.status.conditions[s] !== 'undefined') {
+							if (typeof data.status.conditions[s].status !== 'undefined') {
+								pStatus[s] = data.status.conditions[s].status;
+							}		
+						}	
 					}
 				}
 			}
-		} else {
-			statusFill = '#fa7373'
-			statusMsg = statusMsg + ': None'
+		}
+
+		let pColor;
+		let cX = 100;
+		for (let c = 0; c < 4; c++) {
+			if (pStatus[c] !== 'none') {
+				if (pStatus[c] === false || pStatus[c] === 'False') {
+					pColor = 'red';
+				} else {
+					pColor = 'lightgreen';
+				}
+				rtn = rtn + '<circle cx="' + cX + '" cy="145" r="7" stroke="black" stroke-width="0.5" fill="' + pColor + '" '
+				+ ' onmousemove="showTooltip(evt, \'' 
+				+ evtV
+				+ '\');" onmouseout="hideTooltip()" />'; 
+				cX = cX + 35;
+			}
 		}
 	}
 
-	rtn = rtn
-	+ '<rect x="50" y="' + yS + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
-	+ ' onmousemove="showTooltip(evt, \'' 
-	+ buildSvgInfo(data.status, fnum, 'Statuses') 
-	+ '\');" onmouseout="hideTooltip()" />'
-	yS = yS + 13;
-	rtn = rtn
-	+ '<text x="60" y="' + yS + '" class="small" >'
-	+ statusMsg 
-	+ '</text>'	
+	rtn = rtn 
+	+ '<line x1="0" x2="250" y1="165" y2="165"  stroke="black" stroke-width="0.5" stroke-linecap="round"/>';
+	
+	rtn = rtn 
+	+ '<text x="5" y="180" class="small">Container Information:</text>';
+
+	yS = 180
+
+	rectH = rectH + 50;
+	statusFill = 'white';
+	let statusInfo = '';
+	let cHl =0;
+	let fndStatus = false;
+	if (typeof data.status !== 'undefined') {
+		// containers
+		if (typeof data.status.containerStatuses !== 'undefined') {
+			fndStatus = true;
+			if (typeof data.status.containerStatuses[0] !== 'undefined') {
+				cHl = data.status.containerStatuses.length;
+				for (let c = 0; c < cHl; c++) {
+					countContainer++;
+					yS = yS + 25
+					bnds.height = bnds.height + 40;
+					statusInfo = buildContainerStatus(data.status.containerStatuses[c])
+					statusFill = statusInfo.fill;
+
+					evtV = buildSvgInfo(data.status.containerStatuses[c], 'C' + countContainer, 'ContainerStatus') 
+
+					rtn = rtn
+					+ '<text x="15" y="' + (yS - 2) + '" class="small" >Container[' + c +']</text>'
+
+					rtn = rtn
+					+ '<rect x="75" y="' + (yS - 15) + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
+					+ ' onmousemove="showTooltip(evt, \'' 
+					+ evtV
+					+ '\');" onmouseout="hideTooltip()" />'
+					yS = yS + 13;
+					rtn = rtn
+					+ '<text x="90" y="' + (yS - 15) + '" class="small" >'
+					+ statusInfo.msg
+					+ '</text>'	
+
+					rectH = rectH + 35;
+				}
+			}
+		} 
+
+		//initContainerStatuses
+		if (typeof data.status.initContainerStatuses !== 'undefined') {
+			fndStatus = true;
+			if (typeof data.status.initContainerStatuses[0] !== 'undefined') {
+				evtV = buildSvgInfo(data.status, fnum, 'ContainerStatus') 
+				cHl = data.status.initContainerStatuses.length;
+				for (let c = 0; c < cHl; c++) {
+					countInitContainer++;
+					yS = yS + 25
+					bnds.height = bnds.height + 40;
+					statusInfo = buildContainerStatus(data.status.initContainerStatuses[c])
+					statusFill = statusInfo.fill;
+
+					evtV = buildSvgInfo(data.status.initContainerStatuses[c], 'I' + countInitContainer, 'InitContainerStatus') 
+
+					rtn = rtn
+					+ '<text x="2" y="' + (yS - 2) + '" class="small" >InitContainer[' + c +']</text>'
+
+					rtn = rtn
+					+ '<rect x="75" y="' + (yS - 15) + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
+					+ ' onmousemove="showTooltip(evt, \'' 
+					+ evtV
+					+ '\');" onmouseout="hideTooltip()" />'
+					yS = yS + 13;
+					rtn = rtn
+					+ '<text x="90" y="' + (yS - 15) + '" class="small" >'
+					+ statusInfo.msg
+					+ '</text>'	
+
+					rectH = rectH + 35;
+				}
+			}
+		} 
+		
+		if (fndStatus === false) {
+			rtn = rtn 
+			+ '<text x="55" y="' + (yS + 25) + '" class="small">No container status available</text>';
+			rectH = rectH + 20;
+			bnds.height = bnds.height + 40;
+		}
+	}
+
 	bnds.height = bnds.height + 25;
 	
 	if (bnds.show === true) {
@@ -1151,6 +1211,48 @@ function svgPod(data, fnum, podH) {
 	return {'bnds': bnds, 'rtn': rtn, 'outterName': outterName}
 }
 
+
+function buildContainerStatus(data) {
+	let statusMsg = '';
+	let statusFill = ''
+	if (typeof data.state !== 'undefined') {
+
+		if (typeof data.state.waiting !== 'undefined') {
+			if (typeof data.state.waiting.reason !== 'undefined') {
+				let reason = data.state.waiting.reason;
+				if (reason === 'CrashLoopBackOff') {
+					statusFill = '#fa7373';
+					statusMsg = statusMsg + 'CrashLoopBackOff';
+				} else if (reason === 'ImagePullBackOff') {
+					statusFill = '#fa7373';
+					statusMsg = statusMsg + 'ImagePullBackOff';
+				} else if (reason === 'ContainerCreating') {
+					statusFill = '#fa7373';
+					statusMsg = statusMsg + 'ContainerCreating';
+				} else {
+					statusFill = 'grey';
+					statusMsg = statusMsg +  data.state.waiting.reason;
+					console.log('data.state.waiting.reason: ' +   data.state.waiting.reason)
+				}
+			}
+		} else if (typeof data.state.terminated !== 'undefined') {
+			if (typeof data.state.terminated.reason !== 'undefined') {
+				statusFill = 'lightgrey';
+				statusMsg = data.state.terminated.reason;
+			} else {
+				statusFill = 'lightgrey';
+				statusMsg = 'Unknown';
+				console.log('UnProcessed terminated status: ' + JSON.stringify(data.state.terminated, null, 2))
+			}
+		} else if (typeof data.state.running !== 'undefined') {
+			statusFill = '#66ed8a';
+			statusMsg = 'Running';
+		}
+	}
+	return {'msg': statusMsg, 'fill': statusFill }
+}
+
+
 function buildSvgInfo(data, fnum, type) {
 	let id = fnum+'.'+type;
 	let tName = type;
@@ -1159,7 +1261,7 @@ function buildSvgInfo(data, fnum, type) {
 	}
 	let content = buildTipContent(data, type, fnum)
 	if (type === 'Phase') {
-		tName = 'Status'
+		tName = 'Pod Phase / IPs'
 	}
 	if (type === 'CRD') {
 		tName = 'CustomResourceDefinition'
@@ -1171,41 +1273,33 @@ function buildSvgInfo(data, fnum, type) {
 	return id;
 }
 
+
 function buildTipContent(data, type, fnum) {
 	let cnt = 0;
 	let content = '';
+
 	if (typeof data === 'undefined') {
 		content =  'No info available';
 		content = '<div class="vpkfont-xsm">' + content + '</div>'
 		return content;
 	}
 
-	if (type === 'Secret' || type === 'ConfigMap') {
+	if (type === 'Unknown') {
+		content = 'No resource type located or failed to properly be created.';
+
+	} else if (type === 'ConfigMap') {
 		if (typeof data[0] !== 'undefined' ) {
 			cnt = 0;			
 			for (let k = 0; k < data.length; k++) {
 				cnt++;
 				content = content + '(' + cnt + ') ' + data[k].name + ' ('+ data[k].use +')<br>';
 			}
-		}	
-	} else if (type === 'Unknown') {
-		content = 'No resource type located or failed to properly be created.';  
-	} else if (type === 'HorizontalPodAutoscaler') {
-		content = formatJSON(data);  
-	} else if (type === 'EndPoint') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + data[k].name ;  
+		} else {
+			if (typeof data.name !== 'undefined') {
+				content = 'Name: ' + data.name;
 			}
-		}	
-	} else if (type === 'CRD') {
-		content = 'Name: ' + data;  
-	} else if (type === 'ControllerRevision') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			content = content + data[0].name;  
-		}	
+		}
+
 	} else if (type === 'Conditions') {
 		if (typeof data.conditions !== 'undefined') {
 			if (typeof data.conditions[0] !== 'undefined' ) {
@@ -1224,37 +1318,68 @@ function buildTipContent(data, type, fnum) {
 				}
 			}	
 		}
-	} else if (type === 'Statuses') {
-		if (typeof data.containerStatuses !== 'undefined' ) {
+
+	} else if (type === 'Container') {
+		content = '' 
+		if (typeof data.containerNames !== 'undefined' ) {
+			for (let k = 0; k < data.containerNames.length; k++) {
+				content = content 
+				+ '- &nbsp;&nbsp;<b>Name:</b> ' + data.containerNames[k].c_name + '<br>'
+				+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Image:</b> ' + data.containerNames[k].c_image + '<br>';
+			}
+		}	
+
+
+	} else if (type === 'ContainerStatus' || type === 'InitContainerStatus') {    // container status
+		if (typeof data !== 'undefined' ) {
 			cnt = 0;			
-			content = formatJSON(data.containerStatuses);  
+			content = '';
+			//content = formatJSON(data) + '<br>' 
+			content = content 
+				+ 'Name: ' + data.name + '<br>' 
+				+ 'Restart Count: ' + data.restartCount + '<br>' 
+			
 		} else {
 			content = 'No statuses located'
+		}
+
+	} else if (type === 'ControllerRevision') {
+		if (typeof data[0] !== 'undefined' ) {
+			cnt = 0;			
+			content = content + data[0].name;  
 		}	
+
+	} else if (type === 'CRD') {
+		content = 'Name: ' + data;  
+
+		
+	} else if ( type === 'DaemonSet' || 
+				type === 'Deployment' || 
+				type === 'DeploymentConfig' || 
+				type === 'ReplicaSet' || 
+				type === 'ReplicationController' ||
+				type === 'StatefulSet' ) {
+		content = 'Name: ' + data.name ; 
+
+	} else if (type === 'EndPoint') {
+		if (typeof data[0] !== 'undefined' ) {
+			cnt = 0;			
+			for (let k = 0; k < data.length; k++) {
+				content = content + data[k].name ;  
+			}
+		}
+
 	} else if (type === 'EndPointSlice') {
 		if (typeof data[0] !== 'undefined' ) {
 			cnt = 0;			
 			for (let k = 0; k < data.length; k++) {
 				content = content + data[k].name ;  
 			}
-		}	
-	} else if (type === 'Phase') {
-		content = 'None located';
-		//content = formatJSON(data.status);
-		if (typeof data.status !== 'undefined') {
-			content = '';
-			if (typeof data.status.hostIP !== 'undefined') {
-				content = content + 'HostIP: ' + data.status.hostIP + '<br>';
-			}
-			if (typeof data.status.podIP !== 'undefined') {
-				content = content + 'PodIP: ' + data.status.podIP + '<br>';
-			}
-			if (typeof data.status.podIPs !== 'undefined') {
-				if (typeof data.status.podIPs.length > 1 !== 'undefined') {
-					content = content + 'PodIPs: <br>' + formatJSON(data.status.podIPs) + '<br>';
-				}
-			}			
 		}
+
+	} else if (type === 'HorizontalPodAutoscaler') {
+		content = formatJSON(data);  
+
 	} else if (type === 'PersistentVolumeClaim') {
 		if (typeof data[0] !== 'undefined' ) {
 			cnt = 0;			
@@ -1277,6 +1402,7 @@ function buildTipContent(data, type, fnum) {
 				}
 			}
 		}	
+
 	} else if (type === 'PersistentVolume') {
 		if (typeof data[0] !== 'undefined' ) {
 			cnt = 0;			
@@ -1292,13 +1418,24 @@ function buildTipContent(data, type, fnum) {
 					content = content + 'NFS path: ' + data[k].pvNFSPath + '<br>';
 				}			}
 		}	
-	} else if (type === 'StorageClass') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + 'Name: ' + data[k].storageClassName ;  
+
+	} else if (type === 'Phase') {  //Pod Phase
+		content = 'None located';
+		if (typeof data.status !== 'undefined') {
+			content = '';
+			if (typeof data.status.hostIP !== 'undefined') {
+				content = content + 'HostIP: ' + data.status.hostIP + '<br>';
 			}
-		}	
+			if (typeof data.status.podIP !== 'undefined') {
+				content = content + 'PodIP: ' + data.status.podIP + '<br>';
+			}
+			if (typeof data.status.podIPs !== 'undefined') {
+				if (typeof data.status.podIPs.length > 1 !== 'undefined') {
+					content = content + 'PodIPs: <br>' + formatJSON(data.status.podIPs) + '<br>';
+				}
+			}			
+		}
+
 	} else if (type === 'Pod') {
 		content = '';
 		if (typeof data.name !== 'undefined' ) {
@@ -1312,15 +1449,16 @@ function buildTipContent(data, type, fnum) {
 				}			
 			}
 		}	
-	} else if (type === 'Container') {
-		content = '' 
-		if (typeof data.containerNames !== 'undefined' ) {
-			for (let k = 0; k < data.containerNames.length; k++) {
-				content = content 
-				+ '- &nbsp;&nbsp;<b>Name:</b> ' + data.containerNames[k].c_name + '<br>'
-				+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Image:</b> ' + data.containerNames[k].c_image + '<br>';
+	
+	} else if (type === 'Secret') {
+		if (typeof data[0] !== 'undefined' ) {
+			cnt = 0;			
+			for (let k = 0; k < data.length; k++) {
+				cnt++;
+				content = content + '(' + cnt + ') ' + data[k].name + ' ('+ data[k].use +')<br>';
 			}
 		}	
+
 	}  else if (type === 'Service') {
 		content = fnum + '<br>' 
 		if (typeof data[0] !== 'undefined' ) {
@@ -1337,23 +1475,18 @@ function buildTipContent(data, type, fnum) {
 				cnt++;
 				content = content + '(' + cnt + ') ' + data[k].name + '<br>';
 			}
-		}	
-	} else if (type === 'DaemonSet' || type === 'ReplicaSet' || type === 'Deployment' || type === 'DeploymentConfig' || type === 'StatefulSet' || type === 'ReplicationController') {
-		content = '';
-		if (typeof data.creationChain !== 'undefined' ) {
-			if (typeof data.creationChain.level0 !== 'undefined' ) {
-				content = content + 'Level 0: Pod - ' + ' - ' + data.name + '<br>'
-			}
-			if (typeof data.creationChain.level1Fnum !== 'undefined' ) {
-				content = content + 'Level 1: ' + data.creationChain.level1Kind + ' - ' + data.creationChain.level1Name + '<br>';
-			}
-			if (typeof data.creationChain.level2Fnum !== 'undefined' ) {
-				content = content + 'Level 2: ' + data.creationChain.level2Kind + ' - ' + data.creationChain.level2Name + '<br>';
-			}
 		}
 
+	} else if (type === 'StorageClass') {
+		if (typeof data[0] !== 'undefined' ) {
+			cnt = 0;			
+			for (let k = 0; k < data.length; k++) {
+				content = content + 'Name: ' + data[k].storageClassName ;  
+			}
+		}	
+
 	} else {
-		content = type + '<br>Image icon not available';
+		content = 'Name: ' + data.name  + '<br>' + 'Type: ' + type;
 	}
 	content = '<div class="vpkfont-xsm">' + content + '</div>'
 	return content;	
@@ -1383,6 +1516,8 @@ function checkImage(kind) {
 	let image;
 	if (kind === 'Alertmanager') {
 		image = 'openshift/ocp-am';
+	} else if (kind === 'ConfigMap') {
+		image = 'k8/cm';
 	} else if (kind === 'CRD') {
 		image = 'k8/crd';
 	} else if (kind === 'ControllerRevision') {
@@ -1397,8 +1532,12 @@ function checkImage(kind) {
 		image = 'k8/deploy';
 	} else if (kind === 'DeploymentConfig') {
 		image = 'openshift/ocp-dc';
+	} else if (kind === 'DNS') {
+		image = 'openshift/ocp-dns';
 	} else if (kind === 'HorizontalPodAutoscaler') {
 		image = 'k8/hpa';
+	} else if (kind === 'Network') {
+		image = 'openshift/ocp-net';
 	} else if (kind === 'Prometheus') {
 		image = 'openshift/ocp-prometheus';
 	} else if (kind === 'ReplicaSet') {

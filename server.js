@@ -16,9 +16,7 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMA
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-/*
 
-*/
 //------------------------------------------------------------------------------
 // Software version
 //------------------------------------------------------------------------------
@@ -44,7 +42,7 @@ var YAML = require('js-yaml');
 var commandLineArgs = require('command-line-args');
 var commandLineUsage = require('command-line-usage');
 var chalk = require('chalk');
-var multer = require('multer');
+//var multer = require('multer');
 
 var path = require('path');
 var http = require('http');
@@ -93,30 +91,7 @@ app.set('view engine', 'ejs');
 //------------------------------------------------------------------------------
 // Application variables
 //------------------------------------------------------------------------------
-var colors = '';
-// var dest = './uploads'
-// var zips = [];
-// var targz = [];
-
-// var storage = multer.diskStorage({
-//     destination: function(req, file, cb) {
-//         cb(null, dest)
-//     },
-//     filename: function(req, file, cb) {
-//         cb(null, file.originalname)
-//         var ext = path.extname(file.originalname).toUpperCase();
-//         if (ext === '.ZIP') {
-//             zips.push(file.originalname);
-//         }
-//         if (ext === '.GZ') {
-//             targz.push(file.originalname);
-//         }
-//         if (ext === '.TAR') {
-//             targz.push(file.originalname);
-//         }
-//     }
-// });
-
+//var colors = '';
 var resetReq = false;
 var statMessages;
 var dashline = '----------------------------------------------';
@@ -212,17 +187,6 @@ if (gcstatus === 'OK') {
     process.exit(-1);
 }
 
-// read vpk relations configuration file
-var rf = 'relations.json';
-var relstatus = utl.readConfig(rf);
-if (relstatus === 'OK') {
-    //console.log(JSON.stringify(vpk.configFile));
-} else {
-    utl.logMsg('vpkMNL095 - Terminating application unable to find configuration file: ' + rf);
-    process.exit(-1);
-}
-
-
 
 //------------------------------------------------------------------------------
 // Define express routes / urls
@@ -233,7 +197,6 @@ app.get('/hier', function(req, res) {
     res.end(JSON.stringify(data,null,4));
     utl.logMsg('vpkMNL787 - GET hier event received');
 });
-
 
 app.get('/dumpall',function(req,res){
     res.end(JSON.stringify(vpk,null,2));
@@ -494,47 +457,6 @@ app.get('/ping', function(req, res) {
 });
 
 
-app.post('/upload', function(req, res) {
-
-    var upload = multer({
-        storage: storage
-    }).array('file', 4);
-
-    upload(req, res, function(err) {
-        if (err) {
-            utl.logMsg('vpkMNL022 - Error processing upload, message: ' + err );
-            return res.status(422);
-        }
-
-        // untar files
-        if (targz.length > 0) {
-            for (gz in targz) {
-                if (targz[gz] !== null) {
-                    utl.logMsg('vpkMNL020 - UnTar file: ' + targz[gz] );
-                    utl.untar(targz[gz], dest)
-                    targz[gz] = null;
-                }
-            }
-        }
-
-        // unzip files
-        if (zips.length > 0) {
-            for (zp in zips) {
-                if (zips[zp] !== null) {
-                    utl.logMsg('vpkMNL021 - UnZip file: ' + zips[zp] );
-                    utl.unzip(zips[zp], dest)
-                    zips[zp] = null;
-                }
-            }
-        }
-
-        res.end("File(s) processed");
-    });
-});
-
-
-
-
 
 function chgP2(data) {
     let cp = data.lastIndexOf('@');
@@ -552,13 +474,24 @@ function chgP2(data) {
 //------------------------------------------------------------------------------
 io.on('connection', client => {
 
-    client.on('clearData', () => {
-        utl.logMsg('vpkMNL119 - Clear data request' );
-        //console.log(JSON.stringify(vpk, null, 4))
-        //console.log('======================================================')
-        vpkReset.resetAll();
-    });
+    // client.on('clearData', () => {
+    //     utl.logMsg('vpkMNL119 - Clear data request' );
+    //     //console.log(JSON.stringify(vpk, null, 4))
+    //     //console.log('======================================================')
+    //     vpkReset.resetAll();
+    // });
 
+    client.on('saveConfig', (data) => {
+        utl.logMsg('vpkMNL149 - Save config file request' );
+        let result = utl.saveConfigFile(data);
+        client.emit('saveConfigResult', {'result': result });
+    });
+    
+    client.on('getConfig', () => {
+        utl.logMsg('vpkMNL159 - Get config data request' );
+        client.emit('getConfigResult', {'config': vpk.defaultSettings});
+    });
+    
     client.on('clusterDir', () => {
         utl.logMsg('vpkMNL676 - Get cluster directory request' );
         var result = {
@@ -569,20 +502,25 @@ io.on('connection', client => {
 
     });
 
-    client.on('dynamic', (data) => {
-        utl.logMsg('vpkMNL699 - Dynamic request' );
+    client.on('connectK8', (data) => {
+        utl.logMsg('vpkMNL699 - Connect to K8 request' );
         var dynDir = process.cwd();
-        var tmpDir = data.ip;
+        var tmpDir = '';
+        // set the new directory name
         if (typeof data.datasource_prefix !== 'undefined') {
             var dTmp = data.datasource_prefix;
             dTmp.trim();
+            // check for spaces and only use what is before the first space
             var fs = dTmp.indexOf(' ');
             if (fs > -1 ){
                 dTmp = dTmp.substring(0,fs);
             }
             tmpDir = dTmp;
+        } else {
+            tmpDir = 'kube';
         }
         tmpDir = tmpDir + '-' + utl.dirDate();
+
         var kga;       // Kubernetes Get Array
         var slp = tmpDir.lastIndexOf('/');
 
@@ -590,26 +528,32 @@ io.on('connection', client => {
             slp++;
             tmpDir = tmpDir.substring(slp);
         }
+
         dynDir = dynDir + '/cluster/' + tmpDir;
         vpk.clusterDirectory = dynDir;
+
+        //TODO: should this be async
         var ca = kube.getAuth(data);
         if (ca === 'PASS') {
+            
             var msg = 'Authentication completed successfully';
             client.emit('getKStatus', msg);
-            // get list of api resources in the cluster
+
+            // Using kubectl or other CLI get list of api resources in the cluster
             kga = kube.getAPIs(data);
             if (kga === 'FAIL') {
                 var msg = 'Failed to retrieve api resource data, check log messages';
                 utl.logMsg('vpkMNL697 - ' + msg );
                 client.emit('getKStatus', msg);
-                kube.logout(data);
+                // kube.logout(data);
             } else {
                 // reset and clear the old kinds and counts in the vpk object
                 utl.resetVpkObject();
                 getK(data, kga, client, dynDir);
             }
         } else {
-            kube.logout(data);
+            var msg = 'Failed Authentication';
+            client.emit('getKStatus', msg);
         }
     });
 
@@ -620,13 +564,6 @@ io.on('connection', client => {
         };
         utl.logMsg('vpkMNL021 - Emit cmdResult' );
         client.emit('cmdResult', result);
-    });
-
-    client.on('getColors', () => {
-        utl.logMsg('vpkMNL077 - GetColors request' );
-        var result = {'colors': vpk.colors};
-        utl.logMsg('vpkMNL078 - Emit colorsResults' );
-        client.emit('colorsResult', result);
     });
 
     client.on('decode', parm => {
@@ -674,38 +611,51 @@ io.on('connection', client => {
         }
     });
 
-
-
-
     client.on('getDef', data => {
         // save the key for use when results are returned
         var parts = data.split('::');
-        var defkey = parts[2];
+        var defkey = parts[0];
         data = parts[0] + '::' + parts[1];
 
-        utl.logMsg('vpkMNL003 - Get object definition from file: ' + parts[0] + ' part: ' + parts[1] );
+        utl.logMsg('vpkMNL003 - Get file: ' + parts[0] );
         try {
-            var rtn = '';
             var part = data.split('::');
-            rtn = YAML.safeDump(vpk.fileContent[data]);
+            var rtn =vpk.fileContent[data][0].content;
+            var newRtn = JSON.stringify(rtn);
+            var fileData = JSON.parse(newRtn);
+            // check if managed fields should be removed;
+            if (typeof vpk.defaultSettings.managedFields !== 'undefined') {
+                if (vpk.defaultSettings.managedFields === false) {
+                    if (typeof fileData.metadata.managedFields !== 'undefined') {
+                        delete fileData.metadata.managedFields;
+                    }
+                }   
+            }
+            // check if status section should be removed;
+            if (typeof vpk.defaultSettings.statusSection !== 'undefined') {
+                if (vpk.defaultSettings.statusSection === false) {
+                    if (typeof fileData.status !== 'undefined') {
+                        delete fileData.status;
+                    }                    
+                }   
+            }
+            fileData = YAML.safeDump(fileData);
             var result = {
                 'filePart': part[1],
-                'lines': rtn,
+                'lines': fileData,
                 'defkey': defkey
             };
             utl.logMsg('vpkMNL005 - Emit objectDef' );
             client.emit('objectDef', result);
         } catch (err) {
             utl.logMsg('vpkMNL004 - Error processing getDef, message: ' + err );
+            utl.logMsg(err.stack );
         }
     });
 
     client.on('getHierarchy', data => { 
         utl.logMsg('vpkMNL077 - GetHierarchy request' );
-
         var result = hier.filterHierarchy(data);
-
-        // var result = {'hierarchy': vpk.relMap};
         utl.logMsg('vpkMNL178 - Emit hierarchyResults' );
         client.emit('hierarchyResult', result);
     });    
@@ -736,13 +686,6 @@ io.on('connection', client => {
         client.emit('selectListsResult', result);
     });
 
-    // client.on('getSvg', data => {
-    //     utl.logMsg('vpkMNL997 - Build SVG requests received' );
-    //     var result = gensvg.build(data);
-    //     utl.logMsg('vpkMNL048 - Emit svgResult' );
-    //     client.emit('svgResult', result);
-    // });
-
     client.on('getVersion', data => {
         utl.logMsg('vpkMNL091 - Get software version request ' );
         var result = {'version': softwareVersion};
@@ -754,7 +697,7 @@ io.on('connection', client => {
         utl.logMsg('vpkMNL009 - Load directory: ' + data );
         vpk.clusterDirectory = data;
         reload(data);
-        setTimeout( () => {
+        // setTimeout( () => {
             var result = {
                 'kinds': vpk.kinds,
                 'namespaces': vpk.definedNamespaces,
@@ -762,7 +705,7 @@ io.on('connection', client => {
                 'validDir': validDir,
                 'providers': vpk.providers
             };
-            utl.logMsg('vpkMNL010 - Emit selectListsResult, reset completed after 2 second wait' );
+            utl.logMsg('vpkMNL010 - Emit selectListsResult' );
             client.emit('selectListsResult', result);
 
             result = {
@@ -772,8 +715,8 @@ io.on('connection', client => {
             utl.logMsg('vpkMNL011 - Emit resetResults' );
             client.emit('resetResults', result);
 
-            resetReq = false;
-        }, 2000);
+        //     resetReq = false;
+        // }, 2000);
     });
 
     client.on('saveFile', data => {
@@ -827,7 +770,7 @@ async function getK(data, kga, client, dynDir) {
     var msg;
     var hl;
     hl = kga.length;
-    var curK = 0;
+    var curK = 0; 
 
     // initialize global storage to be empty
     vpk.rtn = {'items': []};
@@ -836,7 +779,7 @@ async function getK(data, kga, client, dynDir) {
         tmp = kga[k];
         kind = tmp.substring(0, tmp.length - 2);
         curK++;
-        msg = 'Processed count ' + curK + ' of ' + hl + ' - Resource kind: <span style="color: blue;">' + kind + '</span>';
+        msg = 'Processed count ' + curK + ' of ' + hl + ' - Resource kind: <span class="vpkcolor">' + kind + '</span>';
         client.emit('getKStatus', msg);
     }
     // logout of current K8s environment
@@ -985,8 +928,10 @@ function makedir(dir) {
 
 function remdir(dir) {
     try {
+        // remove the directory if it already exists;
         fs.removeSync(dir);
-        utl.logMsg('vpkMNL163 - Removed directory: ' + dir );
+        //utl.logMsg('vpkMNL163 - Removed directory: ' + dir );
+        // create the directory
         fs.mkdirSync(dir);
         utl.logMsg('vpkMNL164 - Created directory: ' + dir );
     } catch (err) {
@@ -1017,31 +962,26 @@ function checkLoop() {
         saveStatMsg('Files read', vpk.fCnt);
         saveStatMsg('Kube YAML', vpk.yCnt);
         saveStatMsg('Skipped', vpk.xCnt);
-        
         saveStatMsg('dl', ' ');
 
-        //saveStatMsg('Containers', vpk['ContainerCnt']);
-        //saveStatMsg('PersistentVolumes', vpk['PersistentVolumeCnt']);
-        //saveStatMsg('Services', vpk['ServicesCnt']);
-
-        var totId = vpk.cntId.split('::');
-        if (totId.length > 0) {
-            totId.sort();
-            for (var c = 0; c < totId.length; c++) {
-                var cId = totId[c];
-                cId = cId.trim();
-                if (cId.length > 0) {
-                    cId = cId + 'Cnt'
-                    var item = vpk[cId]
-                    if (typeof item !== 'undefined') {
-                        if (typeof item.id !== 'undefined') {
-                            saveStatMsg(item.id, item.count);
-                        }
-                    }
-                }
-            }
-        saveStatMsg('dl', ' ');
-        }
+        // var totId = vpk.cntId.split('::');
+        // if (totId.length > 0) {
+        //     totId.sort();
+        //     for (var c = 0; c < totId.length; c++) {
+        //         var cId = totId[c];
+        //         cId = cId.trim();
+        //         if (cId.length > 0) {
+        //             cId = cId + 'Cnt'
+        //             var item = vpk[cId]
+        //             if (typeof item !== 'undefined') {
+        //                 if (typeof item.id !== 'undefined') {
+        //                     //saveStatMsg(item.id, item.count);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // saveStatMsg('dl', ' ');
+        // }
 
         // After reading and parsing of files start server
         if (resetReq) {
@@ -1080,18 +1020,16 @@ function checkAgain() {
 
 function startServer() {
     splash();
-    getColors();
     utl.logMsg('vpkMNL014 - VpK Server started, port: ' + port );
     server.listen(port);
-    
 }
 
-function vpkSize() {
-    utl.logMsg('vpkMNL313 - Calculating size of vpk')
-    var vsize = utl.sizeof(vpk);
-    utl.logMsg('vpkMNL314 - Estimated size of vpk: ' + vsize +' bytes')
+// function vpkSize() {
+//     utl.logMsg('vpkMNL313 - Calculating size of vpk')
+//     var vsize = utl.sizeof(vpk);
+//     utl.logMsg('vpkMNL314 - Estimated size of vpk: ' + vsize +' bytes')
 
-}
+// }
 
 function help() {
     var usage = commandLineUsage([{
@@ -1114,26 +1052,6 @@ function splash() {
     console.log(adv);
 }
 
-
-function getColors() {
-    utl.getColors()
-        .then(function(data) {
-			colors = JSON.parse(data)
-            utl.logMsg('vpkMNL350 - Loaded colors' );
-                            	// populate cldr object with config parms
-            try {
-                vpk.colors = JSON.parse(data);
-                //console.log(JSON.stringify(vpk.colors,null,2));
-            } catch (e) {
-                utl.logMsg('vpkUTL035 - Colors file: colors.json has invalid format, message: ' + e);
-            }
-            
-        })
-        .catch(function(err) {
-            utl.logMsg('vpkMNL351 - Failed to load colors ' + err );
-            process.exit(-1);
-        });
-}
 
 //begin processing
 checkLoop();
