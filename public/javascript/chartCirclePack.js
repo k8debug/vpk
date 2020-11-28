@@ -125,21 +125,22 @@ function handleMouseOver(d, i) {
             for (i = 1; i < text.length; i++) {
                 let v1 = '';
                 if (text[i] === 'Namespaces') {
-                    v1 = 'Namespace'
+                    v1 = 'Namespace</b>';
                 } else {
-                    v1 = text[i]
+                    v1 = text[i];
                 }
-                tip = tip + v1;
+                tip = tip + '<b>' + v1 + '</b>';
                 i++;
                 if (typeof text[i] !== 'undefined') {
                     tip = tip + ': ' + text[i] + '<br>';
-                } else (
-                    tip = tip + '(s)'
-                )
+                } else {
+                    if (tip.indexOf('VolumeMounts') === -1) {
+                        tip = tip + '(s)';
+                    } else {
+                        tip = tip;
+                    }
+                }
             }
-
-            console.log('location: ' + 'X:' + d.x + ' Y:' + d.y)
-
 
             // horizontal scrolling amount
             // let xOff = window.pageXOffset;

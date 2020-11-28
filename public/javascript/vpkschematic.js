@@ -51,6 +51,7 @@ let cLevel = '';
 let countContainer = 0;
 let countInitContainer = 0;
 let countUnkImage = 0;
+let collapseIDs = [];
 
 function initSchematicVars() {
 	svgInfo = {};            // array of information for tool tips
@@ -84,6 +85,7 @@ function initSchematicVars() {
 	countContainer = 0;
 	countInitContainer = 0;
 	countUnkImage = 0;
+	collapseIDs = [];
 }
 
 function schematic() {
@@ -162,7 +164,12 @@ function buildCSVG() {
 				first = false;
 				rdata = rdata + '<span class="breakBar vpkcolor"><hr>' 
 				+ '&nbsp;&nbsp;Press the buttons below to view the schematics for the listed namespace' 
-				+ '<hr><span>';
+				+ '&nbsp;&nbsp;<button type="button" class="btn btn-outline-primary btn-sm vpkButtons"' 
+				+ ' onclick="openAll()">&nbsp;&nbsp;Open all&nbsp;&nbsp;</button>'
+				+ '&nbsp;&nbsp;<button type="button" class="btn btn-outline-primary btn-sm vpkButtons"'
+				+ ' onclick="closeAll()">&nbsp;&nbsp;Close all&nbsp;&nbsp;</button>'
+				+ '<hr class="mt-1"><span>'
+
 			} else {
 				rdata = rdata + '</div>'
 			}
@@ -174,6 +181,8 @@ function buildCSVG() {
 			+ '&nbsp;&nbsp;<hr></div>'
 			+ '<div id="collid-' + breakID + '" class="collapse">';
 
+			collapseIDs.push(breakID);
+
 			let nsWide = nsChange(oldNS);
 
 			rdata = rdata + breakData + nsWide;
@@ -183,6 +192,24 @@ function buildCSVG() {
 	}
 	rdata = rdata + '</div>'
 	return rdata
+}
+
+function openAll() {
+	collapseAction('O')
+}
+function closeAll() {
+	collapseAction('C')
+}
+function collapseAction(act) {
+	let id;
+	for (let c = 0; c < collapseIDs.length; c++) {
+		id = '#collid-' + collapseIDs[c];
+		if (act === 'O') {
+			$(id).collapse("show");
+		} else {
+			$(id).collapse("hide");
+		}
+	}
 }
 
 function nsChange(ns) {
@@ -1152,7 +1179,6 @@ function svgPod(data, fnum, podH) {
 					+ '<text x="90" y="' + (yS - 15) + '" class="small" >'
 					+ statusInfo.msg
 					+ '</text>'	
-
 					rectH = rectH + 35;
 				}
 			}
@@ -1186,7 +1212,6 @@ function svgPod(data, fnum, podH) {
 					+ '<text x="90" y="' + (yS - 15) + '" class="small" >'
 					+ statusInfo.msg
 					+ '</text>'	
-
 					rectH = rectH + 35;
 				}
 			}
@@ -1196,7 +1221,12 @@ function svgPod(data, fnum, podH) {
 			rtn = rtn 
 			+ '<text x="55" y="' + (yS + 25) + '" class="small">No container status available</text>';
 			rectH = rectH + 20;
-			bnds.height = bnds.height + 40;
+			if (phaseContent.indexOf('DeadlineEceeded')) {
+				bnds.height = bnds.height + 100;
+				rectH = rectH + 60;
+			} else {
+				bnds.height = bnds.height + 40;
+			}
 		}
 	}
 

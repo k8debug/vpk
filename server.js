@@ -913,7 +913,7 @@ function reload(dir) {
         vpkReset.resetAll();
         vpk.dirFS.push(dir);
         vpk.startDir = dir;
-        utl.logMsg('vpkMNL011 - Reset to new directory: ' + vpk.startDir );
+        utl.logMsg('vpkMNL311 - Using directory: ' + vpk.startDir );
         validDir = true;
         checkLoop();
     } else {
@@ -931,11 +931,11 @@ function makedir(dir) {
             fs.mkdirSync(dir);
             utl.logMsg('vpkMNL158 - Created directory: ' + dir );
         } else {
-            utl.logMsg('vpkMNL157 - Directory already exists: ' + dir );
+            //utl.logMsg('vpkMNL157 - Directory already exists: ' + dir );
         }
         return 'PASS';            
     } catch (e) {
-        utl.logMsg('vpkMNL160 - Mkdir failed for directory: ' + dir + ' error message: ' + e );
+        utl.logMsg('vpkMNL160 - Failed to create directory: ' + dir + ' error message: ' + e );
         return 'FAIL';
     }
 }
@@ -948,7 +948,7 @@ function remdir(dir) {
         //utl.logMsg('vpkMNL163 - Removed directory: ' + dir );
         // create the directory
         fs.mkdirSync(dir);
-        utl.logMsg('vpkMNL164 - Created directory: ' + dir );
+        utl.logMsg('vpkMNL164 - Attempting to create directory: ' + dir );
     } catch (err) {
         utl.logMsg('vpkMNL155 - Unable to delete resource: ' + dir + ' error message: ' + err );
     }
@@ -975,7 +975,7 @@ function checkLoop() {
         saveStatMsg('dl', ' ');
         saveStatMsg('Dirs read', vpk.dCnt);
         saveStatMsg('Files read', vpk.fCnt);
-        saveStatMsg('Kube YAML', vpk.yCnt);
+        saveStatMsg('Valid yaml', vpk.yCnt);
         saveStatMsg('Skipped', vpk.xCnt);
         saveStatMsg('dl', ' ');
 
