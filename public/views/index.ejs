@@ -358,7 +358,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <div id="configHeader">
-                            <h6 class="modal-title">VpK Configuration</h6>
+                            <h6 class="modal-title vpkcolor">VpK Configuration</h6>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -519,29 +519,45 @@
         <!-- About Modal section                  -->
         <!-- ==================================== -->
         <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <img style='vertical-align:middle;' src='images/vpk.png' width='40' height='40'  >
 
-                        <h4 class="ml-4 modal-title">Visual parsed Kubernetes<br>
+                        <h4 class="ml-4 modal-title vpkcolor">Visual parsed Kubernetes<br>
                         </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div style="background-color: #eee;">
-                        <div class="ml-1 vpkfont vpkcolor"><span id="version" class="ml-1 vpkfont-md vpkcolor"></span>
-                        </div>
+
                         <div class="align-middle">
                             <div class="ml-1 mr-1 mt-4 mb-4 vpkfont vpkcolor text-center" >
-                                <P> An application working to bring understanding and insight to the Kubernetes universe. 
-                                    <br><br>
-                                    <span class="vpkfont">Free and Open Source Software</span>
-                                </P>
+                                <P><span id="version" class="ml-1 vpkfont vpkcolor"></span>
+                                    <br>
+                                    <span class="vpkfont font-weight-bold">
+                                        Free and Open Source Software
+                                    </span>
+                                    <br>
+                                    <span class="vpkfont ">
+                                        An application working to bring understanding and insight to the Kubernetes universe.
+                                    </span>
+                                    </P>
                                 
                             </div>
-                            <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-md vpkcolor" >
+
+                            <div id="usageRunning"class="row ml-4 mt-2">
+                                <img style="float:left" src="images/loading.gif"/>
+                                <div class="vpkfont vpkcolor ml-2 mt-2">
+                                    <span >&nbsp;&nbsp;Retrieving usage information</span>
+                                </div>
+                            </div>                            
+
+                            <div id="usageResult" class="ml-2 mr-2 mt-4 mb-4 vpkfont-md vpkcolor" >
+                            </div>
+
+                            <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-sm vpkcolor" >
                                 <hr>
                                 Copyright 2018-2020 David A. Weilert
                                 <br><br>

@@ -660,6 +660,21 @@ io.on('connection', client => {
         client.emit('hierarchyResult', result);
     });    
 
+    client.on('getUsage', data => { 
+        utl.logMsg('vpkMNL477 - GetUsage request' );
+        var dumpFile = process.cwd() + '/dump.json';
+        process.report.writeReport(dumpFile);
+        console.log('start wait');
+        result = '';
+        setTimeout( () => {
+            console.log('waited')
+            result = fs.readFileSync(dumpFile, "utf8");
+            result = JSON.parse(result)
+            utl.logMsg('vpkMNL478 - Emit usageResults' );
+            client.emit('usageResult', result);
+        }, 400);
+    });
+
 
     client.on('getDirStats', data => {
         utl.logMsg('vpkMNL006 - DirStats request' );

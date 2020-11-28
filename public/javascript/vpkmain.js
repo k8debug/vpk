@@ -349,6 +349,17 @@ socket.on('svgResult', function(data) {
     svgResult(data);
 });
 
+socket.on('usageResult', function(data) {
+    console.log(JSON.stringify(data, null,2 ))
+    let content = formatUsage(data);
+
+    $("#usageRunning").hide();
+    $("#usageResult").empty();
+    $("#usageResult").html(content);
+    $("#usageResult").show();
+});
+
+
 socket.on('version', function(data) {
     version = data.version;
 });
@@ -1345,11 +1356,68 @@ function buildNamespaceStats(stats) {
     $("#statsModal").modal();
 }
 
+function formatUsage(data) {
+    let rtn = '<div class="events ml-2 mr-2 mb-2 vpkcolor" ><hr><table style="width:100%">'
+    rtn = rtn + usageLine('Architecture', data.header.arch);
+    rtn = rtn + usageLine('Machine', data.header.osMachine);
+    rtn = rtn + usageLine('OS Name', data.header.osName);
+    rtn = rtn + usageLine('OS Release', data.header.osRelease);
+    rtn = rtn + usageLine('Processor', data.header.cpus[0].model);
+
+    rtn = rtn + usageLine('User CPU seconds', data.resourceUsage.userCpuSeconds);
+    rtn = rtn + usageLine('Kernel CPU seconds', data.resourceUsage.kernelCpuSeconds);
+
+    rtn = rtn + usageLine('Heap total memory', formatBytes(data.javascriptHeap.totalMemory) );
+    rtn = rtn + usageLine('Heap committed memory', formatBytes(data.javascriptHeap.totalCommittedMemory) );
+    rtn = rtn + usageLine('Heap used memory', formatBytes(data.javascriptHeap.usedMemory) );
+    rtn = rtn + usageLine('Heap available memory', formatBytes(data.javascriptHeap.availableMemory) );
+    rtn = rtn + usageLine('Heap memory limit', formatBytes(data.javascriptHeap.memoryLimit) );
+    rtn = rtn + usageLine('Network host name', data.header.host);
+
+    let nI = data.header.networkInterfaces
+    for (let i = 0; i < nI.length; i++) {
+        if ( nI[i].internal === false && nI[i].family === 'IPv4') {
+            rtn = rtn + usageLine('Network interface name', nI[i].name );
+            rtn = rtn + usageLine('Network MAC', nI[i].mac );
+            rtn = rtn + usageLine(nI[i].family + ' Address', nI[i].address );
+        }
+    }
+    rtn = rtn + usageLine('Current working directory', data.header.cwd );
+    rtn = rtn + usageLine('Node.js version', data.header.nodejsVersion );
+
+    rtn = rtn + '</table></div>';
+    return rtn;
+
+}
+
+function usageLine(v1, v2) {
+    let trP1 = '<tr class="vpkcolor">';
+    let trP2 = '</tr>';
+    let tdR = '<td width="40%" style="text-align: right; padding-right: 30px;" >';
+    let tdL = '<td width="60%">';
+    let tdP2 = '</td>';
+    return trP1 + tdR + '<b>' + v1 + ':</b>' + tdP2 + tdL + v2 + tdP2 + trP2;
+}
+
+function formatBytes (bytes, decimals = 2) {
+    if (bytes === 0) {
+        return '0 Bytes';
+    }
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
 
 function about() {
+    socket.emit('getUsage');
     $("#version").empty();
     $("#version").html('');
     $("#version").html('VERSION&nbsp;' + version  );
+    $("#usageResult").hide();
     $("#aboutModal").modal();
 }
 
