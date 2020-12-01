@@ -240,10 +240,7 @@
                                         multiple="multiple" 
                                         style="width: 650px">
                                         <option>all-namespaces</option>
-                                        <option>&lt;cluster-level&gt;</option>
-                                        <option>kube-systemt</option>
                                         <option>default</option>
-                                        <option>team01</option>
                                     </select>
                                 </div>
                             </div>
@@ -308,8 +305,40 @@
                 </div>
 
                 <div id="security" class="tab-pane">
+                    <div id="secUsageType" class="mb-1 vpkcolor grid mt-0 border rounded">
+                        <div class="row filterBack pl-1 ml-2 mt-1">
+                            <div class="mb-2 mr-2 align-middle vpkfont-md">
+                                Select type 
+                            </div>    
+                            <div class="ml-1 mr-1 vpkfont-md">
+                                <select id="usage-type" class="js-example-basic-single" 
+                                    style="width: 120px">
+                                    <option></option>
+                                    <option>All</option>
+                                    <option>Role</option>
+                                    <option>RoleBinding</option>
+                                    <option>Subjects</option>
+                                </select>
+                            </div>
 
-                    <div class="row mb-2">
+                            <div class="ml-4 mb-2 vpkfont-md">
+                                Select filter value(s) 
+                            </div>                       
+                            <div class="ml-1 mr-1 mb-2 vpkfont-md">
+                                <select id="usage-filter"  
+                                    multiple="multiple" 
+                                    style="width: 650px">
+                                    <option>all-namespaces</option>
+                                    <option>default</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-2 mr-4 ml-3 mt-1 align-middle vpkfont-md vpkcolor">
+                            Select information to view
+                        </div>
                         <div class="col-md-2">
                             <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSecurity()">
                             &nbsp;RBAC Definitions&nbsp;

@@ -72,6 +72,8 @@ let RoleRef_RoleCnt = 0;
 let	RoleRef_ClusterRoleCnt = 0;
 let bindingStatCounts = [];
 
+let crdRefCnt = 0;
+
 function openAll(type) {
 	collapseAction('O', type)
 }
@@ -171,6 +173,8 @@ function checkImage(kind) {
 		image = 'k8/hpa';
 	} else if (kind === 'Network') {
 		image = 'openshift/ocp-net';
+	} else if (kind === 'OCP-CRD') {
+		image = 'openshift/ocp-crd';
 	} else if (kind === 'Prometheus') {
 		image = 'openshift/ocp-prometheus';
 	} else if (kind === 'ReplicaSet') {
@@ -237,6 +241,17 @@ function buildTipContent(data, type, fnum) {
 				content = 'Name: ' + data.name;
 			}
 		}
+	} else if (type === 'ClusterRole') {
+		if (typeof data !== 'undefined' ) {
+			cnt = 0;			
+			content = content + 'Name: ' + data.roleRefName;  
+		}
+
+	} else if (type === 'ClusterRoleBinding') {
+		if (typeof data !== 'undefined' ) {
+			cnt = 0;			
+			content = content + 'Name: ' + data.crbName;  
+		}
 
 	} else if (type === 'Conditions') {
 		if (typeof data.conditions !== 'undefined') {
@@ -266,7 +281,6 @@ function buildTipContent(data, type, fnum) {
 				+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Image:</b> ' + data.containerNames[k].c_image + '<br>';
 			}
 		}	
-
 
 	} else if (type === 'ContainerStatus' || type === 'InitContainerStatus') {    // container status
 		if (typeof data !== 'undefined' ) {
@@ -387,6 +401,9 @@ function buildTipContent(data, type, fnum) {
 				}			
 			}
 		}	
+	} else if (type === 'Ref') {
+		content = '';
+		content = content + data;  
 	
 	} else if (type === 'Secret') {
 		if (typeof data[0] !== 'undefined' ) {

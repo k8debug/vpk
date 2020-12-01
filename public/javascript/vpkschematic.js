@@ -47,13 +47,13 @@ function initSchematicVars() {
     pvcH;
     allH;
     outterName = '';
-    cBar = false;
 	wCnt = 0;
 	cLevel = '';
 	countContainer = 0;
 	countInitContainer = 0;
 	countUnkImage = 0;
 	collapseIDs = [];
+	crdRefCnt = 0;
 }
 
 function schematic() {
@@ -263,7 +263,7 @@ function nsChange(ns) {
 
 		for (k = 0; k < keys.length; k++) {
 			key = keys[k];
-			if (key === 'display') {
+			if (key === 'display' || key === 'CRB') {
 				continue;
 			}
 			nsHtml = header;
@@ -315,7 +315,6 @@ function nsChange(ns) {
 
 //Builder for the Workloads
 function process(fnum) {
-	cBar = false;
 	genS = 0;
 	cfgS = 0;
 	iamS = 0;
@@ -559,7 +558,7 @@ function process(fnum) {
 		height = maxR;
 	}
 
-	if (rtnPvc.bnds.clusterBar === true) {
+	if (rtnPvc.bnds.clusterBar === true || rtnIAM.bnds.clusterBar === true || rtnGen.bnds.clusterBar === true) {
 		html = html 
 		+ '<rect  x="875" y="0" width="250" height="' 
 		+ height 
@@ -567,8 +566,40 @@ function process(fnum) {
 		//+ '<line x1="875" y1="0" x2="875" y2="' + height + '" stroke-width="1"  stroke="black" stroke-linecap="round" stroke-dasharray="5, 5"/>'
 		+ '<text x="900" y="25" class="workloadText">Cluster level resources</text>'
 		+ '<text x="900" y="40" class="pickIcon">(Click icon to view detail)</text>'
-
 	}
+
+	if (rtnGen.bnds.clusterBar === true) {
+		let xPos = 900;
+		if (typeof rtnGen.bnds.crd1 !== 'undefined') {
+			crdRefCnt++;
+			let bsg1 = + buildSvgInfo(data.PersistentVolumeClaim, fnum, 'StorageClass') 
+			let what1 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img1 + '.svg" '
+			+ 'onmousemove="showTooltip(evt, \'' 
+			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr1, crdRefCnt, 'Ref')
+			+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd1 +'\')"/>';
+			html = html + what1;
+
+			let note1 = '<circle cx="'+ (xPos - 6) + '" cy="97" r="10" stroke="black" stroke-width="1.5" fill="#000" />'
+			+ '<text x="' + (xPos -15) + '" y="100" fill="white" font-weight="bold">' + rtnGen.bnds.ltr1 + '</text>'
+			html = html + note1;
+			xPos = xPos + 100;
+		}
+
+		if (typeof rtnGen.bnds.crd2 !== 'undefined') {
+			crdRefCnt++;
+			let what2 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img2 + '.svg" '
+			+ 'onmousemove="showTooltip(evt, \'' 
+			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr2, crdRefCnt, 'Ref')
+			+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd2 +'\')"/>' 
+			html = html + what2;
+
+			let note2 = '<circle cx="'+ (xPos - 6) + '" cy="97" r="10" stroke="black" stroke-width="1.5" fill="#000" />'
+			+ '<text x="' + (xPos -15) + '" y="100" fill="white" font-weight="bold">' + rtnGen.bnds.ltr2 + '</text>'
+			html = html + note2;
+			xPos = xPos + 100;
+		}
+	}
+
 
 	let outterBox = '<g>'
 	+ '<rect  x="5" y="0" width="845" height="' 
@@ -618,7 +649,7 @@ function process(fnum) {
 		if (hl > 0) {
 			// Place button inside the schematic border to view Events
 			let evtBtn = '<rect  x="640" y="9" width="160" height="25" ' 
-			+ ' rx="3" stroke-width="1.0" stroke="#3d7eba" fill="#dfe6ed"' 
+			+ ' rx="3" stroke-width="1.0" stroke="#3d7eba" fill="#eff542" ' 
 			+ ' onclick="showEvents(\'events-' + evtCnt +'\')"/>'
 			+ '<text x="650" y="25" class="pickIcon" '
 			+ ' onclick="showEvents(\'events-' + evtCnt +'\')">Toggle viewing workload events</text>'
@@ -665,8 +696,14 @@ function svgPVC(data, fnum) {
 			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'PersistentVolume@' +  data.PersistentVolumeClaim[0].pvFnum +'\')"/>' 
 			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
+			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="100" x2="250" y1="50" y2="50"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="100" x2="105" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="100" x2="105" y1="50" y2="45"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="250" x2="245" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="250" x2="245" y1="50" y2="45"  stroke="black" stroke-width="1" stroke-linecap="round"/>';
 		}
+
 
 		if (data.PersistentVolumeClaim[0].storageClassName !== '') {
 			rectW = rectW + 75;
@@ -677,7 +714,10 @@ function svgPVC(data, fnum) {
 			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'StorageClass@' +  data.PersistentVolumeClaim[0].storageClassFnum +'\')"/>' 
 			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
+			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+			+ '<line  x1="300" x2="350" y1="50" y2="50" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
+			+ '<line  x1="300" x2="305" y1="50" y2="55" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
+			+ '<line  x1="300" x2="305" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>';
 		}
 
 		if (bnds.show = true) {
@@ -690,9 +730,15 @@ function svgPVC(data, fnum) {
 
 
 function svgIAM(data, fnum) {
-	let rectP1 = '<rect  x="0" y="0" width="150" height="' 
-	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#bfffda"/>'
-	let rectH = 0;	
+	let rectP1a = '<rect  x="0" y="0" width="';
+	let rectP1b = '" height="';
+	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#bfffda"/>';
+	let rectH = 0;
+	let rectW = 150;	
+
+	// let rectP1 = '<rect  x="0" y="0" width="150" height="' 
+	// let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#bfffda"/>'
+	// let rectH = 0;	
 	let rtn = '';
 	let bnds = {'height': 0, 'width': 250, 'show': false};
 	// config ServiceAccounts
@@ -714,8 +760,46 @@ function svgIAM(data, fnum) {
 		+ '<line  x1="-100" x2="-95" y1="-100"  y2="-105" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="-100" x2="-95" y1="-100"  y2="-95"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 
+		let nsKey = '0000-' + data.namespace;
+		if (typeof k8cData[nsKey] !== 'undefined') {
+			if (typeof data.ServiceAccount[0].name !== 'undefined') {
+				let saName = data.ServiceAccount[0].name;
+				if (typeof k8cData[nsKey].CRB !== 'undefined') {
+					let crb = k8cData[nsKey].CRB;
+					for (let c = 0; c < crb.length; c++) {
+						if (crb[c].subName === saName ) {
+							let cFnum = crb[c].crbFnum;
+							rtn = rtn
+							+ '<image x="250"  y="25" width="50"  height="50" href="images/k8/crb.svg" onmousemove="showTooltip(evt, \'' 
+							+ buildSvgInfo(crb[c],cFnum , 'ClusterRoleBinding') 
+							+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>'
+							+ '<line  x1="100" x2="250" y1="50" y2="50"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+							+ '<line  x1="100" x2="105" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+							+ '<line  x1="100" x2="105" y1="50" y2="45"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+					
+							+ '<line  x1="300" x2="350" y1="50" y2="50"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+							+ '<line  x1="350" x2="345" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+							+ '<line  x1="350" x2="345" y1="50" y2="45"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+
+
+							cFnum = crb[c].roleRefFnum
+							rtn = rtn
+							+ '<image x="350"  y="25" width="50"  height="50" href="images/k8/c-role.svg" onmousemove="showTooltip(evt, \'' 
+							+ buildSvgInfo(crb[c], cFnum , 'ClusterRole') 
+							+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>';
+							rectW = rectW + 275;
+							bnds.clusterBar = true;
+
+							break;
+						}
+					}
+				}	
+			}
+		}
+
 		if (bnds.show = true) {
-			rtn = rectP1 + rectH + rectP2 + rtn;
+			//rtn = rectP1 + rectH + rectP2 + rtn;
+			rtn = rectP1a + rectW + rectP1b + rectH + rectP2 + rtn;
 		};
 	}
 	return {'bnds': bnds, 'rtn': rtn}
@@ -792,6 +876,7 @@ function svgGenerators(data, fnum) {
 	let rtn = '';
 	let x = 100;
 	let width = 150;
+	let refLetter = '(a)';
 	let bnds = {'height': 0, 'width': 150, 'show': false, 'crev': false};
 	// config generators
 	if (typeof data.creationChain !== 'undefined') {
@@ -913,34 +998,74 @@ function svgGenerators(data, fnum) {
 		if (typeof data.CRD !== 'undefined') {
 			if (typeof data.CRD[0].level1CRD !== 'undefined') {
 				if (data.CRD[0].level1CRD === true) {
-					image = checkImage('CRD');
+					console.log('CRD-Level1: ' + data.namespace);
+					if (typeof data.creationChain.level2API !== 'undefined') {
+						let chkVal = data.creationChain.level2API;
+						if (chkVal.indexOf('openshift') > -1 ) {
+							image = checkImage('OCP-CRD');
+						} else if (chkVal.indexOf('monitoring.coreos') > -1 ) {
+							image = checkImage('OCP-CRD');
+						} else {
+							image = checkImage('CRD');
+						}
+					} else {
+						image = checkImage('CRD');
+					}
+
 					let cFnum1 = data.CRD[0].level1Fnum;
-					let action1 = buildSvgInfo(data.CRD[0].level1Name, cFnum1, 'CRD')
-					let what1 = '<image x="108" y="3"  width="40" height="40" href="images/' + image + '.svg" '
-					+ 'onmousemove="showTooltip(evt, \'' 
+					let action1 = buildSvgInfo('Refer to cluster level CRD', refLetter, 'Ref')
+					let what1 = '<circle cx="134" cy="23" r="10" stroke="black" stroke-width="0.5" fill="#000'
+					+ ' onmousemove="showTooltip(evt, \'' 
 					+ action1
-					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'CRD@' + cFnum1 +'\')"/>' 
+					+ '\');" onmouseout="hideTooltip()" />'
+					+ '<text x="126" y="27" fill="white" font-weight="bold">' + refLetter + '</text>'
 					+ '<line  x1="175" x2="175" y1="20" y2="26"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 					+ '<line  x1="175" x2="147" y1="20" y2="20"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 					+ '<line  x1="147" x2="151" y1="20" y2="15"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					+ '<line  x1="147" x2="151" y1="20" y2="25"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					rtn = rtn + what1;
+					bnds.crd1 = cFnum1;
+					bnds.act1 = action1;
+					bnds.img1 = image;
+					bnds.ltr1 = refLetter;
+					bnds.clusterBar = true;
+					refLetter = '(b)';
 				}
 			}
+
 			if (typeof data.CRD[0].level2CRD !== 'undefined') {
 				if (data.CRD[0].level2CRD === true) {
-					image = checkImage('CRD');
+					console.log('CRD-Level2: ' + data.namespace);
+					if (typeof data.creationChain.level2API !== 'undefined') {
+						let chkVal = data.creationChain.level2API;
+						if (chkVal.indexOf('openshift') > -1 ) {
+							image = checkImage('OCP-CRD');
+						} else if (chkVal.indexOf('monitoring.coreos') > -1 ) {
+							image = checkImage('OCP-CRD');
+						} else {
+							image = checkImage('CRD');
+						}
+					} else {
+						image = checkImage('CRD');
+					}
+				
 					let cFnum2 = data.CRD[0].level2Fnum;
-					let action2 = buildSvgInfo(data.CRD[0].level2Name, cFnum2, 'CRD')
-					let what2 = '<image x="8" y="3"  width="40" height="40" href="images/' + image + '.svg" '
-					+ 'onmousemove="showTooltip(evt, \'' 
+					let action2 = buildSvgInfo('Refer to cluster level CRD', refLetter, 'Ref')
+					let what2 = '<circle cx="33" cy="23" r="10" stroke="black" stroke-width="1.5" fill="#000" '
+					+ ' onmousemove="showTooltip(evt, \'' 
 					+ action2
-					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'CRD@' + cFnum2 +'\')"/>' 
+					+ '\');" onmouseout="hideTooltip()" />'
+					+ '<text x="25" y="27" fill="white" font-weight="bold">' + refLetter + '</text>'
 					+ '<line  x1="75" x2="75" y1="20" y2="26"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 					+ '<line  x1="75" x2="47" y1="20" y2="20"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 					+ '<line  x1="47" x2="51" y1="20" y2="15"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					+ '<line  x1="47" x2="51" y1="20" y2="25"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					rtn = rtn + what2;
+					bnds.crd2 = cFnum2;
+					bnds.act2 = action2;
+					bnds.img2 = image;
+					bnds.ltr2 = refLetter;
+					bnds.clusterBar = true;
 				}
 			}
 		}

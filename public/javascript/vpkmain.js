@@ -94,12 +94,16 @@ $(document).ready(function() {
             $('#charts').show();
             $('#schematic').hide();
             $('#security').hide();
+            // ensure the loading icon is not shown
+            $("#chartInfo").empty();
+            $("#chartInfo").html('');
         } else if (currentTab === "#security") {
             checkIfDataLoaded();
             $('#svgResults').hide();
             $('#charts').hide();
             $('#schematic').hide();
             $('#security').show();
+            $("#usage-filter").prop("disabled", true);
         }
     });
 
@@ -147,6 +151,25 @@ $(document).ready(function() {
         containerCssClass: "vpkfont-md",
         placeholder: "select namespace(s)"
     }); 
+
+    $('#usage-filter').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "select filter values"
+    }); 
+
+    $('#usage-type').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "select type"
+    }); 
+    $('#usage-type').on('select2:select', function (e) { 
+        var selected = $('#usage-type option:selected').val();
+        //showSecFilter(selected);
+        $("#usage-filter").prop("disabled", false);
+        $('#usage-type').val(null)
+    });
+
 
     $("#searchBtn").click(function(e) {
         e.preventDefault();
@@ -1606,10 +1629,15 @@ function bldOptions(options, type, style) {
 // sort and build the selection list option entries
 //----------------------------------------------------------
 function bldProviders(options) {
-    var listitems = '<option value="none">select cluster type</option>';
     if (options === null) {
         return;
     }
+
+    // sort by the dropdown value
+    options.sort((a,b) => (a.dropdown > b.dropdown) ? 1 : ((b.dropdown > a.dropdown) ? -1 : 0)); 
+    var listitems = '<option value="none">select cluster type</option>';
+
+
     for (var i = 0; i < options.length; i++) {
         listitems += '<option value="' + options[i].name + '">' + options[i].dropdown + '</option>';
     }
