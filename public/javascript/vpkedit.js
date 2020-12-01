@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Dave Weilert
+Copyright 2018-2020 David A. Weilert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -24,83 +24,18 @@ function editDef(data) {
     //console.log(JSON.stringify(data, null, 4));
     var part = data.filePart;
     var defkey = data.defkey;
-    // defkey = defkey.trim();
-    // if (defkey.indexOf('::') > -1 ){
-    //     var parts = defkey.split('::');
-    //     defkey = parts[0].trim();
-    // }
-    
-    // if (defkey.indexOf(' --') > -1 ){
-    //     var parts = defkey.split(' ');
-    //     defkey = parts[0].trim();
-    // }
-    
-    // // get file part and convert to integer
-    // part = parseInt(part);
-    // part++;
-    
     var rtn = data.lines;
     data = null;
+    // create array of file lines
     var newData = rtn.split('\n');
     var hl = newData.length;
     var outData = [];
-//    var sp;
-//    var chkline;
-
-    // if (typeof newData[3] !== 'undefined') {
-    //     chkline = newData[3];
-    //     if (chkline.indexOf('apiVersion') > -1) {
-    //         sp = 2;
-    //     } else {
-    //         sp = 3;
-    //     }
-    // }
-
     for (var d = 0; d < hl; d++) {
         outData.push(newData[d].substring(0) + '\n');
     } 
-
+    newData = null;
     rtn = outData.join('');
-
     $("#editTitle").html(defkey);
-
-
-    // for (var h = 0; h < hl; h++) {
-    //     // if first entry set the header
-    //     if (h === 0) {
-    //         $("#editTitle").empty();
-    //         $("#editTitle").html('');
-            // var hdr = newData[h];
-            // if (hdr.startsWith('- sourceFile: >-') ) {
-            //     h++; 
-            //     hdr = 'SourceFile: ' + newData[h];
-            //     var sp = hdr.lastIndexOf(' ');
-            //     var fn = hdr.substring(sp);
-            //     fn = fn.trim();
-            //     currentEditFile = fn;  
-            //     hdr = fn;          
-            // }           
-            // if (hdr.startsWith('- s') ) {
-            //     //hdr = 'S' + hdr.substr(3);
-            //     var sp = hdr.lastIndexOf(' ');
-            //     var fn = hdr.substring(sp);
-            //     fn = fn.trim();
-            //     currentEditFile = fn;
-            //     hdr = fn;
-            // }
-            // hdr = hdr.trim();
-            // $("#editTitle").html(hdr);
-            // if (part > 1) {
-            //     $("#editPart").empty();
-            //     $("#editPart").html('');
-            //     $("#editPart").html('Multi-definition file, part: ' + part);
-            // } else {
-            //     $("#editPart").empty();
-            //     $("#editPart").html('');
-            // }
-            // h = h + 3;
-    //     }
-    // }
 
     initAceEditor(rtn);
     $("#editorModal").modal({

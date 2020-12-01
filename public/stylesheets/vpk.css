@@ -32,6 +32,9 @@
 .vpkcolor {
     color: rgb(0, 123, 255);
 }
+.vpkcolorRed {
+    color: red;
+}
 .vpkwhite {
     background-color: rgb(255, 255, 255);
     color: rgb(0, 123, 255);
@@ -304,4 +307,16 @@ body {
 .btn-toggle:not(:disabled):not(.disabled):active:focus,
 .show>.btn-toggle.dropdown-toggle:focus {
 	box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .5)
+}
+
+.roleRBAC {
+    background-color: lightgrey;
+    color: black;
+}
+.noSubject {
+    background-color: black;
+    color: white;
+}
+.bg-rbn {
+    background-color: #ae6ec2
 }

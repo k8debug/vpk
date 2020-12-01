@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Dave Weilert
+Copyright 2018-2020 David A. Weilert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -105,7 +105,12 @@ $(document).ready(function() {
 
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
         selectedDef = $el.src + '::' + $el.part + '::' + $el.value;
-        getDef(selectedDef);
+        if ( $el.kind === 'Secret') {
+            getDef5(selectedDef);
+        } else {
+            getDef(selectedDef);
+        }
+        
      });
 
 
@@ -267,7 +272,6 @@ socket.on('dynstat', function(data) {
 socket.on('hierarchyResult', function(data) {
     $("#charts").empty();
     $("#charts").html('<svg width="50" height="50"></svg>');
-    //$("#chartInfo").empty();
     $("#chartInfo").html('Click blue dot to expand or collapse.  Red dot is final point of branch.');
 
     if (chartType === 'hierarchy') {
@@ -282,11 +286,7 @@ socket.on('hierarchyResult', function(data) {
         $("#charts").empty();
         $("#charts").html('<svg></svg>');
         chartCirclePack(data);
-    } else if (chartType === 'tree') {
-        $("#charts").empty();
-        $("#charts").html('<svg></svg>');
-        chartTree(data);
-    }
+    } 
 });
 
 // retrieve object definition
@@ -297,10 +297,30 @@ socket.on('objectDef', function(data) {
 
 // decoded secret
 socket.on('decodeDef', function(data) {
+    var content = data.result;
+    var keys = Object.keys(content);
+    var key;
+    var html = '';
+    var item = '';
+    var tValue = '';
+    var work;
+    var hl = 0;''
+
+    for (var k = 0; k < keys.length; k++) {
+        key = keys[k];
+        item = content[key];
+        if (item.type === 'JSON') {
+            value = JSON.stringify(item.value, null, 4);
+        } else {
+            value = item.value;
+        }
+        html = html + '\nKEY: ' + key + '\n' + '\n' + value + '\n' + '\n';
+    }
+
     $("#decodeName").empty();
     $("#decodeName").html('&nbsp;' + data.secret + '&nbsp;');
     $("#decode").empty();
-    $("#decode").html(JSON.stringify(data.value, null, 4));
+    $("#decode").html(html);
     $('#decodeModal').modal('show');
 });
 
@@ -308,9 +328,7 @@ socket.on('resetResults', function(data) {
     if (data.validDir === false) {
         setBaseDir(data.baseDir);
         $("#chgDirModal").modal('hide');
-        var resultMsg = 'Failed to connect to datasource';
-        var resultStatus = 'fail';
-        showMessage(resultMsg, resultStatus);
+        showMessage('Failed to connect to datasource', 'fail');
     } else {
         setBaseDir(data.baseDir);
         rootDir = data.baseDir;
@@ -318,7 +336,7 @@ socket.on('resetResults', function(data) {
         $("#loadStatus").hide();
         $("#chgDirFooter").show();
         $("#chgDirModal").modal('hide');
-        showMessage('Existing datasource connected', 'pass');
+        showMessage('Datasource connected', 'pass');
         getSelectLists('y');
     }
 });
@@ -333,6 +351,12 @@ socket.on('securityResult', function(data) {
     k8cData = data.data;
     hideMessage();
     security();       
+});
+
+socket.on('securityUsageResult', function(data) {
+    k8cData = data.data;
+    hideMessage();
+    securityUsage();       
 });
 
 socket.on('selectListsResult', function(data) {
@@ -421,6 +445,28 @@ function showConfig() {
     socket.emit('getConfig');
 }
 
+function getSecInfo(key) {
+    $("#secInfoContent").html(key)
+    $("#secInfoModal").modal('show')
+}
+
+function getSecRole(key) {
+    let html = key;
+    let info = k8cData['0000-@clusterRoles@'].Role;
+    if (typeof info !== 'undefined') {
+        for (let i = 0; i < info.length; i++) {
+            if (info[i].name === key) {
+                html = buildSecModalRole(info[i], key)
+            }
+        }
+    } else {
+        html = 'Unable to find information for role: ' + key;
+    }
+
+    $("#secInfoContent").html(html)
+    $("#secInfoModal").modal('show')
+}
+
 function closeChgDir() {
     $("#chgDirModal").modal('hide')
 }
@@ -435,21 +481,21 @@ function showMessage(msg, type) {
     }
     var msgClass = 'alert-secondary'
 
-        if (type === 'pass') { 
-            msgClass = 'alert-success'
-        } else if (type === 'warn') {
-            msgClass = 'alert-warning'
-        }  else if (type === 'fail') {
-            msgClass = 'alert-danger'
-        } else {
-            msgClass = 'alert-secondary'
-        }
+    if (type === 'pass') { 
+        msgClass = 'alert-success'
+    } else if (type === 'warn') {
+        msgClass = 'alert-warning'
+    }  else if (type === 'fail') {
+        msgClass = 'alert-danger'
+    } else {
+        msgClass = 'alert-secondary'
+    }
 
     $("#messageText").html(msg)
     $("#messageDiv").removeClass("hide");
     $("#messageType").removeClass("alert-warning alert-success alert-danger alert-secondary");
-
     $("#messageDiv").addClass(msgClass);
+    //console.log(msgClass)
     $("#messageDiv").addClass("show");
     $("#messageDiv").addClass("vpkfont-md");
 }
@@ -469,6 +515,11 @@ function bldSchematic() {
 function bldSecurity() {
     hideMessage();
     socket.emit('security');
+}
+
+function bldSecurityUsage() {
+    hideMessage();
+    socket.emit('securityUsage');
 }
 
 // request to clear directory stats
@@ -564,29 +615,6 @@ function getDef(def) {
     editObj();
 }
 
-// send request to server to get object definition
-function getDef3(def) {
-    $("#multiModal").modal('hide');
-    selectedDef = def;
-    if (selectedDef.indexOf('undefined') > -1) {
-        showMessage('Unable to locate data source yaml.','fail');
-    } else {
-        editObj();
-    }
-}
-
-function getDef4(def, secret) {
-    $("#multiModal").modal('hide');
-    selectedDef = def;
-    if (selectedDef.indexOf('undefined') > -1) {
-        showMessage('Unable to locate data source yaml.','fail');
-    } else {
-        data = {"file": selectedDef, "secret": secret}
-        socket.emit('decode', data);
-    }
-}
-
-
 function getDef2(def) {
     let parts = def.split('@');
     let data;
@@ -635,9 +663,65 @@ function getDef2(def) {
     } 
 }
 
+
+// send request to server to get object definition
+function getDef3(def) {
+    $("#multiModal").modal('hide');
+    selectedDef = def;
+    if (selectedDef.indexOf('undefined') > -1) {
+        showMessage('Unable to locate data source yaml.','fail');
+    } else {
+        editObj();
+    }
+}
+
+// send request to decode object
+function getDef4(def, secret) {
+    $("#multiModal").modal('hide');
+    selectedDef = def;
+    if (selectedDef.indexOf('undefined') > -1) {
+        showMessage('Unable to locate data source yaml.','fail');
+    } else {
+        data = {"file": selectedDef, "secret": secret}
+        socket.emit('decode', data);
+    }
+}
+
+function getDef5(data) {
+    let items = data.split('::');
+    let nData = []
+    if (items.length === 3) {
+        nData.push({
+            'source': items[0], 
+            'part': items[1], 
+            'name': items[2]
+        }); 
+        multiList('Secret', nData);
+    }
+}
+
+// send request to server to get object definition
+function getDef6(def) {
+    $("#secInfoModal").modal('hide')
+
+    selectedDef = def;
+    editObj();
+}
+
+function getDef7(data) {
+    let items = data.split('.');
+    let src = rootDir + '/config' + items[0] + '.yaml';
+    selectedDef = src + '::' + items[1] + '::edit';
+    editObj();
+}
+
+
 function partArray(type, data) {
     try {
-        if (data.length > 1) {
+        if (type === 'Secret') {
+            multiList(type, data)
+        }
+        if (data.length > 1)  {
             multiList(type, data)
         } else {
             if (typeof data[0].source !== 'undefined') {
@@ -1175,6 +1259,9 @@ function dynamic() {
     $("#clusterStatus").html(resp);
 }
 
+function getCirclePackDef(data) {
+    socket.emit('circlePack', data);
+} 
 
 
 //----------------------------------------------------------
@@ -1362,8 +1449,9 @@ function formatUsage(data) {
     rtn = rtn + usageLine('Machine', data.header.osMachine);
     rtn = rtn + usageLine('OS Name', data.header.osName);
     rtn = rtn + usageLine('OS Release', data.header.osRelease);
+    
     rtn = rtn + usageLine('Processor', data.header.cpus[0].model);
-
+    rtn = rtn + usageLine('CPU count', data.header.cpus.length);
     rtn = rtn + usageLine('User CPU seconds', data.resourceUsage.userCpuSeconds);
     rtn = rtn + usageLine('Kernel CPU seconds', data.resourceUsage.kernelCpuSeconds);
 
@@ -1372,8 +1460,8 @@ function formatUsage(data) {
     rtn = rtn + usageLine('Heap used memory', formatBytes(data.javascriptHeap.usedMemory) );
     rtn = rtn + usageLine('Heap available memory', formatBytes(data.javascriptHeap.availableMemory) );
     rtn = rtn + usageLine('Heap memory limit', formatBytes(data.javascriptHeap.memoryLimit) );
+    
     rtn = rtn + usageLine('Network host name', data.header.host);
-
     let nI = data.header.networkInterfaces
     for (let i = 0; i < nI.length; i++) {
         if ( nI[i].internal === false && nI[i].family === 'IPv4') {
@@ -1382,6 +1470,7 @@ function formatUsage(data) {
             rtn = rtn + usageLine(nI[i].family + ' Address', nI[i].address );
         }
     }
+
     rtn = rtn + usageLine('Current working directory', data.header.cwd );
     rtn = rtn + usageLine('Node.js version', data.header.nodejsVersion );
 
@@ -1447,9 +1536,9 @@ function setBaseDir(dir) {
     $("#baseDir").html(dir);
     $("#tableL").bootstrapTable('removeAll')
     //clearSvg();
-    if (dir !== 'No datasource connected') {
-        showMessage('Datasource connected', 'pass');
-    }
+    // if (dir !== 'No datasource connected') {
+    //     showMessage('Datasource connected', 'pass');
+    // }
 }
 
 

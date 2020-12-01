@@ -270,11 +270,6 @@
                                     &nbsp;Circle Pack&nbsp;
                                 </button>
                             </div>
-                            <!-- <div class="col-md-2">
-                                <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart04" onclick="getChart('tree')">
-                                    &nbsp;Tree&nbsp;
-                                </button>
-                            </div> -->
                         </div>
                     </div>
 
@@ -313,11 +308,20 @@
                 </div>
 
                 <div id="security" class="tab-pane">
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSecurity()">
-                        &nbsp;RBAC Info&nbsp;
-                        </button>
+
+                    <div class="row mb-2">
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSecurity()">
+                            &nbsp;RBAC Definitions&nbsp;
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="bldSecurityUsage()">
+                            &nbsp;RBAC Usage&nbsp;
+                            </button>
+                        </div>
                     </div>
+
                     <div id="securityDetail" class="vpkfont">
                     </div>
 
@@ -460,7 +464,7 @@
                        
                         <textarea id="decode" rows="37" cols="125" class="vpkfont-decode">
                             <!-- content here -->
-                        </textarea>
+                        </textarea> 
 
                     </div>
                     <div class="modal-footer">
@@ -584,6 +588,30 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- ==================================== -->
+        <!-- Security Info Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="secInfoModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="secInfoHeader">
+                            <h6 class="modal-title vpkcolor">Security Information</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="secInfoContent" style="text-align: left;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- ==================================== -->
         <!-- Multi-List Modal section             -->

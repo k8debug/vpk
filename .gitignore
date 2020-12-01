@@ -3,6 +3,7 @@ logs
 *.log
 npm-debug.log*
 
+#DS_Store
 public/.DS_Store
 
 # Dependency directories
@@ -14,11 +15,13 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
+#Directories
 cluster/*
 clis/*
 import/*
 export/*
+usage/*
 
+#Files
 .eslintrc.js
-
 package-lock.json

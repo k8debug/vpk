@@ -1,16 +1,14 @@
 // Build circle pack chart
-const chartCirclePack = (input, ns) => {
-    const render = (data, ns) => {
-        
+const chartCirclePack = (input) => {
+    const render = (data) => {
         let leafCnt = 0;
         let clipCnt = 0;
         let eCount = 0;
-
         const width = 975;
         const height = width;
 
         const pack = data => {
-            const tmp = d3.pack()
+            const payload = d3.pack()
                 .size([width, height])
                 .padding(5)
                 (d3.hierarchy(data)
@@ -18,7 +16,7 @@ const chartCirclePack = (input, ns) => {
                     .sort((a, b) => b.value - a.value));
             $("#chartInfo").empty();
             $("#chartInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over circles and pausing<span>');        
-            return tmp;
+            return payload;
         }
 
         const root = pack(data);
@@ -42,17 +40,7 @@ const chartCirclePack = (input, ns) => {
             .attr("stroke-width", 0.3)
             .attr("fill", d => {
                 let rtn;
-                rtn = d.children ? "none" : "rgba(140, 81, 10, 0.8)";
-                if (typeof ns !== 'undefined' && ns.length > 0) {
-                    if (d.parent !== null ) {
-                        if (typeof d.parent.data !== 'undefined') {
-                            const cv = ':' + d.parent.data.name + ':';
-                            if (ns.indexOf(cv) > -1) {
-                                rtn = 'rgba(199, 234, 229, 0.9)';
-                            }
-                        } 
-                    } 
-                }
+                rtn = d.children ? "none" : "#007bff";
                 return rtn;                
             })
             .attr("cid", d => {
@@ -63,22 +51,17 @@ const chartCirclePack = (input, ns) => {
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseOut)
             .on("click", handleClick);
-            
-            
-            
 
         const leaf = node.filter(d => !d.children);
 
         leaf.select("circle")
             .attr("id", d => (d.leafUid = "leaf" + leafCnt++ ));
 
-
         leaf.select("circle")
             .attr("id", d => (d.leafUid = "leaf" + leafCnt++ ))
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseOut)
             .on("click", handleClick);
-
 
         leaf.append("clipPath")
             .attr("id", d => d.clipUid = "clip" + clipCnt++);
@@ -91,16 +74,9 @@ const chartCirclePack = (input, ns) => {
             .attr("x", 0)
             .attr("y", (d, i, nodes) => `${i - nodes.length / 2 + 0.8}em`);
 
-        // node.append("title")
-        //     .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")} Cnt: ${d.value.toLocaleString()}`);
-
         return svg.node();
     }
-    
-
-    // input is a json data structure
-    render(input, ns);
-
+    render(input);
 }
 
 var lastMove;
@@ -111,7 +87,6 @@ function handleMouseOver(d, i) {
     if ( elapsed < 200 ) { 
         return;
     }
-
     let cid;
     if (typeof this.attributes['cid'] !== 'undefined') {
         cid = this.attributes['cid'].nodeValue;
@@ -142,14 +117,14 @@ function handleMouseOver(d, i) {
                 }
             }
 
-            // horizontal scrolling amount
-            // let xOff = window.pageXOffset;
-            // vertical scrolling amount
+            // placement of the tool tip requires using both page and
+            // client offsets
             let yOff = window.pageYOffset  
             let yPos = d.clientY + yOff ;
             yPos = yPos - (i * 10);
             yPos = yPos - 40;
 
+            // populate the tool tip and placement
             tip = tip + '</div>';
             tooltip.innerHTML = tip;
             tooltip.style.display = "block";
@@ -157,18 +132,17 @@ function handleMouseOver(d, i) {
             tooltip.style.top = yPos + 'px';
         }
     }
-    
     lastMove = Date.now();
-
 }
+
 function handleMouseOut(d, i) {
     hideTooltip();
 }
 
 function handleClick(d, i) {
-
-    console.log('CLICKED : ' + d.name);
+    let cid = '';
+    if (typeof this.attributes['cid'] !== 'undefined') {
+        cid = this.attributes['cid'].nodeValue;
+        getCirclePackDef(cid)
+    }
 }
-// onmousemove="showTooltip(evt, \'' 
-// 		+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'PersistentVolumeClaim') 
-// 		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'PVC@' +  fnum +'\')"/>'

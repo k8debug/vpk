@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Dave Weilert
+Copyright 2018-2020 David A. Weilert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -20,38 +20,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------
 // build svg data from returned data
 //----------------------------------------------------------
-let svgInfo = {};            // array of information for tool tips
-let iCnt = 1;
-let oldNS = '@';
-let first = true;
-let evtCnt = 0;
-let partsCnt = 0;
-let rdata = '';
-let breakData = '';
-let breakID = 0;
-let height = 0;
-let fnum;
-let genS;
-let cfgS;
-let iamS;
-let podS;
-let netS;
-let pvcS;
-let genH;
-let cfgH;
-let iamH;
-let podH;
-let netH;
-let pvcH;
-let allH;
-let outterName = '';
-let cBar = false;
-let wCnt = 0;
-let cLevel = '';
-let countContainer = 0;
-let countInitContainer = 0;
-let countUnkImage = 0;
-let collapseIDs = [];
 
 function initSchematicVars() {
 	svgInfo = {};            // array of information for tool tips
@@ -102,20 +70,73 @@ function schematic() {
 
 	//Build the SVG workload images
 	let html = buildCSVG();	
+	let noPods = buildNoPods();
+	if (noPods !== '') {
+		// content was returned to output the message
+		noPods = '<div id="noPods" class"vpkfont vpkcolor mt-4 mb-4 ml-4">'
+		+ '<span class="pl-4">Following defined namespaces have no deployed pods</span>'
+		+ '</div>'
+		+ noPods;
+	}
 
 	//If no images were built display message to inform user
 	if (wCnt === 0) {
-		html = '<div class="vpkfont"><br><p>No workload schematics generated for the selected datasource</p></div>'
+		html = '<div class="vpkfont vpkcolor"><br><p>No workload schematics generated for the selected datasource</p></div>'
 	}
 
 	//Update the browser DOM
-	$("#schematicDetail").html(cLevel + html);
+	$("#schematicDetail").html(cLevel + html + noPods) ;
     $("#schematicDetail").show();
 }
 
 //Force building the Cluster Level name change
 function buildClusterLevel() {
 	return nsChange('clusterLevel')
+}
+
+function buildNoPods() {
+	let keys = Object.keys(k8cData);
+	let key;
+	let noPo = '';
+	let line;
+	let nsData;
+	let newKey;
+	for (let i = 0; i < keys.length; i++) {
+		key = keys[i];
+		if (key.startsWith('0000-@') ) {
+			continue; 
+		}
+		if (!key.startsWith('0000-') ) {
+			continue;
+		}
+		if (key === '0000-clusterLevel')  {
+			continue;
+		}
+
+		if (typeof k8cData[key] !== 'undefined'){
+			if (typeof k8cData[key].Pods === 'undefined'){
+				wCnt++  // increment the workload found counter, even though there is no workload Pods
+				newKey = key.substring(5);
+				breakID++;
+				// output the bar
+				line = '<div class="breakBar"><button type="button" ' 
+				+ ' class="btn btn-warning btn-sm vpkButtons" data-toggle="collapse" data-target="#collid-' 
+				+ breakID + '">&nbsp;&nbsp;' + newKey + '&nbsp;&nbsp;</button>'
+				+ '&nbsp;&nbsp;<hr></div>'
+				+ '<div id="collid-' + breakID + '" class="collapse">';
+				collapseIDs.push(breakID);
+
+				// generate the list of resources in the namespace
+				nsData = nsChange(newKey);
+				// append the data
+				noPo = noPo + line + nsData 
+				+ '<div class="mb-4"><span class="vpkcolor vpkfont-md ml-4 mt-2 mb-4 ">No Pods deployed in this namespace</span></div>'
+				+ '</div>';
+			}
+		}
+
+	}
+	return noPo;
 }
 
 //
@@ -165,9 +186,9 @@ function buildCSVG() {
 				rdata = rdata + '<span class="breakBar vpkcolor"><hr>' 
 				+ '&nbsp;&nbsp;Press the buttons below to view the schematics for the listed namespace' 
 				+ '&nbsp;&nbsp;<button type="button" class="btn btn-outline-primary btn-sm vpkButtons"' 
-				+ ' onclick="openAll()">&nbsp;&nbsp;Open all&nbsp;&nbsp;</button>'
+				+ ' onclick="openAll(\'collid-\')">&nbsp;&nbsp;Open all&nbsp;&nbsp;</button>'
 				+ '&nbsp;&nbsp;<button type="button" class="btn btn-outline-primary btn-sm vpkButtons"'
-				+ ' onclick="closeAll()">&nbsp;&nbsp;Close all&nbsp;&nbsp;</button>'
+				+ ' onclick="closeAll(\'collid-\')">&nbsp;&nbsp;Close all&nbsp;&nbsp;</button>'
 				+ '<hr class="mt-1"><span>'
 
 			} else {
@@ -194,23 +215,7 @@ function buildCSVG() {
 	return rdata
 }
 
-function openAll() {
-	collapseAction('O')
-}
-function closeAll() {
-	collapseAction('C')
-}
-function collapseAction(act) {
-	let id;
-	for (let c = 0; c < collapseIDs.length; c++) {
-		id = '#collid-' + collapseIDs[c];
-		if (act === 'O') {
-			$(id).collapse("show");
-		} else {
-			$(id).collapse("hide");
-		}
-	}
-}
+
 
 function nsChange(ns) {
 	
@@ -248,6 +253,9 @@ function nsChange(ns) {
 	let parm;
 	let fname;
 	let api;
+	let getDef = 'getDef';
+	let getDefSec = 'getDef5';
+	let getD;
 	if (typeof k8cData[nsKey] !== 'undefined'){
 		rtn = partsBar + divSection;
 		keys = Object.keys(k8cData[nsKey]);
@@ -280,11 +288,16 @@ function nsChange(ns) {
 				let fParts = fnum.split('.');
 				fname = baseDir + '/config' + fParts[0] + '.yaml';
 				parm = fname + '::' + fParts[1] + '::' + name;
+				if (key === 'Secret') {
+					getD = getDefSec;
+				} else {
+					getD = getDef;
+				}
 				item = '<tr>' 
 				+ '<td width="25%">' + api + '</td>' 
 				+ '<td width="15%">' + key + '</td>' 
 				+ '<td width="47%">' + name + '</td>' 
-				+ '<td width="13%"><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
+				+ '<td width="13%"><span onclick="' + getD + '(\'' + parm + '\')">' + fnum + '</span></td>'
 				+ '</tr>';
 				nsHtml = nsHtml + item
 			}
@@ -298,17 +311,6 @@ function nsChange(ns) {
 	return rtn;
 }
 
-function parseArray(data) {
-	nData = '';
-	if (typeof data === 'undefined' || data === '') {
-		return nData;
-	}
-
-	for (let i = 0; i < data.length; i++) {
-		nData = nData + data[i] + '<br>'; 
-	}
-	return nData;
-}
 
 
 //Builder for the Workloads
@@ -631,22 +633,6 @@ function process(fnum) {
 	return html;
 }
 
-function formatDate(data) {
-	if (typeof data === 'undefined' || data === null) {
-		return 'Unknown date';
-	}
-	let mydate = new Date(data);
-	let fDate = mydate.toDateString();
-	let tPart = data.split('T')
-	if (typeof tPart[1] !== 'undefined') {
-		fDate = fDate + ' ' + tPart[1]
-		if (fDate.endsWith('Z')) {
-			fDate = fDate.substring(0, fDate.length - 1) + ' GMT'
-		}	
-	}
-	return fDate;
-}
-
 
 function svgPVC(data, fnum) {
 	let rectP1a = '<rect  x="0" y="0" width="';
@@ -756,8 +742,10 @@ function svgNetwork(data, fnum) {
 		+ '<line  x1="150" x2="145" y1="50" y2="55" stroke="red" stroke-width="2" stroke-linecap="round"/>';
 
 		if (typeof data.Services[0] !== 'undefined') {
+			let svcDef = false;
 			if (typeof data.Services[0].eps !== 'undefined') {
 				if (data.Services[0].eps !== '') {
+					svcDef = true;
 					rtn = rtn
 					+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/eps.svg" onmousemove="showTooltip(evt, \'' 
 					+ buildSvgInfo(data.Services, fnum, 'EndPointSlice') 
@@ -768,15 +756,17 @@ function svgNetwork(data, fnum) {
 				}
 			}
 			if (typeof data.Services[0].ep !== 'undefined') {
-				if (data.Services[0].ep !== '') {
-					rtn = rtn
-					+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/ep.svg" onmousemove="showTooltip(evt, \'' 
-					+ buildSvgInfo(data.Services, fnum, 'EndPoint') 
-					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'EndPoint@' + fnum +'\')"/>' 
-					+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-					+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-					+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
-				} 
+				if (svcDef !== true) {
+					if (data.Services[0].ep !== '') {
+						rtn = rtn
+						+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/ep.svg" onmousemove="showTooltip(evt, \'' 
+						+ buildSvgInfo(data.Services, fnum, 'EndPoint') 
+						+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'EndPoint@' + fnum +'\')"/>' 
+						+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+						+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+						+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
+					} 
+				}
 			}
 			if (data.Services[0].eps !== '' && data.Services[0].ep !== '') {
 				rtn = rtn 
@@ -1152,7 +1142,7 @@ function svgPod(data, fnum, podH) {
 	let cHl =0;
 	let fndStatus = false;
 	if (typeof data.status !== 'undefined') {
-		// containers
+		//containerStatuses
 		if (typeof data.status.containerStatuses !== 'undefined') {
 			fndStatus = true;
 			if (typeof data.status.containerStatuses[0] !== 'undefined') {
@@ -1280,312 +1270,6 @@ function buildContainerStatus(data) {
 		}
 	}
 	return {'msg': statusMsg, 'fill': statusFill }
-}
-
-
-function buildSvgInfo(data, fnum, type) {
-	let id = fnum+'.'+type;
-	let tName = type;
-	if (typeof svgInfo[id] === 'undefined') {
-		svgInfo[id] = [];
-	}
-	let content = buildTipContent(data, type, fnum)
-	if (type === 'Phase') {
-		tName = 'Pod Phase / IPs'
-	}
-	if (type === 'CRD') {
-		tName = 'CustomResourceDefinition'
-	}
-	// check if an entry already exists, if so skip
-	if (typeof svgInfo[id][0] === 'undefined') {
-		svgInfo[id].push('<span style="font-size: 0.80rem; text-decoration: underline;">' + tName + '</span><br><span style="font-size: 0.70rem;">' + content + '</span>');
-	}
-	return id;
-}
-
-
-function buildTipContent(data, type, fnum) {
-	let cnt = 0;
-	let content = '';
-
-	if (typeof data === 'undefined') {
-		content =  'No info available';
-		content = '<div class="vpkfont-xsm">' + content + '</div>'
-		return content;
-	}
-
-	if (type === 'Unknown') {
-		content = 'No resource type located or failed to properly be created.';
-
-	} else if (type === 'ConfigMap') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				cnt++;
-				content = content + '(' + cnt + ') ' + data[k].name + ' ('+ data[k].use +')<br>';
-			}
-		} else {
-			if (typeof data.name !== 'undefined') {
-				content = 'Name: ' + data.name;
-			}
-		}
-
-	} else if (type === 'Conditions') {
-		if (typeof data.conditions !== 'undefined') {
-			if (typeof data.conditions[0] !== 'undefined' ) {
-				cnt = 0;			
-				for (let k = 0; k < data.conditions.length; k++) {
-					cnt++;
-					content = content + '- &nbsp;&nbsp;<b>Type:</b> ' + data.conditions[k].type + '<br>'
-					       + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Status:</b> ' + data.conditions[k].status + '<br>';
-					if (typeof data.conditions[k].message !== 'undefined') {
-						content = content + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Message:</b> ' + data.conditions[k].message + '<br>'
-					}
-					if (typeof data.conditions[k].reason !== 'undefined') {
-						content = content + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Reason:</b> ' + data.conditions[k].reason + '<br>'
-					}					
-					content = content + '<br>'
-				}
-			}	
-		}
-
-	} else if (type === 'Container') {
-		content = '' 
-		if (typeof data.containerNames !== 'undefined' ) {
-			for (let k = 0; k < data.containerNames.length; k++) {
-				content = content 
-				+ '- &nbsp;&nbsp;<b>Name:</b> ' + data.containerNames[k].c_name + '<br>'
-				+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Image:</b> ' + data.containerNames[k].c_image + '<br>';
-			}
-		}	
-
-
-	} else if (type === 'ContainerStatus' || type === 'InitContainerStatus') {    // container status
-		if (typeof data !== 'undefined' ) {
-			cnt = 0;			
-			content = '';
-			//content = formatJSON(data) + '<br>' 
-			content = content 
-				+ 'Name: ' + data.name + '<br>' 
-				+ 'Restart Count: ' + data.restartCount + '<br>' 
-			
-		} else {
-			content = 'No statuses located'
-		}
-
-	} else if (type === 'ControllerRevision') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			content = content + data[0].name;  
-		}	
-
-	} else if (type === 'CRD') {
-		content = 'Name: ' + data;  
-
-		
-	} else if ( type === 'DaemonSet' || 
-				type === 'Deployment' || 
-				type === 'DeploymentConfig' || 
-				type === 'ReplicaSet' || 
-				type === 'ReplicationController' ||
-				type === 'StatefulSet' ) {
-		content = 'Name: ' + data.name ; 
-
-	} else if (type === 'EndPoint') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + data[k].name ;  
-			}
-		}
-
-	} else if (type === 'EndPointSlice') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + data[k].name ;  
-			}
-		}
-
-	} else if (type === 'HorizontalPodAutoscaler') {
-		content = formatJSON(data);  
-
-	} else if (type === 'PersistentVolumeClaim') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + 'Name: ' + data[k].pvcName;
-				if (typeof data[k].pcvStorageClass !== 'undefined') {
-					if (data[k].pcvStorageClass !== '') {
-						content = content + 'Storage class: ' + data[k].pcvStorageClass + '<br>';  
-					}
-				}
-				if (typeof data[k].pcvVolumeName !== 'undefined') {
-					if (data[k].pcvVolumeName !== '') {
-						content = content + 'Volume name: ' + data[k].pcvVolumeName + '<br>';  
-					}
-				}
-				if (typeof data[k].pcvSelectorLabel !== 'undefined') {
-					if (data[k].pcvSelectorLabel !== '') {
-						content = content + 'Selector label: ' + data[k].pcvSelectorLabel + '<br>';  
-					}
-				}
-			}
-		}	
-
-	} else if (type === 'PersistentVolume') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + 'Name: ' + data[k].pvName + '<br>';
-				if (data[k].pvLocalPath !== '') {
-					content = content + 'Local path: ' + data[k].pvLocalPath + '<br>';
-				}  
-				if (data[k].pvHostPath !== '') {
-					content = content + 'Host path: ' + data[k].pvHostPath + '<br>';
-				}  
-				if (data[k].pvNFSPath !== '') {
-					content = content + 'NFS path: ' + data[k].pvNFSPath + '<br>';
-				}			}
-		}	
-
-	} else if (type === 'Phase') {  //Pod Phase
-		content = 'None located';
-		if (typeof data.status !== 'undefined') {
-			content = '';
-			if (typeof data.status.hostIP !== 'undefined') {
-				content = content + 'HostIP: ' + data.status.hostIP + '<br>';
-			}
-			if (typeof data.status.podIP !== 'undefined') {
-				content = content + 'PodIP: ' + data.status.podIP + '<br>';
-			}
-			if (typeof data.status.podIPs !== 'undefined') {
-				if (typeof data.status.podIPs.length > 1 !== 'undefined') {
-					content = content + 'PodIPs: <br>' + formatJSON(data.status.podIPs) + '<br>';
-				}
-			}			
-		}
-
-	} else if (type === 'Pod') {
-		content = '';
-		if (typeof data.name !== 'undefined' ) {
-			content = content + 'Name: ' + data.name + '<br>';
-			if (typeof data.Volume !== 'undefined' ) {
-				content = content + 'Volume(s):' + '<br>'
-				cnt = 0;			
-				for (let k = 0; k < data.Volume.length; k++) {
-					cnt++;
-					content = content + '(' + cnt + ') ' + data.Volume[k].name + '<br>';  
-				}			
-			}
-		}	
-	
-	} else if (type === 'Secret') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				cnt++;
-				content = content + '(' + cnt + ') ' + data[k].name + ' ('+ data[k].use +')<br>';
-			}
-		}	
-
-	}  else if (type === 'Service') {
-		content = fnum + '<br>' 
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				cnt++;
-				content = data[k].name+ '<br>';
-			}
-		}	
-	} else 	if (type === 'ServiceAccount') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				cnt++;
-				content = content + '(' + cnt + ') ' + data[k].name + '<br>';
-			}
-		}
-
-	} else if (type === 'StorageClass') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + 'Name: ' + data[k].storageClassName ;  
-			}
-		}	
-
-	} else {
-		content = 'Name: ' + data.name  + '<br>' + 'Type: ' + type;
-	}
-	content = '<div class="vpkfont-xsm">' + content + '</div>'
-	return content;	
-}
-
-function formatJSON(content) {
-	let cData = JSON.stringify(content, null, 2);
-	cData = cData.split('\n');
-	let nLine = '';
-	let rtn = '';
-	let pttrn = /^\s*/;
-	let spc = 0;
-	for (let i = 0; i < cData.length; i++) {
-		nLine = '';
-		spc = cData[i].match(pttrn)[0].length;
-		if (spc > 0) {
-			for (let s = 0; s < spc; s++) {
-				nLine = nLine + '&nbsp;'
-			}
-		}
-		rtn = rtn + nLine + cData[i].substring(spc) + '<br>';
-	}
-	return rtn;
-} 
-
-function checkImage(kind) {
-	let image;
-	if (kind === 'Alertmanager') {
-		image = 'openshift/ocp-am';
-	} else if (kind === 'ConfigMap') {
-		image = 'k8/cm';
-	} else if (kind === 'CRD') {
-		image = 'k8/crd';
-	} else if (kind === 'ControllerRevision') {
-		image = 'k8/c-rev';
-	} else if (kind === 'DaemonSet') {
-		image = 'k8/ds';
-	} else if (kind === 'CronJob') {
-		image = 'k8/cronjob';
-	} else if (kind === 'Job') {
-		image = 'k8/job';
-	} else if (kind === 'Deployment') {
-		image = 'k8/deploy';
-	} else if (kind === 'DeploymentConfig') {
-		image = 'openshift/ocp-dc';
-	} else if (kind === 'DNS') {
-		image = 'openshift/ocp-dns';
-	} else if (kind === 'HorizontalPodAutoscaler') {
-		image = 'k8/hpa';
-	} else if (kind === 'Network') {
-		image = 'openshift/ocp-net';
-	} else if (kind === 'Prometheus') {
-		image = 'openshift/ocp-prometheus';
-	} else if (kind === 'ReplicaSet') {
-		image = 'k8/rs';
-	} else if (kind === 'HorizontalPodAutoscaler') {
-		image = 'k8/hpa';
-	} else if (kind === 'ReplicationController') {
-		image = 'k8/rc';
-	}  else if (kind === 'Node') {
-		image = 'k8/node';
-	} else if (kind === 'StatefulSet') {
-		image = 'k8/sts';
-	} else if (kind === 'Unknown') {
-		image = 'unk';
-	} else {
-		image = 'unk';
-	}
-	return image;
 }
 
 

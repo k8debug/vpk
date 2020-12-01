@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Dave Weilert
+Copyright 2018-2020 David A. Weilert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -59,6 +59,7 @@ var partials = require('express-partials');
 
 var compression = require('compression');
 var cors = require('cors');
+const { text } = require('express');
 
 
 //------------------------------------------------------------------------------
@@ -174,8 +175,9 @@ if (typeof options.port !== 'undefined' && options.port !== null) {
     }
 }
 
-// if not defined create the 'cluster' directory 
+// if not defined create the 'cluster' and 'usage' directories 
 makedir('cluster');
+makedir('usage');
 
 // read vpk configuration file
 var vf = 'vpkconfig.json';
@@ -469,6 +471,42 @@ function chgP2(data) {
     return result;
 }
 
+function circleNameLookup(data) {
+    let parts = data.split('::');
+    let ns = '';
+    let kind = '';
+    let name = '';
+    let key = '';
+    if (parts.length > 3) {
+        ns = parts[2];
+        if (typeof parts[3] !== 'undefined') {
+            kind = parts[3];
+        }
+        if (typeof parts[4] !== 'undefined') {
+            name = parts[4];
+        }
+    } else if (parts.length === 3) {
+        ns = 'cluster-level';
+        kind = 'Namespace';
+        name = parts[2]
+    } else {
+        return 'nf';
+    }
+
+    //check for file    
+    if (typeof vpk[kind] !== 'undefined') {
+        key = ns+'.'+kind+'.'+name;
+        if (typeof vpk[kind][key] !== 'undefined') {
+            if (typeof vpk[kind][key][0] !== 'undefined') {
+                if (typeof vpk[kind][key][0].sourceFile !== 'undefined') {
+                    return vpk[kind][key][0].sourceFile;
+                }
+            }
+        }
+    }
+    return 'nf';
+}
+
 //------------------------------------------------------------------------------
 // Define SocketIO 
 //------------------------------------------------------------------------------
@@ -492,6 +530,19 @@ io.on('connection', client => {
         client.emit('getConfigResult', {'config': vpk.defaultSettings});
     });
     
+    client.on('circlePack', data => {
+        utl.logMsg('vpkMNL091 - Get circlePack request ' );
+        let key = circleNameLookup(data)
+        let result = '';
+        let fKey = '';
+        // key format = fileName::part
+        if (key !== 'nf') {
+            fKey = key+'::0';
+            result = getFileContents(fKey);
+            client.emit('objectDef', result);
+        }
+    });
+
     client.on('clusterDir', () => {
         utl.logMsg('vpkMNL676 - Get cluster directory request' );
         var result = {
@@ -572,9 +623,12 @@ io.on('connection', client => {
         var secret = parm.secret;
         var parts = def.split('::');
         var fn = parts[0] + '::' + parts[1];
-        var rtn;
+        var rtn = '';
         var data;
         var tmp;
+        var vArray = {};
+        var text = '';
+        var buff;
 
         utl.logMsg('vpkMNL173 - Decode secret from file: ' + fn );
             
@@ -587,21 +641,28 @@ io.on('connection', client => {
             if (typeof data === 'object') {
                 let keys = Object.keys(data);
                 let key;
+        
                 for (let d = 0; d < keys.length; d++) {
                     key = keys[d];
-                    console.log(key + ' :: ');
-                    let buff = new Buffer.from(data[key], 'base64');
+                    console.log(key);
+                    buff = new Buffer.from(data[key], 'base64');
                     text = buff.toString('ascii');
                     if (text.startsWith('{')) {
-                        rtn = JSON.parse(text);
-                        break;
+                        text = JSON.parse(text)
+                        vArray[key] = {
+                            'value': text,
+                            'type': 'JSON'
+                        }
                     } else {
-                        rtn = text;
+                        vArray[key] = {
+                            'value': text,
+                            'type': 'TEXT'
+                        }
                     }
                 }
             }
             var result = {
-                'value': rtn,
+                'result': vArray,
                 'secret': secret
             };
             utl.logMsg('vpkMNL005 - Emit decodeDef' );
@@ -612,45 +673,11 @@ io.on('connection', client => {
     });
 
     client.on('getDef', data => {
-        // save the key for use when results are returned
         var parts = data.split('::');
-        var defkey = parts[0];
         data = parts[0] + '::' + parts[1];
-
         utl.logMsg('vpkMNL003 - Get file: ' + parts[0] );
-        try {
-            var part = data.split('::');
-            var rtn =vpk.fileContent[data][0].content;
-            var newRtn = JSON.stringify(rtn);
-            var fileData = JSON.parse(newRtn);
-            // check if managed fields should be removed;
-            if (typeof vpk.defaultSettings.managedFields !== 'undefined') {
-                if (vpk.defaultSettings.managedFields === false) {
-                    if (typeof fileData.metadata.managedFields !== 'undefined') {
-                        delete fileData.metadata.managedFields;
-                    }
-                }   
-            }
-            // check if status section should be removed;
-            if (typeof vpk.defaultSettings.statusSection !== 'undefined') {
-                if (vpk.defaultSettings.statusSection === false) {
-                    if (typeof fileData.status !== 'undefined') {
-                        delete fileData.status;
-                    }                    
-                }   
-            }
-            fileData = YAML.safeDump(fileData);
-            var result = {
-                'filePart': part[1],
-                'lines': fileData,
-                'defkey': defkey
-            };
-            utl.logMsg('vpkMNL005 - Emit objectDef' );
-            client.emit('objectDef', result);
-        } catch (err) {
-            utl.logMsg('vpkMNL004 - Error processing getDef, message: ' + err );
-            utl.logMsg(err.stack );
-        }
+        var result = getFileContents(data);
+        client.emit('objectDef', result);
     });
 
     client.on('getHierarchy', data => { 
@@ -662,19 +689,16 @@ io.on('connection', client => {
 
     client.on('getUsage', data => { 
         utl.logMsg('vpkMNL477 - GetUsage request' );
-        var dumpFile = process.cwd() + '/dump.json';
+        var dumpFile = process.cwd() + '/usage/usageInfo.json';
         process.report.writeReport(dumpFile);
-        console.log('start wait');
         result = '';
         setTimeout( () => {
-            console.log('waited')
             result = fs.readFileSync(dumpFile, "utf8");
             result = JSON.parse(result)
             utl.logMsg('vpkMNL478 - Emit usageResults' );
             client.emit('usageResult', result);
         }, 400);
     });
-
 
     client.on('getDirStats', data => {
         utl.logMsg('vpkMNL006 - DirStats request' );
@@ -686,9 +710,7 @@ io.on('connection', client => {
 
     client.on('getSelectLists', () => {
         utl.logMsg('vpkMNL008 - Get select lists request' );
-
         var labels = Object.keys(vpk.labelKeys);
-
         var result = {
             'kinds': vpk.kinds,
             'namespaces': vpk.definedNamespaces,
@@ -747,10 +769,16 @@ io.on('connection', client => {
         client.emit('schematicResult', {'data': vpk.containers, 'messages': vpk.svgMsg} );
     });
 
-    client.on('security', data => {
+    client.on('security', () => {
         utl.logMsg('vpkMNL091 - Get security request ' );
-        schematic.parse(data);
+        schematic.parse();  //no data will be passed
         client.emit('securityResult', {'data': vpk.containers, 'messages': vpk.svgMsg} );
+    });
+
+    client.on('securityUsage', () => {
+        utl.logMsg('vpkMNL091 - Get securityUsage request ' );
+        schematic.parse(); //no
+        client.emit('securityUsageResult', {'data': vpk.containers, 'messages': vpk.svgMsg} );
     });
 
     client.on('search', data => {
@@ -777,6 +805,41 @@ io.on('connection', client => {
 
 });
 
+function getFileContents(data) {
+    try {
+        var part = data.split('::');
+        var rtn =vpk.fileContent[data][0].content;
+        var newRtn = JSON.stringify(rtn);
+        var fileData = JSON.parse(newRtn);
+        // check if managed fields should be removed;
+        if (typeof vpk.defaultSettings.managedFields !== 'undefined') {
+            if (vpk.defaultSettings.managedFields === false) {
+                if (typeof fileData.metadata.managedFields !== 'undefined') {
+                    delete fileData.metadata.managedFields;
+                }
+            }   
+        }
+        // check if status section should be removed;
+        if (typeof vpk.defaultSettings.statusSection !== 'undefined') {
+            if (vpk.defaultSettings.statusSection === false) {
+                if (typeof fileData.status !== 'undefined') {
+                    delete fileData.status;
+                }                    
+            }   
+        }
+        fileData = YAML.safeDump(fileData);
+        var result = {
+            'filePart': part[1],
+            'lines': fileData,
+            'defkey': part[0]
+        };
+        return result;
+    } catch (err) {
+        utl.logMsg('vpkMNL057 - Error processing getDef, message: ' + err );
+        utl.logMsg(err.stack );
+    }
+}
+
 
 // Get the K8 resource type and emit message after processing
 async function getK(data, kga, client, dynDir) {
@@ -789,6 +852,7 @@ async function getK(data, kga, client, dynDir) {
 
     // initialize global storage to be empty
     vpk.rtn = {'items': []};
+    kga.sort();
     for (var k = 0; k < kga.length; k++) {
         await kube.getKubeInfo(data, kga[k], client)
         tmp = kga[k];
@@ -828,10 +892,17 @@ function write2(yf, dynDir) {
             var fbase = 'config';
             var fnum = 1000;
             var fn;
+            var oldKind = '@startUp';
             var input;
             var cnt = 0;
             for (var i = 0; i < yf.items.length; i++) {
                 input = yf.items[i];
+                if (typeof input.kind !== 'undefined') {
+                    if (oldKind !== input.kind) {
+                        utl.logMsg('vpkMNL617 - Kind: ' + oldKind + ' fnum: ' + fnum)
+                        oldKind = input.kind;
+                    }
+                }
                 input = JSON.stringify(input, null, 4);
                 fnum++;
                 fn = dynDir + '/' + fbase + fnum + '.yaml';
@@ -859,49 +930,49 @@ function write2(yf, dynDir) {
 }
 
 
-/**
- * Create the target directory for file uploads.   
- * @param {string} - [dir] Directory name
- * @returns {Object} A JSON object with fields status: (PASS or FAIL), dir: directory, msg: error message if create 
- */
-function uploadDir(dir) {
-    // clear or reset existing vars	
-    zips = [];
-    targz = [];
+// /**
+//  * Create the target directory for file uploads.   
+//  * @param {string} - [dir] Directory name
+//  * @returns {Object} A JSON object with fields status: (PASS or FAIL), dir: directory, msg: error message if create 
+//  */
+// function uploadDir(dir) {
+//     // clear or reset existing vars	
+//     zips = [];
+//     targz = [];
 
-    var currentDir = process.cwd();
-    var rtn;
-    var status = 'PASS';
-    if (dir.startsWith('./')) {
-        dir = currentDir + '/' + dir.substring(2)
-    }
+//     var currentDir = process.cwd();
+//     var rtn;
+//     var status = 'PASS';
+//     if (dir.startsWith('./')) {
+//         dir = currentDir + '/' + dir.substring(2)
+//     }
 
-    // determine if directory already exist and/or create directory
-    try {
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-            rtn = 'Created directory: ' + dir;
-        } else {
-            rtn = 'Directory: ' + dir + ' already exists';
-        }
-        // set the file upload directory
-        dest = dir;
+//     // determine if directory already exist and/or create directory
+//     try {
+//         if (!fs.existsSync(dir)) {
+//             fs.mkdirSync(dir);
+//             rtn = 'Created directory: ' + dir;
+//         } else {
+//             rtn = 'Directory: ' + dir + ' already exists';
+//         }
+//         // set the file upload directory
+//         dest = dir;
 
-    } catch (e) {
-        rtn = e.message;
-        status = 'FAIL';
-    }
+//     } catch (e) {
+//         rtn = e.message;
+//         status = 'FAIL';
+//     }
 
-    // return JSON object with results
-    utl.logMsg('vpkMNL019 - ' + rtn );
-    var data = {
-        'status': status,
-        'dir': dir,
-        'msg': rtn
-    };
+//     // return JSON object with results
+//     utl.logMsg('vpkMNL019 - ' + rtn );
+//     var data = {
+//         'status': status,
+//         'dir': dir,
+//         'msg': rtn
+//     };
 
-    return data;
-}
+//     return data;
+// }
 
 
 function reload(dir) {

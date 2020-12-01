@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Dave Weilert
+Copyright 2018-2020 David A. Weilert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -20,11 +20,22 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------
 // build svg data from returned data
 //----------------------------------------------------------
-let oldSecNS = '@';
-let secFirst = true;
-let secBreakID = 100;
-let secBldCnt = 0;
-let secRData = '';
+
+let RBAClegend = '<div class="vpkfont-md text-dark ml-2 mb-2 mt-2"><span class="pr-1">Legend:</span>'
++ '<span class="text-light bg-rbn pl-1 pr-1">RoleBinding name</span>'
++ '&nbsp;&nbsp;'
++ '<span class="text-light bg-success pl-1 pr-1">Role name</span>'
++ '<span class="pl-4 pr-1 text-dark">Subject kind:</span>'
++ '<span style="width: 80px;" class="text-light bg-info pl-1 pr-1">ServiceAccount</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="bg-warning pl-1 pr-1">Group</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="text-light bg-danger pl-1 pr-1">User</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="text-light bg-primary pl-1 pr-1">SystemGroup</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="text-light bg-secondary pl-1 pr-1">SystemUser</span>'
++ '<span class="pl-4 vpkfont-md">(click on color bar in following table to view additional information)</span>'
 
 function initVars() {
     oldSecNS = '@';
@@ -51,11 +62,13 @@ function security() {
 		html = '<div class="vpkfont"><br><p>No RBAC lists generated for the selected datasource</p></div>'
 	}
 
+	console.log(JSON.stringify(bindingStatCounts, null, 4));
+	
 	//Update the browser DOM
 	$("#securityDetail").html(cLevel + html);
-    $("#securityDetail").show();
+	$("#securityDetail").show();
+	
 }
-
 
 //
 function buildRBACs() {
@@ -67,6 +80,7 @@ function buildRBACs() {
 	let secKey;
 	let breakColor;
 	let breakKey;
+	let secType;
 	for (let p = 0; p < keys.length; p++) {
 		newKey = keys[p];
 		if (newKey.startsWith('0000-') ) {
@@ -97,15 +111,19 @@ function buildRBACs() {
 		if (breakKey === '0000-@subjects@') {
 			breakKey = '&lt;Cluster Level&gt;&nbsp;&nbsp;&nbsp;RoleBinding Subjects'
 			breakColor = 'btn-secondary'
+			secType = 'CRB';
 		} else if (breakKey === '0000-@clusterRoles@') {
 			breakKey = '&lt;Cluster Level&gt;&nbsp;&nbsp;&nbsp;Roles'
 			breakColor = 'btn-secondary'
+			secType = 'CRB';
 		} else if (breakKey === '0000-@clusterRoleBinding@') {
 			breakKey = '&lt;Cluster Level&gt;&nbsp;&nbsp;&nbsp;ClusterRoleBinding'
 			breakColor = 'btn-secondary'
+			secType = 'CRB';
 		} else {
 			breakKey = breakKey.substring(5);
 			breakColor = 'btn-primary'
+			secType = 'RB';
 		}
 
 		if (secKey !== oldSecNS) {
@@ -127,7 +145,7 @@ function buildRBACs() {
 			+ '&nbsp;&nbsp;<hr></div>'
 			+ '<div id="collid-' + secBreakID + '" class="collapse">';
 
-			let nsWide = secNSChange(oldSecNS);
+			let nsWide = secNSChange(oldSecNS,secType);
 
 			rdata = rdata + breakData + nsWide;
 		}
@@ -136,7 +154,7 @@ function buildRBACs() {
 	return rdata
 }
 
-function secNSChange(ns) {
+function secNSChange(ns, secType) {
 	let rtn = '';
 	let bRoles = buildRoles(ns);
 	if (typeof bRoles !== 'undefined') {
@@ -150,7 +168,7 @@ function secNSChange(ns) {
 		bBindings = null;
 	}
 
-	let subsData = buildSubjects(ns);
+	let subsData = buildSubjects(ns, secType);
 	if (typeof subsData !== 'undefined') {
 		rtn = rtn + subsData;
 		subsData = null;
@@ -159,100 +177,8 @@ function secNSChange(ns) {
 	return rtn;
 }
 
-function parseArray(data) {
-	nData = '';
-	if (typeof data === 'undefined' || data === '' || data === 'null' || data === null) {
-		return nData;
-	}
-
-	for (let i = 0; i < data.length; i++) {
-		if (data[i] === '') {
-			nData = nData + '&lt;blank&gt;<br>';
-		} else {
-			nData = nData + data[i] + '<br>'; 
-		}
-	}
-	return nData;
-}
-
-
-
-
-//Build list of ServiceAccounts
-// function buildSA(ns) {
-	
-// 	let nsKey = '0000-' + ns;
-// 	// check if there are any role entries to process
-// 	if (typeof k8cData[nsKey].ServiceAccount === 'undefined') {
-// 		return
-// 	}
-// 	partsCnt++;
-// 	let partsBar = '<div class="partsBar"><button type="button" ' 
-// 	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-// 	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing the ServiceAccounts&nbsp;&nbsp;</button>'
-// 	+ '</div>'
-// 	+ '<div id="parts-' + partsCnt + '" class="collapse">';
-// 	let bottomButton = '&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" ' 
-// 	+ ' class="btn btn-secondary btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-// 	+ partsCnt + '">&nbsp;&nbsp;&nbsp;&nbsp;Close ServiceAccount list&nbsp;&nbsp;</button>';
-// 	let divSection = '<div class="events" ><hr><table style="width:100%">';
-// 	let header = '<tr class="partsList"><th>Service Account name</th><th>ID # (click to view)</th></tr>';
-
-// 	//data to show
-// 	let accounts = k8cData[nsKey].ServiceAccount;
-// 	accounts.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
-
-// 	let account;
-// 	let hl = accounts.length;
-// 	let nsHtml = '';
-// 	let item;
-// 	let rtn = '';
-// 	let name;
-// 	let fnum;
-// 	let parm;
-// 	let fname;
-// 	rtn = partsBar + divSection + header;
-
-
-// 	for (r = 0; r < hl; r++) {
-// 		account = accounts[r];
-// 		name = account.name;
-
-// 		fnum = account.fnum;
-// 		let fParts = fnum.split('.');
-// 		fname = baseDir + '/config' + fParts[0] + '.yaml';
-// 		parm = fname + '::' + fParts[1] + '::' + name;
-
-// 		item = '<tr>' 
-// 		+ '<td width="50%"  class="align-top"> <span class=" text-light bg-info">' + name + '</span></td>' 
-// 		+ '<td width="50%"  class="align-top" ><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
-// 		+ '</tr>';
-// 		nsHtml = nsHtml + item
-// 		item = '<tr>' 
-// 		+ '<td width="50%"><hr></td>' 
-// 		+ '<td width="50%"><hr></td>' 
-// 		+ '</tr>';
-// 		nsHtml = nsHtml + item		
-
-// 	}
-// 	if (nsHtml !== header) {
-// 		rtn = rtn + nsHtml;
-// 	}
-	
-	
-// 	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
-
-// 	if (rtn.indexOf('undefined') > -1) {
-// 		console.log(rtn);
-// 	}
-
-// 	return rtn;
-// }
-
-
-
 //Build the RoleBinding Subjects information
-function parseRBSubject(data, both) {
+function parseRBSubject(data, both, fnum) {
 	if (typeof both === 'undefined' || both === null) {
 		both = false;
 	}
@@ -262,37 +188,79 @@ function parseRBSubject(data, both) {
 	}
 	let hl = data.length;
 
+	let line1Color;
+	let line2; 
+	let line3; 
+	let linkValue;
+	let lineHR;
+	let fParts;
+	let fname;
 	for (let i = 0; i < hl; i++) {
+		line1Color = '';
+		line2 = ''; 
+		line3 = ''; 
+		linkValue = '@';
+		lineHR = false;
 		if (typeof data[i].name !== 'undefined' ) {
+			linkValue = linkValue + data[i].name + '@';
 			if (typeof data[i].kind !== 'undefined' ) {
 				if (data[i].kind === 'ServiceAccount' ) {
-					nData = nData + 'Name: <span class=" text-light bg-info">' + data[i].name + '</span><br>';
+					line1Color = 'text-light bg-info';
 				} else if (data[i].kind === 'Group' ) {
-					nData = nData + 'Name: <span class=" bg-warning">' + data[i].name + '</span><br>';
+					line1Color = 'bg-warning';
 				} else if (data[i].kind === 'User' ) {
-					nData = nData + 'Name: <span class=" text-light bg-danger">' + data[i].name + '</span><br>';
+					line1Color = 'text-light bg-danger';
 				} else if (data[i].kind === 'SystemGroup' ) {
-					nData = nData + 'Name: <span class=" text-light bg-primary">' + data[i].name + '</span><br>';
+					line1Color = 'text-light bg-primary';
 				} else if (data[i].kind === 'SystemUser' ) {
-					nData = nData + 'Name: <span class=" text-light bg-secondary">' + data[i].name + '</span><br>';
+					line1Color = 'text-light bg-secondary';
 				} else {
-					nData = nData + 'Name: ' + data[i].name + '<br>';
+					line1Color = '';
 					console.log('Unmanaged kind for Subject: ' + data[i].kind)
 				}
 			} else {
-				nData = nData + 'Name: ' + data[i].name + '<br>';
+				line1Color = '';
 			}
 		}
 		if (both === true) {
 			if (typeof data[i].kind !== 'undefined' ) {
-				nData = nData + 'Kind: ' + data[i].kind + '<br>';
-			}
-			if (hl === 1 || i === (hl - 1) ) {
-				//
+				linkValue = linkValue + data[i].kind + '@';
+				line2 = 'Kind: ' + data[i].kind + '<br>';
 			} else {
-				nData = nData + '<hr>';
+				linkValue = linkValue + '<blank>:';
+			}
+		
+			if (typeof data[i].namespace !== 'undefined' ) {
+				linkValue = linkValue + data[i].namespace + '@';
+				line3 = 'Namespace: ' + data[i].namespace + '<br>';
+			} else {
+				linkValue = linkValue + '<blank>:';
+			}
+
+			if (hl === 1 || i === (hl - 1) ) {
+				lineHR = false;
+			} else {
+				lineHR = true;
 			}
 		}
+
+		// build html output
+		if (typeof fnum !== 'undefined') {
+		fParts = fnum.split('.');
+		fname = baseDir + '/config' + fParts[0] + '.yaml';
+		fname = fname + '::' + fParts[1] + '::' + name;
+		} else {
+			fname = 'missing::missing::missing';
+		}
+
+		nData = nData + 'Name: <span class="' + line1Color + '" onclick="getDef(\'' + fname + '\')">' + data[i].name + '</span><br>';
+		if (line2 !== '') {
+			nData = nData + line2;
+		}
+		if (line3 !== '') {
+			nData = nData + line3;
+		}		
+
 	}
 	return nData;
 }
@@ -303,14 +271,17 @@ function buildSubjects(ns) {
 		return;
 	}
 	
+	//cluster level flag
 	let cLevel = false;
 	if (ns === '0000-@subjects@') {
 		cLevel = true;
 	}
+	//get namespace by striping the 0000-
 	ns = ns.substring(5);
 
 	let used = [];
 	let nsKey = '0000-@subjects@';
+	
 	// check if there are any role entries to process
 	if (typeof k8cData[nsKey] === 'undefined') {
 		return
@@ -329,7 +300,7 @@ function buildSubjects(ns) {
 	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
 	+ secBldCnt + '">&nbsp;Close above Subjects list&nbsp;</button>';
 	let divSection = '<div class="events" ><hr><table style="width:100%">';
-	let header = '<tr class="partsList"><th>Subject Kind</th><th>Subject Name</th><th>RoleRef Kind</th><th>ID # (click to view)</th></tr>';
+	let header = '<tr class="partsList"><th>Subject Kind</th><th>Subject Name</th><th>RoleRef Kind</th><th>RoleRef</th></tr>';
 
 	let subs;
 	let sKeys;
@@ -345,8 +316,9 @@ function buildSubjects(ns) {
 	let data;
 	let uKey;
 	let roleK;
+	let roleRefName;
 
-	rtn = partsBar + divSection + header;
+	rtn = partsBar + divSection + RBAClegend + header;
 
 	for (let k = 0; k < keys.length; k++) {
 		subs = subsData[keys[k]]
@@ -358,6 +330,10 @@ function buildSubjects(ns) {
 		for (r = 0; r < sKeys.length; r++) {
 			elem = subs[sKeys[r]];
 
+			if (elem.roleKind === 'Role') {
+				continue;
+			}
+
 			if (ns === '@subjects@') {
 				if (elem.namespace === '') {
 					elem.namespace = '<cluster>'
@@ -368,12 +344,6 @@ function buildSubjects(ns) {
 				}
 			}
 
-			uKey = elem.kind+':'+elem.name+':'+elem.roleKind;
-			if (typeof used[uKey] === 'undefined') {
-				used[uKey] = 1;
-			} else {
-				continue;
-			}
 
 
 			fParts = elem.fnum.split('.');
@@ -382,28 +352,31 @@ function buildSubjects(ns) {
 	
 			data = []
 			data.push({'name': elem.name, 'kind': elem.kind});
-			subject = parseRBSubject(data)
+			subject = parseRBSubject(data, false, elem.fnum)
 
 			if (typeof elem.roleKind === 'undefined') {
 				roleK = 'Unknown';
 			} else {
 				roleK = elem.roleKind;
 			}
-
-
+			if (typeof elem.roleName === 'undefined') {
+				roleRefName = 'Unknown';
+			} else {
+				roleRefName = elem.roleName;
+			}
 
 			item = '<tr>' 
-			+ '<td width="25%">' + elem.kind + '</td>' 
-			+ '<td width="45%">' + subject + '</td>' 
-			+ '<td width="15%">' + roleK + '</td>' 
-			+ '<td width="15%"><span onclick="getDef(\'' + parm + '\')">' + elem.fnum + '</span></td>'
+			+ '<td width="10%">' + elem.kind + '</td>' 
+			+ '<td width="40%">' + subject + '</td>' 
+			+ '<td width="10%">' + roleK + '</td>' 
+			+ '<td width="40%"><span class="bg-success text-light" onclick="getSecRole(\'' + roleRefName + '\')">' + roleRefName + '</span></td>' 
 			+ '</tr>';
 			nsHtml = nsHtml + item
 			item = '<tr>' 
-			+ '<td width="25%"><hr></td>' 
-			+ '<td width="45%"><hr></td>' 
-			+ '<td width="15%"><hr></td>' 
-			+ '<td width="15%"><hr></td>' 
+			+ '<td width="10%"><hr></td>' 
+			+ '<td width="40%"><hr></td>' 
+			+ '<td width="10%"><hr></td>' 
+			+ '<td width="40%"><hr></td>' 
 			+ '</tr>';
 			nsHtml = nsHtml + item		
 		}
@@ -412,11 +385,11 @@ function buildSubjects(ns) {
 		rtn = rtn + nsHtml;
 	}
 	
-	
 	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
 	used = null;
 	return rtn;
 }
+
 
 //Build RoleBinding information
 function buildRoleBindings(ns) {
@@ -435,11 +408,12 @@ function buildRoleBindings(ns) {
 	+ secBldCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbspRoleBindings'
 	+ '</div>'
 	+ '<div id="parts-' + secBldCnt + '" class="collapse">';
+
 	let bottomButton = '<button type="button" ' 
 	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
 	+ secBldCnt + '">&nbsp;Close above RoleBinding list&nbsp;</button>';
 	let divSection = '<div class="events" ><hr><table style="width:100%">';
-	let header = '<tr class="partsList"><th>RoleBinding Name</th><th>Role Name</th><th>Subject Name & Kind</th><th>ID # (click to view)</th></tr>';
+	let header = '<tr class="partsList"><th>RoleBinding Name</th><th>Role Name</th><th>Subject Name & Kind</th></tr>';
 
 	//data to show
 	let bindings = k8cData[nsKey].RoleBinding;
@@ -458,8 +432,7 @@ function buildRoleBindings(ns) {
 	let fname;
 	let uKey;
 	let bKind;
-	rtn = partsBar + divSection + header;
-
+	rtn = partsBar + divSection + RBAClegend + header;
 
 	for (r = 0; r < hl; r++) {
 		bind = bindings[r];
@@ -492,38 +465,38 @@ function buildRoleBindings(ns) {
 			bKind = '<blank>';
 		}
 
-		uKey = name+':'+roleName+':'+bKind;
+		uKey = name+'@'+roleName+'@'+bKind;
 		if (typeof used[uKey] === 'undefined') {
 			used[uKey] = 1
 		} else {
 			continue;
 		}
 
-
 		fnum = bind.fnum;
 		let fParts = fnum.split('.');
 		fname = baseDir + '/config' + fParts[0] + '.yaml';
 		parm = fname + '::' + fParts[1] + '::' + name;
 
-		subject = parseRBSubject(bind.subjects, true);
-
+		subject = parseRBSubject(bind.subjects, true, bind.fnum);
+		if (subject === '') {
+			subject = '<span class="noSubject">&lt;No subjects defined&gt;</span>'
+		}
 
 		item = '<tr>' 
-		+ '<td width="27%"  class="align-top" >' + name + '</td>' 
-		+ '<td width="30%"  class="align-top"><span class=" text-light bg-success">' + roleName + '<span></td>' 
-		+ '<td width="30%"  class="align-top" >' + subject + '</td>' 
-		+ '<td width="13%"  class="align-top" ><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
+		+ '<td width="34%"  class="align-top"><span class="text-light bg-rbn" onclick="getDef(\'' + parm + '\')">' + name + '</td>' 
+		+ '<td width="33%"  class="align-top"><span class="text-light bg-success" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
+		+ '<td width="33%"  class="align-top" >' + subject + '</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item
 		item = '<tr>' 
-		+ '<td width="25%"><hr></td>' 
-		+ '<td width="25%"><hr></td>' 
-		+ '<td width="25%"><hr></td>' 
-		+ '<td width="25%"><hr></td>' 
+		+ '<td width="34%"><hr></td>' 
+		+ '<td width="33%"><hr></td>' 
+		+ '<td width="33%"><hr></td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item		
 
 	}
+
 	if (nsHtml !== header) {
 		rtn = rtn + nsHtml;
 	}
@@ -539,6 +512,112 @@ function buildRoleBindings(ns) {
 	return rtn;
 }
 
+// build the Role information to populate the secInfoModal for Role
+function buildSecModalRole(data, key) {
+	let role = data;
+	let item;
+	let rtn = '';
+	let grpInfo = '';
+	let resourceNames = '';
+	let resources = '';
+	let verbs = '';
+	let category = '';
+	let fnum = '<na>';
+	let fParts = '';
+	let fname = '';
+	let parm = '';
+
+	if (typeof role.fnum !== 'undefined') {
+		fnum = role.fnum;
+		fParts = fnum.split('.');
+		fname = baseDir + '/config' + fParts[0] + '.yaml';
+		parm = fname + '::' + fParts[1] + '::' + name;
+	} else {
+		parm = 'missing::missing::missing';
+	}
+
+
+	let roleId = 
+	  '<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
+	+ '  <div>Role Name:&nbsp;<span class="text-light bg-success vpkfont-md">' + key + '</span></div>'
+	+ '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef6(\'' + parm + '\')">' + fnum + '</span>'
+	+ '  <span class="vpkfont-sm vpkcolor pl-1">(click # to view)</span></div>'
+	+ '</div><hr>';
+
+	let divSection = '<div class="events" ><table style="width:100%">';
+	let header = '<tr class="partsList"><th>Category</th><th>Category Values</th><th>Resource Names</th><th>Resources</th><th>Verbs</th></tr>';
+	rtn = roleId + divSection + header;
+
+	if (typeof role.rules !== 'undefined' && role.rules !== 'null' && role.rules !== null) {
+		for (let c = 0; c < role.rules.length; c++) {
+			category = '&nbsp;';
+			resourceNames = '&nbsp;'
+			resources = '&nbsp;'
+			verbs = '&nbsp;'
+			grpInfo = '&nbsp';
+			if (typeof role.rules[c].apiGroups !== 'undefined') {
+				grpInfo = parseArray(role.rules[c].apiGroups);
+
+				if (grpInfo === '' || grpInfo.length < 2) {
+					grpInfo = '&lt;blank&gt;'
+				}
+
+				category = 'apiGroup';
+			}
+
+			if (typeof role.rules[c].nonResourceURLs !== 'undefined') {
+				grpInfo = parseArray(role.rules[c].nonResourceURLs);
+				category = 'nonResourceURLs'
+			}
+
+			if (typeof role.rules[c].resourceNames !== 'undefined') {
+				resourceNames = parseArray(role.rules[c].resourceNames);
+			}
+			if (typeof role.rules[c].resources !== 'undefined') {
+				resources = parseArray(role.rules[c].resources);
+			}
+			if (typeof role.rules[c].verbs !== 'undefined') {
+				verbs = parseArray(role.rules[c].verbs);
+			}
+
+			if (grpInfo === '') {
+				grpInfo = '&lt;blank&gt;'
+			}
+
+			item = '<tr>' 
+			+ '<td width="15%" class="align-top ">' + category+ '</td>' 
+			+ '<td width="25%" class="align-top ">' + grpInfo + '</td>' 
+			+ '<td width="25%" class="align-top ">' + resourceNames + '</td>' 
+			+ '<td width="25%" class="align-top ">' + resources + '</td>' 
+			+ '<td width="10%" class="align-top">' + verbs + '</td>' 
+			+ '</tr>';
+			rtn = rtn + item
+
+			item = '<tr>' 
+			+ '<td width="15%"><hr></td>' 
+			+ '<td width="25%"><hr></td>' 
+			+ '<td width="25%"><hr></td>' 
+			+ '<td width="25%"><hr></td>' 
+			+ '<td width="10%"><hr></td>' 
+			+ '</tr>';
+			rtn = rtn + item
+		} 
+	} else {
+		console.log('No Role rules located for role: ' + key)
+		item = '<tr>' 
+		+ '<td width="15%" class="align-top ">No Rules</td>' 
+		+ '<td width="25%" class="align-top ">&nbsp;</td>' 
+		+ '<td width="25%" class="align-top ">&nbsp;</td>' 
+		+ '<td width="25%" class="align-top ">&nbsp;</td>' 
+		+ '<td width="10%" class="align-top">&nbsp;</td>' 
+		+ '</tr>';
+		rtn = rtn + item
+	}
+
+	rtn = rtn + '</table></div>';
+	return rtn;
+}
+
 //Build the Role information
 function buildRoles(ns) {
 	
@@ -548,7 +627,6 @@ function buildRoles(ns) {
 	if (typeof k8cData[nsKey].Role === 'undefined') {
 		return
 	}
-
 	secBldCnt++;
 
 	let partsBar = '<div class="partsBar"><button type="button" ' 
@@ -561,12 +639,9 @@ function buildRoles(ns) {
 	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
 	+ secBldCnt + '">&nbsp;Close above Role list&nbsp;</button>';
 	let divSection = '<div class="events" ><hr><table style="width:100%">';
-	let header = '<tr class="partsList"><th>Role Name</th><th>API Groups</th><th>Resource Names</th><th>Resources</th><th>Verbs</th><th>ID # (click to view)</th></tr>';
+	let header = '<tr class="partsList"><th>Role Name</th><th>Category</th><th>Category Values</th><th>Resource Names</th><th>Resources</th><th>Verbs</th></tr>';
 
 	//data to show
-	if (nsKey === '0000-@clusterRoles@') {
-		console.log('d')
-	}
 	let roles = k8cData[nsKey].Role;
 	
 
@@ -585,10 +660,11 @@ function buildRoles(ns) {
 	let verbs;
 	let parm;
 	let fname;
-	rtn = partsBar + divSection + header;
+	rtn = partsBar + divSection + RBAClegend + header;
 
 	for (r = 0; r < hl; r++) {
-		apiG = '';
+		grpInfo = '';
+		category = '';
 		resourceNames = '';
 		resources = '';
 		verbs = '';
@@ -604,22 +680,22 @@ function buildRoles(ns) {
 			fname = baseDir + '/config' + fParts[0] + '.yaml';
 			parm = fname + '::' + fParts[1] + '::' + name;
 		}
-		item = '<tr>' 
-		+ '<td width="20%" class="top"><span class=" text-light bg-success">' + name + '</span></td>' 
+		item = '<tr class="roleRBAC">' 
+		+ '<td width="15%" class="top"><span class="text-light bg-success" onclick="getDef(\'' + parm + '\')">' + name + '</span></td>' 
+		+ '<td width="15%">&nbsp;</td>' 
 		+ '<td width="20%">&nbsp;</td>' 
 		+ '<td width="20%">&nbsp;</td>' 
 		+ '<td width="20%">&nbsp;</td>' 
-		+ '<td width="7%">&nbsp;</td>' 
-		+ '<td width="13%"><span onclick="getDef(\'' + parm + '\')">' + fnum + '</span></td>'
+		+ '<td width="10%">&nbsp;</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item
 		item = '<tr>' 
+		+ '<td width="15%"><hr></td>' 
+		+ '<td width="15%"><hr></td>' 
 		+ '<td width="20%"><hr></td>' 
 		+ '<td width="20%"><hr></td>' 
 		+ '<td width="20%"><hr></td>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="7%"><hr></td>' 
-		+ '<td width="13%"><hr></td>'
+		+ '<td width="10%"><hr></td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item		
 
@@ -627,8 +703,16 @@ function buildRoles(ns) {
 
 			for (let c = 0; c < role.rules.length; c++) {
 				if (typeof role.rules[c].apiGroups !== 'undefined') {
-					apiG = parseArray(role.rules[c].apiGroups);
+					grpInfo = parseArray(role.rules[c].apiGroups);
+					category = 'apiGroup'
 				}
+
+				if (typeof role.rules[c].nonResourceURLs !== 'undefined') {
+					grpInfo = parseArray(role.rules[c].nonResourceURLs);
+					category = 'nonResourceURLs'
+				}
+
+
 				if (typeof role.rules[c].resourceNames !== 'undefined') {
 					resourceNames = parseArray(role.rules[c].resourceNames);
 				}
@@ -640,21 +724,21 @@ function buildRoles(ns) {
 				}
 
 				item = '<tr>' 
-				+ '<td width="20%">&nbsp;</td>' 
-				+ '<td width="20%" class="align-top ">' + apiG + '</td>' 
+				+ '<td width="15%">&nbsp;</td>' 
+				+ '<td width="15%" class="align-top ">' + category + '</td>' 
+				+ '<td width="20%" class="align-top ">' + grpInfo + '</td>' 
 				+ '<td width="20%" class="align-top ">' + resourceNames + '</td>' 
 				+ '<td width="20%" class="align-top ">' + resources + '</td>' 
 				+ '<td width="10%" class="align-top">' + verbs + '</td>' 
-				+ '<td width="10%">&nbsp;</td>'
 				+ '</tr>';
 				nsHtml = nsHtml + item
 
 				item = '<tr>' 
+				+ '<td width="15%"><hr></td>' 
+				+ '<td width="15%"><hr></td>' 
 				+ '<td width="20%"><hr></td>' 
 				+ '<td width="20%"><hr></td>' 
 				+ '<td width="20%"><hr></td>' 
-				+ '<td width="20%"><hr></td>' 
-				+ '<td width="10%"><hr></td>' 
 				+ '<td width="10%"><hr></td>'
 				+ '</tr>';
 				nsHtml = nsHtml + item
@@ -662,23 +746,24 @@ function buildRoles(ns) {
 		} else {
 			console.log('No Role rules located for ns: ' + ns + ' content:' + JSON.stringify(role))
 			item = '<tr>' 
-			+ '<td width="20%">&nbsp;</td>' 
-			+ '<td width="20%" class="align-top ">&lt;blank&gt;</td>' 
-			+ '<td width="20%" class="align-top ">&lt;blank&gt;</td>' 
-			+ '<td width="20%" class="align-top ">&lt;blank&gt;</td>' 
+			+ '<td width="15%">&nbsp;</td>' 
+			+ '<td width="15%" class="align-top">&lt;No rules defined&gt;</td>' 
+			+ '<td width="20%" class="align-top">&lt;blank&gt;</td>' 
+			+ '<td width="20%" class="align-top">&lt;blank&gt;</td>' 
+			+ '<td width="20%" class="align-top">&lt;blank&gt;</td>' 
 			+ '<td width="10%" class="align-top">&lt;blank&gt;</td>' 
-			+ '<td width="10%">&nbsp;</td>'
 			+ '</tr>';
 			nsHtml = nsHtml + item
 
 			item = '<tr>' 
 			+ '<td width="20%"><hr></td>' 
+			+ '<td width="10%"><hr></td>'
 			+ '<td width="20%"><hr></td>' 
 			+ '<td width="20%"><hr></td>' 
 			+ '<td width="20%"><hr></td>' 
 			+ '<td width="10%"><hr></td>' 
-			+ '<td width="10%"><hr></td>'
 			+ '</tr>';
+			nsHtml = nsHtml + item
 		}
 
 	}
