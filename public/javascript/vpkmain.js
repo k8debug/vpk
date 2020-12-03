@@ -393,12 +393,14 @@ socket.on('schematicResult', function(data) {
 socket.on('securityResult', function(data) {
     k8cData = data.data;
     hideMessage();
-    security();       
+    buildSecArrays();
+    securityDefinitions();      
 });
 
 socket.on('securityUsageResult', function(data) {
     k8cData = data.data;
     hideMessage();
+    buildSecArrays();
     securityUsage();       
 });
 

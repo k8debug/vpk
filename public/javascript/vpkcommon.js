@@ -25,6 +25,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 let svgInfo = {};            			// tool tip pop-ups
 let workloadEventsInfo = {};			// workload events
 let nsResourceInfo = {};				// namespace resource lists
+
+// security arrays
 let securityRoleInfo = {};				// roles
 let securityRoleBindingInfo = {};		// role bindings
 let securitySubjectInfo = {};			// subjects
@@ -80,6 +82,24 @@ let	RoleRef_ClusterRoleCnt = 0;
 let bindingStatCounts = [];
 
 let crdRefCnt = 0;
+
+// color legend for security 
+let RBAClegend = '<div class="vpkfont-md text-dark ml-2 mb-2 mt-2"><span class="pr-1">Legend:</span>'
++ '<span class="text-light bg-rbn pl-1 pr-1">RoleBinding name</span>'
++ '&nbsp;&nbsp;'
++ '<span class="text-light bg-success pl-1 pr-1">Role name</span>'
++ '<span class="pl-4 pr-1 text-dark">Subject kind:</span>'
++ '<span style="width: 80px;" class="text-light bg-info pl-1 pr-1">ServiceAccount</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="bg-warning pl-1 pr-1">Group</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="text-light bg-danger pl-1 pr-1">User</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="text-light bg-primary pl-1 pr-1">SystemGroup</span>'
++ '&nbsp;&nbsp;'
++ '<span style="width: 80px;" class="text-light bg-secondary pl-1 pr-1">SystemUser</span>'
++ '<span class="pl-4 vpkfont-md">(click color bars in table for additional info)</span>';
+
 
 function openAll(type) {
 	collapseAction('O', type)
@@ -270,8 +290,7 @@ function checkImage(kind, api) {
 		image = 'unk';
 	}
 
-	console.log('Image: ' + image)
-
+	// if unknown use the apiGroup to determine image to display
 	if (image === 'unk') {
 		if (typeof api !== 'undefined') {
 			if (api.indexOf('openshift') > -1 ) {
@@ -671,6 +690,113 @@ function populateWhereRoleBound(binding) {
 		'fnum': binding.fnum,
 		'subjects': binding.subjects
     })
+}
+
+
+// build the Role information to populate the secInfoModal for Role
+function buildSecModalRole(data, key) {
+	let role = data;
+	let item;
+	let rtn = '';
+	let grpInfo = '';
+	let resourceNames = '';
+	let resources = '';
+	let verbs = '';
+	let category = '';
+	let fnum = '<na>';
+	let fParts = '';
+	let fname = '';
+	let parm = '';
+
+	if (typeof role.fnum !== 'undefined') {
+		fnum = role.fnum;
+		fParts = fnum.split('.');
+		fname = baseDir + '/config' + fParts[0] + '.yaml';
+		parm = fname + '::' + fParts[1] + '::' + name;
+	} else {
+		parm = 'missing::missing::missing';
+	}
+
+
+	let roleId = 
+	  '<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
+	+ '  <div>Role Name:&nbsp;<span class="text-light bg-success vpkfont-md">' + key + '</span></div>'
+	+ '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef6(\'' + parm + '\')">' + fnum + '</span>'
+	+ '  <span class="vpkfont-sm vpkcolor pl-1">(click # to view)</span></div>'
+	+ '</div><hr>';
+
+	let divSection = '<div class="events" ><table style="width:100%">';
+	let header = '<tr class="partsList"><th>Category</th><th>Category Values</th><th>Resource Names</th><th>Resources</th><th>Verbs</th></tr>';
+	rtn = roleId + divSection + header;
+
+	if (typeof role.rules !== 'undefined' && role.rules !== 'null' && role.rules !== null) {
+		for (let c = 0; c < role.rules.length; c++) {
+			category = '&nbsp;';
+			resourceNames = '&nbsp;'
+			resources = '&nbsp;'
+			verbs = '&nbsp;'
+			grpInfo = '&nbsp';
+			if (typeof role.rules[c].apiGroups !== 'undefined') {
+				grpInfo = parseArray(role.rules[c].apiGroups);
+
+				if (grpInfo === '' || grpInfo.length < 2) {
+					grpInfo = '&lt;blank&gt;'
+				}
+
+				category = 'apiGroup';
+			}
+
+			if (typeof role.rules[c].nonResourceURLs !== 'undefined') {
+				grpInfo = parseArray(role.rules[c].nonResourceURLs);
+				category = 'nonResourceURLs'
+			}
+
+			if (typeof role.rules[c].resourceNames !== 'undefined') {
+				resourceNames = parseArray(role.rules[c].resourceNames);
+			}
+			if (typeof role.rules[c].resources !== 'undefined') {
+				resources = parseArray(role.rules[c].resources);
+			}
+			if (typeof role.rules[c].verbs !== 'undefined') {
+				verbs = parseArray(role.rules[c].verbs);
+			}
+
+			if (grpInfo === '') {
+				grpInfo = '&lt;blank&gt;'
+			}
+
+			item = '<tr>' 
+			+ '<td width="15%" class="align-top ">' + category+ '</td>' 
+			+ '<td width="25%" class="align-top ">' + grpInfo + '</td>' 
+			+ '<td width="25%" class="align-top ">' + resourceNames + '</td>' 
+			+ '<td width="25%" class="align-top ">' + resources + '</td>' 
+			+ '<td width="10%" class="align-top">' + verbs + '</td>' 
+			+ '</tr>';
+			rtn = rtn + item
+
+			item = '<tr>' 
+			+ '<td width="15%"><hr></td>' 
+			+ '<td width="25%"><hr></td>' 
+			+ '<td width="25%"><hr></td>' 
+			+ '<td width="25%"><hr></td>' 
+			+ '<td width="10%"><hr></td>' 
+			+ '</tr>';
+			rtn = rtn + item
+		} 
+	} else {
+		console.log('No Role rules located for role: ' + key)
+		item = '<tr>' 
+		+ '<td width="15%" class="align-top ">No Rules</td>' 
+		+ '<td width="25%" class="align-top ">&nbsp;</td>' 
+		+ '<td width="25%" class="align-top ">&nbsp;</td>' 
+		+ '<td width="25%" class="align-top ">&nbsp;</td>' 
+		+ '<td width="10%" class="align-top">&nbsp;</td>' 
+		+ '</tr>';
+		rtn = rtn + item
+	}
+
+	rtn = rtn + '</table></div>';
+	return rtn;
 }
 
 
