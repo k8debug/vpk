@@ -30,18 +30,37 @@ function editDef(data) {
     var newData = rtn.split('\n');
     var hl = newData.length;
     var outData = [];
+    var line = '';
+    var image = 'k8';
+    var kind = '';
+    var api = '';
     for (var d = 0; d < hl; d++) {
-        outData.push(newData[d].substring(0) + '\n');
+        line = newData[d]
+        outData.push(line + '\n');
+        //line = line.trim();
+        if (line.startsWith('kind: ') ) {
+            kind = line.substring(5);
+            kind = kind.trim();
+        }
+        if (line.startsWith('apiVersion: ') ) {
+            api = line.substring(5);
+            api = api.trim();
+        }
+        image = checkImage(kind, api);       
     } 
     newData = null;
     rtn = outData.join('');
-    $("#editTitle").html(defkey);
+    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '.svg" width="50" height="50"></img>'
+    + '<div style="vertical-align:middle; display:inline;" class="vpkcolor vpkfont pl-2">'
+    + defkey
+    + '</div>';
+    $("#editTitle").html(editImage);
 
     initAceEditor(rtn);
-    $("#editorModal").modal({
-        backdrop: 'static',
-        keyboard: false        
-    });
+    // $("#editorModal").modal({
+    //     backdrop: 'static',
+    //     keyboard: false        
+    // });
 
     $('#editorModal').modal('show');
 
@@ -63,19 +82,19 @@ function initAceEditor(rtn) {
             enableLiveAutocompletion: true
         }
     )  
-    editor.commands.addCommand({
-        name: 'saveFile',
-        bindKey: {
-            win: 'Ctrl-S',
-            mac: 'Command-S',
-            sender: 'editor|cli'
-        },
-        exec: function(env, args, request) {
-            alert("Use the Save button to save the file");
-            // call function to save the file
-            // saveFile(currentEditFile);
-        }
-    });
+    // editor.commands.addCommand({
+    //     name: 'saveFile',
+    //     bindKey: {
+    //         win: 'Ctrl-S',
+    //         mac: 'Command-S',
+    //         sender: 'editor|cli'
+    //     },
+    //     exec: function(env, args, request) {
+    //         alert("Use the Save button to save the file");
+    //         // call function to save the file
+    //         // saveFile(currentEditFile);
+    //     }
+    // });
     editor.focus();
     editor.gotoLine(1,0, true);
     editor.renderer.scrollToRow(1);  

@@ -21,7 +21,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // build common vars and functions
 //----------------------------------------------------------
 
-let svgInfo = {};            // array of information for tool tips
+// objects that contain html sections that are dnynamically shown
+let svgInfo = {};            			// tool tip pop-ups
+let workloadEventsInfo = {};			// workload events
+let nsResourceInfo = {};				// namespace resource lists
+let securityRoleInfo = {};				// roles
+let securityRoleBindingInfo = {};		// role bindings
+let securitySubjectInfo = {};			// subjects
+
 let iCnt = 1;
 let oldNS = '@';
 let first = true;
@@ -147,51 +154,137 @@ function formatJSON(content) {
 	return rtn;
 } 
 
-function checkImage(kind) {
+function checkImage(kind, api) {
 	let image;
-	if (kind === 'Alertmanager') {
+	if (kind === 'k8') {
+		image = 'k8'
+	} else if (kind === 'API' || kind === 'Api' || kind === 'APIService') {
+		image = 'k8/api';
+	} else if (kind === 'Alertmanager') {
 		image = 'openshift/ocp-am';
+	} else if (kind === 'CertificateSigningRequest') {
+		image = 'k8/k8';
+	} else if (kind === 'ClusterRole') {
+		image = 'k8/c-role';
+	} else if (kind === 'ClusterRoleBinding') {
+		image = 'k8/crb';
+	} else if (kind === 'ComponentStatus') {
+		image = 'k8/k8';
 	} else if (kind === 'ConfigMap') {
 		image = 'k8/cm';
-	} else if (kind === 'CRD') {
-		image = 'k8/crd';
 	} else if (kind === 'ControllerRevision') {
 		image = 'k8/c-rev';
-	} else if (kind === 'DaemonSet') {
-		image = 'k8/ds';
 	} else if (kind === 'CronJob') {
 		image = 'k8/cronjob';
-	} else if (kind === 'Job') {
-		image = 'k8/job';
+	} else if (kind === 'CSIDriver') {
+		image = 'k8/k8';
+	} else if (kind === 'CSINode') {
+		image = 'k8/k8';
+	} else if (kind === 'CustomResourceDefinition' || kind === 'CRD') {
+		image = 'k8/crd';
+	} else if (kind === 'DaemonSet') {
+		image = 'k8/ds';
 	} else if (kind === 'Deployment') {
 		image = 'k8/deploy';
 	} else if (kind === 'DeploymentConfig') {
 		image = 'openshift/ocp-dc';
 	} else if (kind === 'DNS') {
 		image = 'openshift/ocp-dns';
+	} else if (kind === 'Endpoints') {
+		image = 'k8/ep';
+	} else if (kind === 'EndpointSlice') {
+		image = 'k8/eps';
+	} else if (kind === 'Etcd') {
+		image = 'k8/etcd';
+	} else if (kind === 'Event') {
+		image = 'k8/evt';
+	} else if (kind === 'FlowSchema') {
+		image = 'k8/k8';
 	} else if (kind === 'HorizontalPodAutoscaler') {
 		image = 'k8/hpa';
+	} else if (kind === 'Ingress') {
+		image = 'k8/ing';
+	} else if (kind === 'Job') {
+		image = 'k8/job';
+	} else if (kind === 'Lease') {
+		image = 'k8/k8';
+	} else if (kind === 'LimitRange') {
+		image = 'k8/limits';
+	} else if (kind === 'MutatingWebhookConfiguration') {
+		image = 'k8/k8';
+	} else if (kind === 'Namespace') {
+		image = 'k8/ns';
 	} else if (kind === 'Network') {
 		image = 'openshift/ocp-net';
+	} else if (kind === 'NetworkPolicy') {
+		image = 'k8/netpol';
+	} else if (kind === 'Node') {
+		image = 'k8/node';
 	} else if (kind === 'OCP-CRD') {
 		image = 'openshift/ocp-crd';
+	} else if (kind === 'PersistentVolumeClaim') {
+		image = 'k8/pvc';
+	} else if (kind === 'PersistentVolume') {
+		image = 'k8/pv';
+	} else if (kind === 'Pod') {
+		image = 'k8/pod';
+	} else if (kind === 'PodDisruptionBudget') {
+		image = 'k8/k8';
+	} else if (kind === 'PodSecurityPolicy') {
+		image = 'k8/psp';
+	} else if (kind === 'PodTemplate') {
+		image = 'k8/k8';
 	} else if (kind === 'Prometheus') {
 		image = 'openshift/ocp-prometheus';
+	} else if (kind === 'PriorityClass') {
+		image = 'k8/k8';
 	} else if (kind === 'ReplicaSet') {
 		image = 'k8/rs';
-	} else if (kind === 'HorizontalPodAutoscaler') {
-		image = 'k8/hpa';
 	} else if (kind === 'ReplicationController') {
 		image = 'k8/rc';
-	}  else if (kind === 'Node') {
-		image = 'k8/node';
+	} else if (kind === 'ResourceQuota') {
+		image = 'k8/quota';
+	} else if (kind === 'Role') {
+		image = 'k8/role';		
+	} else if (kind === 'RoleBinding') {
+		image = 'k8/rb';		
+	} else if (kind === 'RuntimeClass') {
+		image = 'k8/k8';		
+	} else if (kind === 'Secret') {
+		image = 'k8/secret';		
+	} else if (kind === 'Service') {
+		image = 'k8/svc';		
+	} else if (kind === 'ServiceAccount') {
+		image = 'k8/sa';			
 	} else if (kind === 'StatefulSet') {
 		image = 'k8/sts';
+	} else if (kind === 'StorageClass') {
+		image = 'k8/sc';
+	} else if (kind === 'ValidatingWebhookConfiguration') {
+		image = 'k8/k8';
+	} else if (kind === 'VolumeAttachment') {
+		image = 'k8/k8';
 	} else if (kind === 'Unknown') {
 		image = 'unk';
 	} else {
 		image = 'unk';
 	}
+
+	console.log('Image: ' + image)
+
+	if (image === 'unk') {
+		if (typeof api !== 'undefined') {
+			if (api.indexOf('openshift') > -1 ) {
+				image = 'openshift/ocp';
+			} else if (api.indexOf('coreos') > -1 ) {
+				image = 'openshift/ocp';
+			} else if (api.indexOf('k8s.io') > -1) {
+				image = 'k8/k8';
+			}
+		}
+	}
+
+
 	return image;
 }
 
@@ -229,18 +322,9 @@ function buildTipContent(data, type, fnum) {
 	if (type === 'Unknown') {
 		content = 'No resource type located or failed to properly be created.';
 
-	} else if (type === 'ConfigMap') {
-		if (typeof data[0] !== 'undefined' ) {
-			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				cnt++;
-				content = content + '(' + cnt + ') Name: ' + data[k].name + ' (Used by: '+ data[k].use +')<br>';
-			}
-		} else {
-			if (typeof data.name !== 'undefined') {
-				content = 'Name: ' + data.name;
-			}
-		}
+	} else if (type === 'Cluster') {
+		content = 'Name: ' + data + '<br>';  
+
 	} else if (type === 'ClusterRole') {
 		if (typeof data !== 'undefined' ) {
 			cnt = 0;			
@@ -272,6 +356,19 @@ function buildTipContent(data, type, fnum) {
 			}	
 		}
 
+	} else if (type === 'ConfigMap') {
+		if (typeof data[0] !== 'undefined' ) {
+			cnt = 0;			
+			for (let k = 0; k < data.length; k++) {
+				cnt++;
+				content = content + '(' + cnt + ') Name: ' + data[k].name + ' (Used by: '+ data[k].use +')<br>';
+			}
+		} else {
+			if (typeof data.name !== 'undefined') {
+				content = 'Name: ' + data.name;
+			}
+		}
+
 	} else if (type === 'Container') {
 		content = '' 
 		if (typeof data.containerNames !== 'undefined' ) {
@@ -301,7 +398,7 @@ function buildTipContent(data, type, fnum) {
 			content = content + 'Name: ' + data[0].name;  
 		}	
 
-	} else if (type === 'CRD') {
+	} else if (type === 'CRD') {  //CustomResourceDefinition
 		content = 'Name: ' + data;  
 
 		
@@ -331,6 +428,9 @@ function buildTipContent(data, type, fnum) {
 
 	} else if (type === 'HorizontalPodAutoscaler') {
 		content = formatJSON(data);  
+
+	} else if (type === 'Namespace') {
+		content = 'Name: ' + data + '<br>';  
 
 	} else if (type === 'PersistentVolumeClaim') {
 		if (typeof data[0] !== 'undefined' ) {

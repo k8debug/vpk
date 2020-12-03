@@ -262,6 +262,13 @@ body {
     background-color:#b4b4b4;
     color: white;
 } 
+
+.eventsList  {
+    font-size: 0.75rem;
+    background-color:#b4b4b4;
+    color: white;
+} 
+
 .parts {
     margin-left: 10px;
     font-size: 0.75rem;
@@ -319,4 +326,15 @@ body {
 }
 .bg-rbn {
     background-color: #ae6ec2
+}
+
+.modal { 
+    /*simple fix for multiple bootstrap modal backdrop issue: 
+    don't need to recalculate backdrop z-index;
+    https://stackoverflow.com/questions/19305821/multiple-modals-overlay/21816777 */
+      background: rgba(0, 0, 128, 0.2);
+}
+#decodeModal {
+    /* sequence this modal to the top of other modals */
+    z-index: 2000; 
 }

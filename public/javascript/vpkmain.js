@@ -46,6 +46,7 @@ var rootDir;
 var k8cData;
 var dsCounts;
 var dsToggle = 'kind';
+var bootstrapModalCounter = 0;
 
 //----------------------------------------------------------
 // document ready
@@ -54,6 +55,21 @@ $(document).ready(function() {
 
     // get version from server
     getVersion();
+ 
+    $('.modal').on("hidden.bs.modal", function (e) {
+        --bootstrapModalCounter;
+        if (bootstrapModalCounter > 0) {
+        //don't need to recalculate backdrop z-index; already handled by css
+        //$('.modal-backdrop').first().css('z-index', parseInt($('.modal:visible').last().css('z-index')) - 10);
+        $('body').addClass('modal-open');
+        }
+    }).on("show.bs.modal", function (e) {
+        ++bootstrapModalCounter;
+        //don't need to recalculate backdrop z-index; already handled by css
+    });
+
+
+
 
     $("#instructions").addClass("active");
     $("#instructions").addClass("show");
@@ -213,6 +229,10 @@ $(document).ready(function() {
 
 });
 
+// $(document).on('hidden.bs.modal', '.modal', function () {
+//     $('.modal:visible').length && $(document.body).addClass('modal-open');
+// });
+
 function printObject(o) {
     var out = '';
     for (var p in o) {
@@ -280,12 +300,12 @@ socket.on('getKStatus', function(data) {
 
 });
 
-socket.on('saveFileResults', function(data) {
-    $("#saveeStatus").empty();
-    $("#saveStatus").html('');
-    var resp = '<div class="ml-2 mt-0 pt-0 mb-0 pb-0">' + data.message + '</div>';
-    $("#saveStatus").html(resp); 
-});
+// socket.on('saveFileResults', function(data) {
+//     $("#saveeStatus").empty();
+//     $("#saveStatus").html('');
+//     var resp = '<div class="ml-2 mt-0 pt-0 mb-0 pb-0">' + data.message + '</div>';
+//     $("#saveStatus").html(resp); 
+// });
 
 socket.on('dynstat', function(data) {
     console.log('socket: dynstat');
@@ -341,7 +361,7 @@ socket.on('decodeDef', function(data) {
     }
 
     $("#decodeName").empty();
-    $("#decodeName").html('&nbsp;' + data.secret + '&nbsp;');
+    $("#decodeName").html('<span class="vpkcolor">&nbsp;' + data.secret + '&nbsp;</span>');
     $("#decode").empty();
     $("#decode").html(html);
     $('#decodeModal').modal('show');
@@ -463,6 +483,25 @@ function saveConfig() {
     socket.emit('saveConfig', { "managedFields": mFlds, "statusSection": sFlds} );
 }
 
+function getNsTable(ns) {
+    $("#schemHeader").html('Resources for namespace: <span class="font-weight-bold">' + ns + '</span>');
+    if (typeof nsResourceInfo[ns] !== 'undefined') {
+        $("#schemBody").html(nsResourceInfo[ns]);
+    } else {
+        $("#schemBody").html('No namespace resource information located');
+    }
+    $("#schemModal").modal('show');
+}
+
+function getEvtsTable(key) {
+    $("#schemHeader").html('<span class="vpkcolor vpkfont">Events for workload</span>');
+    if (typeof workloadEventsInfo[key] !== 'undefined') {
+        $("#schemBody").html(workloadEventsInfo[key]);
+    } else {
+        $("#schemBody").html('No events located of workload');
+    }
+    $("#schemModal").modal('show');
+}
 
 function showConfig() {
     socket.emit('getConfig');
@@ -471,6 +510,51 @@ function showConfig() {
 function getSecInfo(key) {
     $("#secInfoContent").html(key)
     $("#secInfoModal").modal('show')
+}
+
+function getRoleBindingByNs(ns) {
+    let key = '';
+    if (ns.startsWith('0000-')) {
+        key = ns;
+    } else {
+        key = '0000-' + ns;
+    }
+    if (typeof securityRoleBindingInfo[key] === 'undefined') {
+        buildRoleBindings(key);
+    } 
+    $("#schemBody").html(securityRoleBindingInfo[key]);
+    $("#schemHeader").html('RoleBindings for namespace: <span class="font-weight-bold">' + ns + '</span>');
+    $("#schemModal").modal('show');
+}
+
+function getSecRoleByNs(ns) {
+    let key = '';
+    if (ns.startsWith('0000-')) {
+        key = ns;
+    } else {
+        key = '0000-' + ns;
+    }
+    if (typeof securityRoleInfo[key] === 'undefined') {
+        buildRoles(key);
+    } 
+    $("#schemBody").html(securityRoleInfo[key]);
+    $("#schemHeader").html('Roles for namespace: <span class="font-weight-bold">' + ns + '</span>');
+    $("#schemModal").modal('show');
+}
+
+function getSecSubjectsByNs(ns) {
+    let key = '';
+    if (ns.startsWith('0000-')) {
+        key = ns;
+    } else {
+        key = '0000-' + ns;
+    }
+    if (typeof securitySubjectInfo[key] === 'undefined') {
+        buildRoleBindings(key);
+    } 
+    $("#schemBody").html(securitySubjectInfo[key]);
+    $("#schemHeader").html('Subjects for namespace: <span class="font-weight-bold">' + ns + '</span>');
+    $("#schemModal").modal('show');
 }
 
 function getSecRole(key) {
@@ -551,36 +635,6 @@ function clearStats() {
     $("#statsData").html('');
 }
 
-function saveFile() {
-    $("#saveStatus").empty();
-    $("#saveStatus").html('');
-    var document = editor.getValue();
-    data = {"filename": currentEditFile, "content": document}
-    socket.emit('saveFile', data);
-}
-
-function saveFileAs() {
-    var resp = '<div class="col-md-12 pb-2">' 
-    + '<label for="saveAsName">&nbsp;New file name:&nbsp;</label>'
-    + '<input id="saveAsName" class="form-control-sm col-6">' 
-    + '<button id="saProcess" class="btn btn-sm btn-outline-primary ml-4" onclick="processSA()">&nbsp;Process</button>'
-    + '<button id="saCancel" class="btn btn-sm btn-outline-primary ml-4" onclick="cancelSA()">&nbsp;Cancel</button>'
-    + '</div>'
-
-    $("#saveStatus").empty();
-    $("#saveStatus").html('');
-    $("#saveStatus").html(resp);
-    resp = '';
-    // hide the footer
-    $("#saFooter").hide();
-}
-
-function cancelSA() {
-    $("#saveStatus").empty();
-    $("#saveStatus").html('');
-    $("#saFooter").show();
-}
-
 function showEvents(what) {
     what = '#' + what;
     // (\'events-' + evtCnt +'\')
@@ -606,25 +660,6 @@ function closeGetCluster() {
     //clearDisplay();
     getSelectLists();
     $("#clusterModal").modal('hide');
-}
-
-function processSA() {
-    var nfn = '';
-    nfn = $("#saveAsName").val();
-    if (typeof nfn !== 'undefined') {
-        if (nfn.length > 0 ) {
-            currentEditFile = nfn;
-            $("#saveStatus").empty();
-            $("#saveStatus").html('');
-            $("#saFooter").show();
-            currentEditFile = nfn;
-            saveFile();
-        } else {
-            alert("Error processing save as, file name field is required and cannot be empty.")
-        }
-    } else {
-        alert("Error processing save as request.");
-    }
 }
 
 // send request to server to get config info
@@ -689,7 +724,7 @@ function getDef2(def) {
 
 // send request to server to get object definition
 function getDef3(def) {
-    $("#multiModal").modal('hide');
+    //$("#multiModal").modal('hide');
     selectedDef = def;
     if (selectedDef.indexOf('undefined') > -1) {
         showMessage('Unable to locate data source yaml.','fail');
@@ -700,7 +735,7 @@ function getDef3(def) {
 
 // send request to decode object
 function getDef4(def, secret) {
-    $("#multiModal").modal('hide');
+    //$("#multiModal").modal('hide');
     selectedDef = def;
     if (selectedDef.indexOf('undefined') > -1) {
         showMessage('Unable to locate data source yaml.','fail');
@@ -735,6 +770,12 @@ function getDef7(data) {
     let items = data.split('.');
     let src = rootDir + '/config' + items[0] + '.yaml';
     selectedDef = src + '::' + items[1] + '::edit';
+    editObj();
+}
+
+// send request to server to get object definition
+function getDef8(def) {
+    selectedDef = def;
     editObj();
 }
 

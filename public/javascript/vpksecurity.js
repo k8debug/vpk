@@ -35,7 +35,7 @@ let RBAClegend = '<div class="vpkfont-md text-dark ml-2 mb-2 mt-2"><span class="
 + '<span style="width: 80px;" class="text-light bg-primary pl-1 pr-1">SystemGroup</span>'
 + '&nbsp;&nbsp;'
 + '<span style="width: 80px;" class="text-light bg-secondary pl-1 pr-1">SystemUser</span>'
-+ '<span class="pl-4 vpkfont-md">(click on color bar in following table to view additional information)</span>'
++ '<span class="pl-4 vpkfont-md">(click color bars in table for additional info)</span>'
 
 function initVars() {
     oldSecNS = '@';
@@ -146,7 +146,7 @@ function buildRBACs() {
 			+ '<div id="collid-' + secBreakID + '" class="collapse">';
 
 			let nsWide = secNSChange(oldSecNS,secType);
-
+ 
 			rdata = rdata + breakData + nsWide;
 		}
 	}
@@ -291,14 +291,12 @@ function buildSubjects(ns) {
 	keys.sort();
 
 	secBldCnt++;
-	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ secBldCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;RoleBinding Subjects'
-	+ '</div>'
-	+ '<div id="parts-' + secBldCnt + '" class="collapse">';
-	let bottomButton = '<button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ secBldCnt + '">&nbsp;Close above Subjects list&nbsp;</button>';
+
+	let = secIcon = '<div id="secRB-"' + secBldCnt + '" class="row ml-4 mt-2">'
+	+ '<img style="float:left" src="images/k8/subjects.svg" width="40" height="40" onclick="getSecSubjectsByNs(\'' + ns +'\')" />'
+	+ '<div class="vpkfont-md vpkcolor ml-2 mt-2">'
+	+ '  <span onclick="getSecSubjectsByNs(\'' + ns +'\')">&nbsp;&nbsp;Subjects</span>'
+	+ '</div></div>';
 	let divSection = '<div class="events" ><hr><table style="width:100%">';
 	let header = '<tr class="partsList"><th>Subject Kind</th><th>Subject Name</th><th>RoleRef Kind</th><th>RoleRef</th></tr>';
 
@@ -307,18 +305,14 @@ function buildSubjects(ns) {
 	let nsHtml = '';
 	let item;
 	let rtn = '';
-	let name;
 	let fnum;
-	let parm;
 	let elem;
-	let fParts;
 	let subject;
 	let data;
-	let uKey;
 	let roleK;
 	let roleRefName;
 
-	rtn = partsBar + divSection + RBAClegend + header;
+	nsHtml = divSection + RBAClegend + header;
 
 	for (let k = 0; k < keys.length; k++) {
 		subs = subsData[keys[k]]
@@ -326,14 +320,12 @@ function buildSubjects(ns) {
 		sKeys.sort();
 		sKeys.sort((a, b) => (a.name > b.name) ? 1 : (a.name === b.name) ? ((a.roleKind > b.roleKind) ? 1 : -1) : -1 );
 
-
 		for (r = 0; r < sKeys.length; r++) {
 			elem = subs[sKeys[r]];
 
 			if (elem.roleKind === 'Role') {
 				continue;
 			}
-
 			if (ns === '@subjects@') {
 				if (elem.namespace === '') {
 					elem.namespace = '<cluster>'
@@ -344,13 +336,8 @@ function buildSubjects(ns) {
 				}
 			}
 
-
-
-			fParts = elem.fnum.split('.');
-			fname = baseDir + '/config' + fParts[0] + '.yaml';
-			parm = fname + '::' + fParts[1] + '::' + name;
-	
-			data = []
+			fnum = elem.fnum;
+			data = [];
 			data.push({'name': elem.name, 'kind': elem.kind});
 			subject = parseRBSubject(data, false, elem.fnum)
 
@@ -381,11 +368,19 @@ function buildSubjects(ns) {
 			nsHtml = nsHtml + item		
 		}
 	}
-	if (nsHtml !== header) {
-		rtn = rtn + nsHtml;
+ 
+	rtn = rtn + secIcon;
+	nsHtml = nsHtml + '</table></div>';
+
+	// add content to the array
+	let bldKey = '0000-'+ns;
+	if (typeof securitySubjectInfo[bldKey] === 'undefined') {
+		securitySubjectInfo[bldKey] = nsHtml;
+	} else {
+		securitySubjectInfo[bldKey] = nsHtml;
 	}
-	
-	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
+
+
 	used = null;
 	return rtn;
 }
@@ -403,15 +398,12 @@ function buildRoleBindings(ns) {
 		return
 	}
 	secBldCnt++;
-	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ secBldCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbspRoleBindings'
-	+ '</div>'
-	+ '<div id="parts-' + secBldCnt + '" class="collapse">';
 
-	let bottomButton = '<button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ secBldCnt + '">&nbsp;Close above RoleBinding list&nbsp;</button>';
+	let = secIcon = '<div id="secRB-"' + secBldCnt + '" class="row ml-4 mt-2">'
+	+ '<img style="float:left" src="images/k8/rb.svg" width="40" height="40" onclick="getRoleBindingByNs(\'' + nsKey +'\')" />'
+	+ '<div class="vpkfont-md vpkcolor ml-2 mt-2">'
+	+ '  <span onclick="getRoleBindingByNs(\'' + nsKey +'\')">&nbsp;&nbsp;RoleBinding</span>'
+	+ '</div></div>';
 	let divSection = '<div class="events" ><hr><table style="width:100%">';
 	let header = '<tr class="partsList"><th>RoleBinding Name</th><th>Role Name</th><th>Subject Name & Kind</th></tr>';
 
@@ -428,11 +420,9 @@ function buildRoleBindings(ns) {
 	let fnum;
 	let subject;
 	let roleName;
-	let parm;
-	let fname;
 	let uKey;
 	let bKind;
-	rtn = partsBar + divSection + RBAClegend + header;
+	nsHtml = divSection + RBAClegend + header;
 
 	for (r = 0; r < hl; r++) {
 		bind = bindings[r];
@@ -450,18 +440,18 @@ function buildRoleBindings(ns) {
 				if (typeof bind.subjects[0].kind !== 'undefined') {
 					bKind = bind.subjects[0].kind
 				} else {
-					console.log('RoleBinding ns: ' + ns)
-					console.log('No bind.subjects[0].kind, skipping: ' + JSON.stringify(bind, null, 2))
+					//console.log('RoleBinding ns: ' + ns)
+					//console.log('No bind.subjects[0].kind, skipping: ' + JSON.stringify(bind, null, 2))
 					bKind = '<blank>';
 				}		
 			} else {
-				console.log('RoleBinding ns: ' + ns)
-				console.log('No bind.subjects[0], skipping: ' + JSON.stringify(bind, null, 2))
+				//console.log('RoleBinding ns: ' + ns)
+				//console.log('No bind.subjects[0], skipping: ' + JSON.stringify(bind, null, 2))
 				bKind = '<blank>';
 			}
 		} else {
-			console.log('RoleBinding ns: ' + ns)
-			console.log('No bind.subjects, skipping: ' + JSON.stringify(bind, null, 2))
+			//console.log('RoleBinding ns: ' + ns)
+			//console.log('No bind.subjects, skipping: ' + JSON.stringify(bind, null, 2))
 			bKind = '<blank>';
 		}
 
@@ -473,19 +463,15 @@ function buildRoleBindings(ns) {
 		}
 
 		fnum = bind.fnum;
-		let fParts = fnum.split('.');
-		fname = baseDir + '/config' + fParts[0] + '.yaml';
-		parm = fname + '::' + fParts[1] + '::' + name;
-
 		subject = parseRBSubject(bind.subjects, true, bind.fnum);
 		if (subject === '') {
 			subject = '<span class="noSubject">&lt;No subjects defined&gt;</span>'
 		}
 
 		item = '<tr>' 
-		+ '<td width="34%"  class="align-top"><span class="text-light bg-rbn" onclick="getDef(\'' + parm + '\')">' + name + '</td>' 
-		+ '<td width="33%"  class="align-top"><span class="text-light bg-success" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
-		+ '<td width="33%"  class="align-top" >' + subject + '</td>' 
+		+ '<td width="34%" class="align-top"><span class="text-light bg-rbn" onclick="getDef7(\'' + fnum + '\')">' + name + '</td>' 
+		+ '<td width="33%" class="align-top"><span class="text-light bg-success" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
+		+ '<td width="33%" class="align-top" >' + subject + '</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item
 		item = '<tr>' 
@@ -494,18 +480,16 @@ function buildRoleBindings(ns) {
 		+ '<td width="33%"><hr></td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item		
-
-	}
-
-	if (nsHtml !== header) {
-		rtn = rtn + nsHtml;
 	}
 	
-	
-	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
+	rtn = rtn + secIcon;
+	nsHtml = nsHtml + '</table></div>';
 
-	if (rtn.indexOf('undefined') > -1) {
-		console.log(rtn);
+	// add content to the array
+	if (typeof securityRoleBindingInfo[ns] === 'undefined') {
+		securityRoleBindingInfo[ns] = nsHtml;
+	} else {
+		securityRoleBindingInfo[ns] = nsHtml;
 	}
 
 	used = null;
@@ -629,21 +613,17 @@ function buildRoles(ns) {
 	}
 	secBldCnt++;
 
-	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ secBldCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;Roles'
-	+ '</div>'
-	+ '<div id="parts-' + secBldCnt + '" class="collapse">';
+	let = secIcon = '<div id="secRB-"' + secBldCnt + '" class="row ml-4 mt-2">'
+	+ '<img style="float:left" src="images/k8/role.svg" width="40" height="40" onclick="getSecRoleByNs(\'' + nsKey +'\')" />'
+	+ '<div class="vpkfont-md vpkcolor ml-2 mt-2">'
+	+ '  <span onclick="getSecRoleByNs(\'' + nsKey +'\')">&nbsp;&nbsp;Role</span>'
+	+ '</div></div>';
 
-	let bottomButton = '<button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ secBldCnt + '">&nbsp;Close above Role list&nbsp;</button>';
 	let divSection = '<div class="events" ><hr><table style="width:100%">';
 	let header = '<tr class="partsList"><th>Role Name</th><th>Category</th><th>Category Values</th><th>Resource Names</th><th>Resources</th><th>Verbs</th></tr>';
 
 	//data to show
 	let roles = k8cData[nsKey].Role;
-	
 
 	roles.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
 
@@ -660,7 +640,7 @@ function buildRoles(ns) {
 	let verbs;
 	let parm;
 	let fname;
-	rtn = partsBar + divSection + RBAClegend + header;
+	nsHtml = divSection + RBAClegend + header;
 
 	for (r = 0; r < hl; r++) {
 		grpInfo = '';
@@ -767,15 +747,15 @@ function buildRoles(ns) {
 		}
 
 	}
-	if (nsHtml !== header) {
-		rtn = rtn + nsHtml;
-	}
-	
-	
-	rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
-	// build the roleBinding sections
-	if (rtn.indexOf('undefined') > -1) {
-		console.log(rtn);
+
+	rtn = rtn + secIcon;
+	nsHtml = nsHtml + '</table></div>';
+
+	// add content to the array
+	if (typeof securityRoleInfo[ns] === 'undefined') {
+		securityRoleInfo[ns] = nsHtml;
+	} else {
+		securityRoleInfo[ns] = nsHtml;
 	}
 
 	return rtn;

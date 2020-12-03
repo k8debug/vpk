@@ -228,15 +228,6 @@ function nsChange(ns) {
 		titleNS = 'namespace'; 
 	}
 	partsCnt++;
-	let partsBar = '<div class="partsBar"><button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;&nbsp;Press to toggle viewing&nbsp;&nbsp;</button>&nbsp;&nbsp;Resources in ' + titleNS
-	+ '</div>'
-	+ '<div id="parts-' + partsCnt + '" class="collapse">'
-	let bottomButton = '<button type="button" ' 
-	+ ' class="btn btn-toggle btn-sm vpkButtons" data-toggle="collapse" data-target="#parts-' 
-	+ partsCnt + '">&nbsp;Close above Resource list&nbsp;</button>'
-
 	let divSection = '<div class="events" ><hr><table style="width:100%">'
 	let header = '<tr class="partsList"><th>API Version</th><th>Kind</th><th>Resource Name</th><th>ID # (click ID # to view)</th></tr>'
 	let nsHtml = '';
@@ -253,23 +244,23 @@ function nsChange(ns) {
 	let parm;
 	let fname;
 	let api;
-	let getDef = 'getDef';
+	let getDef8 = 'getDef8';
 	let getDefSec = 'getDef5';
 	let getD;
 	if (typeof k8cData[nsKey] !== 'undefined'){
-		rtn = partsBar + divSection;
+		nsHtml = divSection;
 		keys = Object.keys(k8cData[nsKey]);
 		keys.sort();
 
 		for (k = 0; k < keys.length; k++) {
 			key = keys[k];
-			if (key === 'display' || key === 'CRB') {
+			if (key === 'display' || key === 'CRB' || key === 'Pods') {
 				continue;
 			}
-			nsHtml = header;
+			nsHtml = nsHtml + header;
 			parts = k8cData[nsKey][key];
 			let nArray = [];
-			//parts.sort( (a, b) => (a.name > b.name) ? 1 : (a.name === b.name) );
+
 			hl = parts.length;
 			for (d = 0; d < hl; d++) {
 				nArray.push(parts[d].name+'#@@#'+parts[d].fnum+'#@@#'+parts[d].api);
@@ -291,7 +282,7 @@ function nsChange(ns) {
 				if (key === 'Secret') {
 					getD = getDefSec;
 				} else {
-					getD = getDef;
+					getD = getDef8;
 				}
 				item = '<tr>' 
 				+ '<td width="25%">' + api + '</td>' 
@@ -301,12 +292,13 @@ function nsChange(ns) {
 				+ '</tr>';
 				nsHtml = nsHtml + item
 			}
-			if (nsHtml !== header) {
-				rtn = rtn + nsHtml;
-			}
 		}
-		
-		rtn = rtn + '</table><hr>' + bottomButton + '</div></div>';
+		nsHtml = nsHtml + '</table><hr></div>';
+		if (typeof nsResourceInfo[ns] === 'undefined') {
+			nsResourceInfo[ns] = nsHtml;
+		} else {
+			nsResourceInfo[ns] = nsHtml;
+		}
 	}
 	return rtn;
 }
@@ -333,12 +325,28 @@ function process(fnum) {
 	height = 0;
 	outterName = 'No defined workload name';
 	html = '';
+
+	// add the namespace and cluster icons 
+	let rtnHeader = svgHeader(k8cData[fnum],fnum)
+	if (rtnHeader.bnds.show === true ) {
+		html = html + '<g id="configH-' + fnum + '" transform="translate(5, -20)">' + rtnHeader.rtn + '</g>';
+	}
+
 	// config
 	let rtnConfig = svgConfig(k8cData[fnum], fnum);
 	if (rtnConfig.bnds.show === true ) {
 		cfgS = 50;
-		html = html + '<g id="config-' + fnum + '" transform="translate(350, ' + cfgS + ')">' + rtnConfig.rtn + '</g>';
+		html = html + '<g id="config-' + fnum + '" transform="translate(350, ' + (cfgS + 25) + ')">' + rtnConfig.rtn + '</g>';
 		cfgH = rtnConfig.bnds.height;
+	}
+
+	// check if events shoud be built
+	if (typeof k8cData[fnum].Events !== 'undefined') {
+		bldEvents(fnum);
+		if (cfgH === 0) {
+			cfgS = 50;
+			cfgH = 100;
+		}
 	}
 
 	// generators
@@ -562,17 +570,13 @@ function process(fnum) {
 		html = html 
 		+ '<rect  x="875" y="0" width="250" height="' 
 		+ height 
-		+ '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>'
-		//+ '<line x1="875" y1="0" x2="875" y2="' + height + '" stroke-width="1"  stroke="black" stroke-linecap="round" stroke-dasharray="5, 5"/>'
-		+ '<text x="900" y="25" class="workloadText">Cluster level resources</text>'
-		+ '<text x="900" y="40" class="pickIcon">(Click icon to view detail)</text>'
+		+ '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>';
 	}
 
 	if (rtnGen.bnds.clusterBar === true) {
 		let xPos = 900;
 		if (typeof rtnGen.bnds.crd1 !== 'undefined') {
 			crdRefCnt++;
-			let bsg1 = + buildSvgInfo(data.PersistentVolumeClaim, fnum, 'StorageClass') 
 			let what1 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img1 + '.svg" '
 			+ 'onmousemove="showTooltip(evt, \'' 
 			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr1, crdRefCnt, 'Ref')
@@ -601,68 +605,146 @@ function process(fnum) {
 	}
 
 
+	// build the outter box 
 	let outterBox = '<g>'
 	+ '<rect  x="5" y="0" width="845" height="' 
 	+ height 
 	+ '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>'
-	+ '<text x="15" y="25" class="workloadText">Workload: ' 
+	+ '<text x="15" y="67" class="workloadText">Workload: ' 
 	+ outterName 
 	+ '</text>'
-	+ '<text x="15" y="40" class="pickIcon">(Click icon to view detail)&nbsp;&nbsp;' + fnum + '</text>'
+	+ '<text x="15" y="80" class="pickIcon">(Click icons to view detail)&nbsp;&nbsp;' + fnum + '</text>'
+
+	+ '<line  x1="15" x2="55" y1="95" y2="95" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+	+ '<line  x1="55" x2="50" y1="95" y2="90" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+	+ '<line  x1="55" x2="50" y1="95" y2="100" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+	+ '<text  x="65" y="100" >References</text>'
+
+	+ '<line  x1="15" x2="55" y1="115" y2="115" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
+	+ '<line  x1="55" x2="50" y1="115" y2="110" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
+	+ '<line  x1="55" x2="50" y1="115" y2="120" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
+	+ '<text  x="65" y="120" >Creates</text>'
+
 	+ '</g>'
 	html = html + outterBox;	
 
-	let nBar = '<div class="eventBar" data-toggle="collapse" data-target="#events-' + evtCnt + '"></div>'
-	+ '<div id="events-' + evtCnt + '" class="collapse">'
+	// let nBar = '<div class="eventBar" data-toggle="collapse" data-target="#events-' + evtCnt + '"></div>'
+	// + '<div id="events-' + evtCnt + '" class="collapse">'
 
-	// build the table of Event messages
-	if (typeof k8cData[fnum].Events !== 'undefined') {
-		let evts = k8cData[fnum].Events;
-		let hl = evts.length;
-		if (hl > 0) {
-			let msg;
-			let evtHtml = '<div class="events" ><hr><table style="width:100%">' 
-			+ '<tr style="text-align:center"><th>Type</th><th>Reason</th><th>Object</th>' 
-			+ '<th>Message</th><th>Occurences</th></tr>'
-			for (let e = 0; e < hl; e++) {
-				msg = '<tr>'
-				+ '<td width="5%"><hr></td>'
-				+ '<td width="10%"><hr></td>'
-				+ '<td width="20%"><hr></td>'
-				+ '<td width="45%"><hr></td>'
-				+ '<td width="20%"><hr></td></tr>'
-				+ '<tr>' 
-				+ '<td width="5%">'  + evts[e].type + '</td>' 
-				+ '<td width="10%">' + evts[e].reason + '</td>' 
-				+ '<td width="20%">' + evts[e].kind+'/'+evts[e].name + '</td>' 
-				+ '<td width="45%">' + evts[e].message + '</td>'
-				+ '<td width="20%"><b>First:</b> ' + formatDate(evts[e].firstTime) + '<br><b>Last:</b>&nbsp;' + formatDate(evts[e].lastTime) + '<br>' + '<b>Count:</b> ' + evts[e].count + '</td>' 
-				+ '</tr>';
-				evtHtml = evtHtml + msg
-				evts[e].used = true;
-			}
-			k8cData[fnum].Events = evts;
-			evtHtml = evtHtml + '</table><hr></div>';
-			rdata = rdata + nBar + evtHtml + '</div>'
-		}
 
-		if (hl > 0) {
-			// Place button inside the schematic border to view Events
-			let evtBtn = '<rect  x="640" y="9" width="160" height="25" ' 
-			+ ' rx="3" stroke-width="1.0" stroke="#3d7eba" fill="#eff542" ' 
-			+ ' onclick="showEvents(\'events-' + evtCnt +'\')"/>'
-			+ '<text x="650" y="25" class="pickIcon" '
-			+ ' onclick="showEvents(\'events-' + evtCnt +'\')">Toggle viewing workload events</text>'
-
-			html = html + evtBtn;
-		}
-	}
 
 	iCnt++;
 	height = height + 50;  // adding visual space between svg
 	html = '<svg id="fnum-' + fnum + '" width="1285" height="' + height + '">' +  html + '</svg>';
 	return html;
 }
+
+function bldEvents(fnum) {
+	// build the table of Event messages
+	if (typeof k8cData[fnum].Events !== 'undefined') {
+		let evts = k8cData[fnum].Events;
+		let hl = evts.length;
+		if (hl > 0) {
+			let msg;
+			let evtHtml = '<div class="events"><table style="width:100%">' 
+			+ '<tr class="eventsList text-center" ><th>Type</th><th>Reason</th><th>Object</th>' 
+			+ '<th>Message</th><th>Occurences</th></tr>'
+			for (let e = 0; e < hl; e++) {
+				msg = '<tr class="mb-0 mt-0">'
+				+ '<td width="5%"><hr class="mb-0 mt-0"></td>'
+				+ '<td width="10%"><hr class="mb-0 mt-0"></td>'
+				+ '<td width="20%"><hr class="mb-0 mt-0"></td>'
+				+ '<td width="45%"><hr class="mb-0 mt-0"></td>'
+				+ '<td width="20%"><hr class="mb-0 mt-0"></td></tr>'
+				+ '<tr>' 
+				+ '<td width="5%"  class="vpkfont-sm"  onclick="getDef7(\'' + evts[e].fnum +'\')">'  + evts[e].type + '</td>' 
+				+ '<td width="10%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' + evts[e].reason + '</td>' 
+				+ '<td width="20%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' + evts[e].kind+'/'+evts[e].name + '</td>' 
+				+ '<td width="45%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' + evts[e].message + '</td>'
+				+ '<td width="20%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' 
+				+ '<b>Occurence count:</b> ' + evts[e].count + '<br>' 
+				+ '<b>First:</b> ' + formatDate(evts[e].firstTime) + '<br>'
+				+ '<b>Last:</b>&nbsp;' + formatDate(evts[e].lastTime) 
+				+ '</td></tr>';
+				evtHtml = evtHtml + msg;
+				evts[e].used = true;
+			}
+			k8cData[fnum].Events = evts;
+			evtHtml = evtHtml + '</table></div>';
+
+			if (typeof workloadEventsInfo[fnum] === 'undefined') {
+				workloadEventsInfo[fnum] = evtHtml;
+			} else {
+				workloadEventsInfo[fnum] = evtHtml;
+			}
+		}
+
+		// show the events icon if there are events
+		if (hl > 0) {
+			let evtMsg = '' + hl + ' events'
+			let evtBtn = '<rect  x="200" y="90" width="75" height="75" rx="15" stroke-dasharray="1, 2" ' 
+			+ ' stroke-width="1"  stroke="black" fill="#c5a3ff"/>'
+			
+			+ '<image x="218"  y="105" width="40"  height="40" href="images/k8/evt.svg" onmousemove="showTooltip(evt, \''
+			+ buildSvgInfo(evtMsg, fnum, 'Events')
+			+ '\');" onmouseout="hideTooltip()"  onclick="getEvtsTable(\'' + fnum +'\')" />'
+			html = html + evtBtn;
+			
+		}
+	}	
+
+}
+
+
+
+function svgHeader(data, fnum) {
+	let rect1 = '<rect  x="0"   y="20" width="845" height="50" rx="15" stroke-dasharray="1, 2" ' 
+	+ ' stroke-width="1"  stroke="none" fill="#c4c3be"/>';
+
+	let rect2 = '<rect  x="870" y="20" width="250" height="50" rx="15" fill="#326ce5"/>';
+	
+	let rectH = 45;
+	let rtn = '';
+	let bnds = {'height': 0, 'width': 845, 'show': true};
+
+	// namespace and cluster icons
+	rectH = 45;
+	bnds.height = 45;
+	rtn = rtn
+	+ '<image x="10"  y="22" width="45"  height="45" href="images/k8/ns.svg" onmousemove="showTooltip(evt, \''
+	+ buildSvgInfo(data.namespace, fnum, 'Namespace')
+	+ '\');" onmouseout="hideTooltip()"  onclick="getNsTable(\'' + data.namespace +'\')"/>'
+
+	+ '<image x="1065" y="22" width="45"  height="45" href="images/k8/k8.svg" onmousemove="showTooltip(evt, \''
+	+ buildSvgInfo('cluster', fnum, 'Cluster')
+	+ '\');" onmouseout="hideTooltip()"  onclick="getDef7(\'' + fnum +'\')"/>'
+	+ '<text x="890" y="50" fill="white" class="workloadText">Cluster level resources</text>'
+
+	let roleNs = '0000-' + data.namespace;
+	if (typeof k8cData[roleNs].RoleBinding !== 'undefined') {
+		rtn = rtn
+		+ '<image x="750"  y="22" width="45"  height="45" href="images/k8/rb.svg" onmousemove="showTooltip(evt, \''
+		+ buildSvgInfo(data.namespace, fnum, 'RoleBinding')
+		+ '\');" onmouseout="hideTooltip()"  onclick="getRoleBindingByNs(\'' + data.namespace +'\')"/>'
+
+		+ '<image x="675"  y="22" width="45"  height="45" href="images/k8/role.svg" onmousemove="showTooltip(evt, \''
+		+ buildSvgInfo(data.namespace, fnum, 'Roles')
+		+ '\');" onmouseout="hideTooltip()"  onclick="getSecRoleByNs(\'' + data.namespace +'\')"/>'	
+
+		+ '<image x="600"  y="22" width="45"  height="45" href="images/k8/subjects.svg" onmousemove="showTooltip(evt, \''
+		+ buildSvgInfo(data.namespace, fnum, 'Subject')
+		+ '\');" onmouseout="hideTooltip()"  onclick="getSecSubjectsByNs(\'' + data.namespace +'\')"/>'
+	}
+
+	if (bnds.show === true) {
+		rtn = rect1 + rect2 + rtn;
+	}
+	return {'bnds': bnds, 'rtn': rtn}
+}
+
+ 
+
+
 
 
 function svgPVC(data, fnum) {
@@ -808,7 +890,7 @@ function svgIAM(data, fnum) {
 
 function svgNetwork(data, fnum) {
 	let rectP1 = '<rect  x="0" y="0" width="250" height="' 
-	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="lightblue"/>'
+	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#c4faf8"/>'
 	let rectH = 0;	
 	let rtn = '';
 	let bnds = {'height': 0, 'width': 250, 'show': false};
@@ -1077,6 +1159,7 @@ function svgGenerators(data, fnum) {
 
 	return {'bnds': bnds, 'rtn': rtn}
 }
+
 
 function svgConfig(data, fnum) {
 	let rectP1 = '<rect  x="0"   y="0"  width="250" height="' 

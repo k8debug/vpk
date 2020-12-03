@@ -428,7 +428,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -471,7 +471,7 @@
 
                     </div>
                     <div id="clusterModalFooter" class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="closeGetCluster()">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="closeGetCluster()">Close</button>
                     </div>
                 </div>
             </div>
@@ -486,23 +486,43 @@
                     <div class="modal-header">
                         <div id="dirHeader">
                             <span class="vpkfont">Decoded content for secret:&nbsp;&nbsp;</span>
-                            <span class="vpkfontI" id="decodeName"></span>
+                            <span class="vpkfont vkpcolor" id="decodeName"></span>
                         </div>
                     </div>
                     <div class="modal-body">
                        
-                        <textarea id="decode" rows="37" cols="125" class="vpkfont-decode">
+                        <textarea id="decode" rows="33" cols="125" class="vpkfont-decode">
                             <!-- content here -->
                         </textarea> 
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- ==================================== -->
+        <!-- Schematic Modal section              -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="schemModal" tabindex="-1" role="dialog">
+             <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="schemHeader" class="vpkfont vpkcolor">
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="schemBody" class="vpkfont">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ==================================== -->
         <!-- Change directory Modal section       -->
@@ -514,6 +534,10 @@
                         <div id="dirHeader">
                             <h6 class="modal-title vpkcolor">Previous captured instance</h6>
                         </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+
                     </div>
                     <div class="modal-body">
 
@@ -540,9 +564,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div id="chgDirFooter" class="modal-footer">
-                        <button id="closeChgDir" type="button" class="btn btn-primary" onclick="closeChgDir()">Close</button>
+                        <button id="closeChgDir" type="button" class="btn btn-sm btn-primary" onclick="closeChgDir()">Close</button>
                     </div>
                 </div>
             </div>
@@ -611,9 +634,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="modal-footer" style="background-color: #eee;">
-                        &nbsp;
-                    </div> -->
                 </div>
             </div>
         </div>
@@ -635,7 +655,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -650,19 +670,20 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <div id="multiHeader">
-                            <h6 class="modal-title vpkcolor">Select resource</h6>
+                            <!-- <h6 class="modal-title vpkcolor">Select resource</h6> -->
+                            <span class="vkpfont vpkcolor">Multiple resources</span>
                         </div>
                     </div>
                     <div class="modal-body">
-						<div style="font-size: 80%;">
-						    <p>Select item from resource list to view or edit.
+						<div class="vpkfont-md vpkcolor">
+						    <p>Select item from resource list:
 						    </p>
 						</div>
                         <div id="multiContents" style="text-align: left;">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -686,7 +707,7 @@
 						</div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -713,7 +734,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -726,9 +747,7 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <div id="editHeader" class=" vpkcolor">
-                            <h6 class="modal-title vpkcolor" id="editTitle">Object Definition</h6>
-                            <h6 class="modal-title vpkcolor" id="editPart"></h6>
+                        <div id="editTitle" class="ml-2">
                         </div>
                     </div>
                     <div class="modal-body mb-0 pb-0">
@@ -740,21 +759,21 @@
                         </div>
 
                         <div class="form-row mt-1 mb-0">
-                            <div class="form-group col-md-1 text-right pr-1 pt-1 pb-0">
+                            <div class="form-group col-md-1 text-right pr-1 pt-1 pb-0 vpkcolor mb-0">
                                 <span style="font-size: 65%">Theme:</span>&nbsp;
                             </div>
-                            <div class="form-group col-md-2 pl-0">
-                                <select class="form-control-sm" id="eTheme" name="eTheme">
+                            <div class="form-group col-md-2 pl-0 mb-0">
+                                <select class="form-control-sm vpkcolor" id="eTheme" name="eTheme">
                                     '<option value="sqlserver" selected>Light</option>'
                                     '<option value="solarized_light">Medium</option>'
                                     '<option value="monokai">Dark</option>'
                                 </select>
                             </div>
-                            <div class="form-group col-md-2 text-right pr-1 pt-1">
+                            <div class="form-group col-md-2 text-right pr-1 pt-1 vpkcolor mb-0">
                                 <span style="font-size: 65%">Font size:</span>&nbsp;
                             </div>
-                            <div class="form-group col-md-1 pl-0">
-                                <select class="form-control-sm" id="eFont" name="eFont">
+                            <div class="form-group col-md-1 pl-0 mb-0">
+                                <select class="form-control-sm vpkcolor" id="eFont" name="eFont">
                                     '<option value="12" selected>Small</option>'
                                     '<option value="14">Medium</option>'
                                     '<option value="18">Large</option>'
@@ -762,29 +781,14 @@
                             </div>
                         </div>        
                     </div>
-                    <div id="saveStatus">
-                        <!-- File save status message here -->
-                    </div>
-                    <div class="modal-footer mt-0 pt-1" id="saFooter">
-                        <div class="form-row col-md-12">
-                            <div class="form-group col-md-2" id="sa1">
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="saveFile()">Save</button>
-                            </div>
-                            <!-- <div class="form-group col-md-2" id="sa2">
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="saveFileAs()">Save As</button>
-                            </div> -->
-                            <div class="form-group col-md-8" >&nbsp;</div>
-                            <div class="form-group col-md-2">
-                                <button type="button" class="btn btn-sm btn-outline-primary float-right" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
+                    <div class="modal-footer mt-0 pt-1">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div> <!-- End of editor Modal -->
-
     </div>  <!-- End of Wrapper -->
-  </body>
+</body>
   
   <!-- Append the needed scripts -->
   <%- include('partials/scripts') %>
