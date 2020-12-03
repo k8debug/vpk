@@ -836,11 +836,11 @@ function svgIAM(data, fnum) {
 		+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 
-		+ '<line  x1="75" x2="75"   y1="25"    y2="-100" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-		+ '<line  x1="75" x2="-100" y1="-100"  y2="-100" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="75" x2="75"   y1="25"    y2="-75" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="75" x2="-100" y1="-75"  y2="-75" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 
-		+ '<line  x1="-100" x2="-95" y1="-100"  y2="-105" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-		+ '<line  x1="-100" x2="-95" y1="-100"  y2="-95"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="-100" x2="-95" y1="-75"  y2="-80" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+		+ '<line  x1="-100" x2="-95" y1="-75"  y2="-70"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 
 		let nsKey = '0000-' + data.namespace;
 		if (typeof k8cData[nsKey] !== 'undefined') {
