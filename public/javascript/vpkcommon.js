@@ -21,6 +21,40 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // build common vars and functions
 //----------------------------------------------------------
 
+// Global vars 
+var version = 'Get from server';
+var socket = io.connect();
+var dix;
+var dixArray = [];
+var svgE = 0; 
+var baseDir;
+var validDir;
+var newDir;
+//var colors;
+var clusterProviders;
+var files;
+var inputFlds;
+//var stable;
+var dCnt = 0;
+var editor;
+var currentEditFile;
+var selectedDef;
+var selectedAction;
+var popCnt = 0;
+var cHeight;
+var chartType;
+var selectCnt = 0;
+var currentTab = "instructions"
+var newData = [];
+var rootDir;
+var k8cData;
+var dsCounts;
+var dsToggle = 'kind';
+var bootstrapModalCounter = 0;
+var documentationTabTopic = 'toc';
+
+
+
 // objects that contain html sections that are dnynamically shown
 let svgInfo = {};            			// tool tip pop-ups
 let workloadEventsInfo = {};			// workload events
@@ -30,6 +64,7 @@ let nsResourceInfo = {};				// namespace resource lists
 let securityRoleInfo = {};				// roles
 let securityRoleBindingInfo = {};		// role bindings
 let securitySubjectInfo = {};			// subjects
+let securityArraysLoaded = false;       // indicate if data loaded in security arrays
 
 let iCnt = 1;
 let oldNS = '@';
@@ -75,13 +110,27 @@ let whereRoleBound = {};
 let whereSubjects = {};
 let whereRoleRefs = {};
 
-let RoleBindingCnt = 0;
-let ClusterRoleBindingCnt = 0;
-let RoleRef_RoleCnt = 0;
-let	RoleRef_ClusterRoleCnt = 0;
+let roleBindingCnt = 0;
+let clusterRoleBindingCnt = 0;
+let roleRefRoleCnt = 0;
+let	roleRefClusterRoleCnt = 0;
+let	unknownKindCnt = 0;
 let bindingStatCounts = [];
 
 let crdRefCnt = 0;
+
+let hrLow = '<hr class="mb-0 mt-0>"';
+
+// browser details
+let usageBrowserName;
+let usageFullVersion;
+let usageMajorVersion;
+let usageNavigatorAppName;
+let usageNavigatorUserAgent;
+let usageJSHeapSizeLimit = 0;
+let usageJSHeapTotal = 0;
+let usageJSHeapUsed = 0;
+
 
 // color legend for security 
 let RBAClegend = '<div class="vpkfont-md text-dark ml-2 mb-2 mt-2"><span class="pr-1">Legend:</span>'
@@ -127,7 +176,9 @@ function parseArray(data) {
 	if (typeof data === 'undefined' || data === '') {
 		return nData;
 	}
-
+	if (data === null) {
+		return nData;
+	}
 	for (let i = 0; i < data.length; i++) {
 		if (data[i] === '') {
 			nData = nData + '&lt;blank&gt;<br>'; 
@@ -174,6 +225,67 @@ function formatJSON(content) {
 	return rtn;
 } 
 
+
+// print Div 
+function printDiv(id) {  
+    //id = 'schemModal';
+    //ToDo replace this with parsing of public/views/partials/head.ejs
+    let = html = '<html><head><meta charset="UTF-8" />'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
+    + '<meta http-equiv="X-UA-Compatible" content="ie=edge" />'
+    + '<link rel="icon" type="image/png" href="images/vpk.png">'
+    + '<title>VpK Print</title>'
+    + '<link rel="stylesheet" href="stylesheets/bootstrap.min.css">'
+    + '<link rel="stylesheet" href="stylesheets/bootstrap-toggle.min.css">'
+    + '<link rel="stylesheet" href="stylesheets/all.min.css">'
+    + '<link rel="stylesheet" href="stylesheets/bootstrap-table.min.css" >'
+    + '<link rel="stylesheet" href="stylesheets/select2.css"> '
+    + '<link rel="stylesheet" href="stylesheets/vpk.css">'
+    + '<script src="javascript/jquery-3.4.1.min.js"></script>'
+    + '<script src="javascript/popper.min.js"></script>'
+    + '<script src="javascript/bootstrap.min.js"></script>'
+    + '<script src="javascript/bootstrap-toggle.min.js"></script>'
+    + '<script src="javascript/bootstrap-table.min.js"></script>'
+    + '<script src="javascript/select2.full.min.js"></script>'
+    + '<script src="javascript/f62fcc73b5.js" crossorigin="anonymous"></script>';
+
+    // how to from:
+    // https://www.aspsnippets.com/Articles/Print-DIV-contents-with-CSS-using-JavaScript-and-jQuery.aspx
+    /* a dynamic IFRAME is created and the extracted contents of the HTML DIV are written to the IFRAME 
+       along with the link to the external CSS file and finally the IFRAME document is printed using the 
+       JavaScript Window Print command and the IFRAME is removed from the pag
+    */
+    var contents = $("#schemModal").html();
+    var frame1 = $('<iframe />');
+    frame1[0].name = "frame1";
+    frame1.css({
+        "position": "absolute",
+        "top": "-1000000px"
+    });
+
+    $("body").append(frame1);
+    var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
+    frameDoc.document.open();
+    //Create a new HTML document.
+    //frameDoc.document.write('<html><head><title>DIV Contents</title>');
+    frameDoc.document.write(html);   //added this to ensure iframe has needed css and scripts
+    frameDoc.document.write('</head><body>');
+    //Append the external CSS file.
+    frameDoc.document.write('<link href="style.css" rel="stylesheet" type="text/css" />');
+    //Append the DIV contents.
+    frameDoc.document.write(contents);
+    frameDoc.document.write('</body></html>');
+    frameDoc.document.close();
+    setTimeout(function() {
+        window.frames["frame1"].focus();
+        window.frames["frame1"].print();
+        frame1.remove();
+    }, 500);
+
+}
+
+
+
 function checkImage(kind, api) {
 	let image;
 	if (kind === 'k8') {
@@ -181,7 +293,7 @@ function checkImage(kind, api) {
 	} else if (kind === 'API' || kind === 'Api' || kind === 'APIService') {
 		image = 'k8/api';
 	} else if (kind === 'Alertmanager') {
-		image = 'openshift/ocp-am';
+		image = 'other/ocp';
 	} else if (kind === 'CertificateSigningRequest') {
 		image = 'k8/k8';
 	} else if (kind === 'ClusterRole') {
@@ -207,9 +319,9 @@ function checkImage(kind, api) {
 	} else if (kind === 'Deployment') {
 		image = 'k8/deploy';
 	} else if (kind === 'DeploymentConfig') {
-		image = 'openshift/ocp-dc';
+		image = 'other/ocp';
 	} else if (kind === 'DNS') {
-		image = 'openshift/ocp-dns';
+		image = 'other/ocp';
 	} else if (kind === 'Endpoints') {
 		image = 'k8/ep';
 	} else if (kind === 'EndpointSlice') {
@@ -235,13 +347,13 @@ function checkImage(kind, api) {
 	} else if (kind === 'Namespace') {
 		image = 'k8/ns';
 	} else if (kind === 'Network') {
-		image = 'openshift/ocp-net';
+		image = 'other/ocp';
 	} else if (kind === 'NetworkPolicy') {
 		image = 'k8/netpol';
 	} else if (kind === 'Node') {
 		image = 'k8/node';
 	} else if (kind === 'OCP-CRD') {
-		image = 'openshift/ocp-crd';
+		image = 'other/ocp';
 	} else if (kind === 'PersistentVolumeClaim') {
 		image = 'k8/pvc';
 	} else if (kind === 'PersistentVolume') {
@@ -255,7 +367,7 @@ function checkImage(kind, api) {
 	} else if (kind === 'PodTemplate') {
 		image = 'k8/k8';
 	} else if (kind === 'Prometheus') {
-		image = 'openshift/ocp-prometheus';
+		image = 'other/ocp';
 	} else if (kind === 'PriorityClass') {
 		image = 'k8/k8';
 	} else if (kind === 'ReplicaSet') {
@@ -285,26 +397,43 @@ function checkImage(kind, api) {
 	} else if (kind === 'VolumeAttachment') {
 		image = 'k8/k8';
 	} else if (kind === 'Unknown') {
-		image = 'unk';
+		image = 'other/unk';
 	} else {
-		image = 'unk';
+		image = 'other/unk';
 	}
 
 	// if unknown use the apiGroup to determine image to display
-	if (image === 'unk') {
+	if (image === 'other/unk') {
 		if (typeof api !== 'undefined') {
 			if (api.indexOf('openshift') > -1 ) {
 				image = 'openshift/ocp';
-			} else if (api.indexOf('coreos') > -1 ) {
+			} else if (api.indexOf('.coreos') > -1 ) {
 				image = 'openshift/ocp';
 			} else if (api.indexOf('k8s.io') > -1) {
 				image = 'k8/k8';
+			} else if (api.indexOf('.ibm.') > -1) {
+				image = 'other/ibm';
+			} else if (api.indexOf('.open-cluster-management.') > -1) {
+				image = 'other/ibm';
+			} else if (api.indexOf('.ansible.com') > -1) {
+				image = 'other/redhat';
+			} else if (api.indexOf('.core.hybridapp.io') > -1) {
+				image = 'other/ibm';
+			} else if (api.indexOf('.tools.hybridapp.io') > -1) {
+				image = 'other/ibm';
+			} else if (api.indexOf('.deploy.hybridapp.io') > -1) {
+				image = 'other/ibm';
+			} else if (api.indexOf('.noobaa.io') > -1) {
+				image = 'other/redhat';
+			} else if (api.indexOf('.rook.') > -1) {
+				image = 'other/rook';
+			} else if (api.indexOf('.konghq.com') > -1) {
+				image = 'other/kong';
 			}
 		}
 	}
-
-
 	return image;
+	
 }
 
 function buildSvgInfo(data, fnum, type) {
@@ -676,20 +805,41 @@ function populateWhereRoleBound(binding) {
 		}
 	} 
 
-	if (binding.kind === 'RoleBinding') {
-		RoleBindingCnt++
-	} else if (binding.kind === 'ClusterRoleBinding') {
-		ClusterRoleBindingCnt++
-	} else if (binding.roleRef.kind === 'Role') {
-		RoleRef_RoleCnt++;
-	} else if (binding.roleRef.kind === 'ClusterRole') {
-		RoleRef_ClusterRoleCnt++;
+	if (typeof binding.roleRef.kind === 'undefined') {
+		if (binding.kind === 'ClusterRoleBinding') {
+			binding.roleRef.kind = 'ClusterRole';
+		} else {
+			binding.roleRef.kind = 'Role';
+		} 
+		console.log('No roleRef.kind for fnum: ' + binding.fnum + ' changed to ' + binding.roleRef.kind);
 	}
 
-	whereRoleBound[roleName][binding.kind][binding.roleRef.kind].push({
-		'fnum': binding.fnum,
-		'subjects': binding.subjects
-    })
+	if (binding.kind === 'RoleBinding') {
+		roleBindingCnt++
+	} else if (binding.kind === 'ClusterRoleBinding') {
+		clusterRoleBindingCnt++
+	}
+	
+	if (binding.roleRef.kind === 'Role') {
+		roleRefRoleCnt++;
+	} else if (binding.roleRef.kind === 'ClusterRole') {
+		roleRefClusterRoleCnt++;
+	}
+
+	try {
+		if (typeof whereRoleBound[roleName][binding.kind][binding.roleRef.kind] === 'undefined' ) {
+			whereRoleBound[roleName][binding.kind][binding.roleRef.kind] = [];
+		}
+
+		whereRoleBound[roleName][binding.kind][binding.roleRef.kind].push({
+			'fnum': binding.fnum,
+			'subjects': binding.subjects
+		})
+	} catch (e) {
+		console.log(e)
+	}
+	
+
 }
 
 
@@ -704,24 +854,18 @@ function buildSecModalRole(data, key) {
 	let verbs = '';
 	let category = '';
 	let fnum = '<na>';
-	let fParts = '';
-	let fname = '';
-	let parm = '';
 
 	if (typeof role.fnum !== 'undefined') {
 		fnum = role.fnum;
-		fParts = fnum.split('.');
-		fname = baseDir + '/config' + fParts[0] + '.yaml';
-		parm = fname + '::' + fParts[1] + '::' + name;
 	} else {
-		parm = 'missing::missing::missing';
+		fnum = '9999999.0';
 	}
 
 
 	let roleId = 
 	  '<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
 	+ '  <div>Role Name:&nbsp;<span class="text-light bg-success vpkfont-md">' + key + '</span></div>'
-	+ '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef6(\'' + parm + '\')">' + fnum + '</span>'
+	+ '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef7(\'' + fnum + '\')">' + fnum + '</span>'
 	+ '  <span class="vpkfont-sm vpkcolor pl-1">(click # to view)</span></div>'
 	+ '</div><hr>';
 
@@ -799,6 +943,241 @@ function buildSecModalRole(data, key) {
 	return rtn;
 }
 
+
+// how to do
+// https://stackoverflow.com/questions/11219582/how-to-detect-my-browser-version-and-operating-system-using-javascript
+function browserUsageDetails () {
+
+	var nVer = navigator.appVersion;
+	var nAgt = navigator.userAgent;
+	var browserName  = navigator.appName;
+	var fullVersion  = ''+parseFloat(navigator.appVersion); 
+	var majorVersion = parseInt(navigator.appVersion,10);
+	var nameOffset,verOffset,ix;
+	
+	// In Opera, the true version is after "Opera" or after "Version"
+	if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
+	 browserName = "Opera";
+	 fullVersion = nAgt.substring(verOffset+6);
+	 if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+	   fullVersion = nAgt.substring(verOffset+8);
+	}
+	// In MSIE, the true version is after "MSIE" in userAgent
+	else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
+	 browserName = "Microsoft Internet Explorer";
+	 fullVersion = nAgt.substring(verOffset+5);
+	}
+	// In Chrome, the true version is after "Chrome" 
+	else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
+	 browserName = "Chrome";
+	 fullVersion = nAgt.substring(verOffset+7);
+	}
+	// In Safari, the true version is after "Safari" or after "Version" 
+	else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
+	 browserName = "Safari";
+	 fullVersion = nAgt.substring(verOffset+7);
+	 if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+	   fullVersion = nAgt.substring(verOffset+8);
+	}
+	// In Firefox, the true version is after "Firefox" 
+	else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
+	 browserName = "Firefox";
+	 fullVersion = nAgt.substring(verOffset+8);
+	}
+	// In most other browsers, "name/version" is at the end of userAgent 
+	else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < 
+			  (verOffset=nAgt.lastIndexOf('/')) ) 
+	{
+	 browserName = nAgt.substring(nameOffset,verOffset);
+	 fullVersion = nAgt.substring(verOffset+1);
+	 if (browserName.toLowerCase()==browserName.toUpperCase()) {
+	  browserName = navigator.appName;
+	 }
+	}
+	// trim the fullVersion string at semicolon/space if present
+	if ((ix=fullVersion.indexOf(";"))!=-1)
+	   fullVersion=fullVersion.substring(0,ix);
+	if ((ix=fullVersion.indexOf(" "))!=-1)
+	   fullVersion=fullVersion.substring(0,ix);
+	
+	majorVersion = parseInt(''+fullVersion,10);
+	if (isNaN(majorVersion)) {
+	 fullVersion  = ''+parseFloat(navigator.appVersion); 
+	 majorVersion = parseInt(navigator.appVersion,10);
+	}
+
+
+	usageBrowserName = browserName;
+	usageFullVersion = fullVersion;
+	usageMajorVersion = majorVersion;
+	usageNavigatorAppName = navigator.appName;
+	usageNavigatorUserAgent = navigator.userAgent;
+
+	// async function run() {
+	// 	const result = await performance.measureMemory();
+	// 	console.log(result);
+	//   }
+	// run();
+	try {
+		let memU = window.performance.memory;
+		if (typeof memU!== 'undefined') {
+			console.log(typeof memU)
+			usageJSHeapSizeLimit = memU.jsHeapSizeLimit;
+			usageJSHeapTotal = memU.totalJSHeapSize;
+			usageJSHeapUsed = memU.usedJSHeapSize;
+		}
+	} catch (e) {
+		console.log('unable to get browser memeory usage')
+	}
+}
+
+
+function formatUsage(data) {
+    let rtn = '<div class="events ml-2 mr-2 mb-2 vpkcolor" ><hr><table style="width:100%">'
+    rtn = rtn + usageLine('Architecture', data.header.arch);
+    rtn = rtn + usageLine('Machine', data.header.osMachine);
+    rtn = rtn + usageLine('OS Name', data.header.osName);
+    rtn = rtn + usageLine('OS Release', data.header.osRelease);
+    
+    rtn = rtn + usageLine('Processor', data.header.cpus[0].model);
+    rtn = rtn + usageLine('CPU count', data.header.cpus.length);
+    rtn = rtn + usageLine('User CPU seconds', data.resourceUsage.userCpuSeconds);
+    rtn = rtn + usageLine('Kernel CPU seconds', data.resourceUsage.kernelCpuSeconds);
+
+    rtn = rtn + usageLine('Heap total memory', formatBytes(data.javascriptHeap.totalMemory) );
+    rtn = rtn + usageLine('Heap committed memory', formatBytes(data.javascriptHeap.totalCommittedMemory) );
+    rtn = rtn + usageLine('Heap used memory', formatBytes(data.javascriptHeap.usedMemory) );
+    rtn = rtn + usageLine('Heap available memory', formatBytes(data.javascriptHeap.availableMemory) );
+    rtn = rtn + usageLine('Heap memory limit', formatBytes(data.javascriptHeap.memoryLimit) );
+    
+    rtn = rtn + usageLine('Network host name', data.header.host);
+    let nI = data.header.networkInterfaces
+    for (let i = 0; i < nI.length; i++) {
+        if ( nI[i].internal === false && nI[i].family === 'IPv4') {
+            rtn = rtn + usageLine('Network interface name', nI[i].name );
+            rtn = rtn + usageLine('Network MAC', nI[i].mac );
+            rtn = rtn + usageLine(nI[i].family + ' Address', nI[i].address );
+        }
+    }
+    rtn = rtn + usageLine('Current working directory', data.header.cwd );
+    rtn = rtn + usageLine('Node.js version', data.header.nodejsVersion );
+    //browser related fields
+    browserUsageDetails();
+    rtn = rtn + usageLine('Browser name', usageBrowserName );
+    rtn = rtn + usageLine('Browser version', usageFullVersion );
+    rtn = rtn + usageLine('Browser agent', usageNavigatorUserAgent );
+    // at this time only chrome browser provides memory stats
+    if (usageJSHeapSizeLimit !== 0) {
+        rtn = rtn + usageLine('Browser Heap total memory', formatBytes(usageJSHeapTotal) );
+        rtn = rtn + usageLine('Browser Heap used memory', formatBytes(usageJSHeapUsed) );
+        rtn = rtn + usageLine('Browser Heap memory limit', formatBytes(usageJSHeapSizeLimit) );
+    }
+    rtn = rtn + '</table></div>';
+    return rtn;
+}
+
+function usageLine(v1, v2) {
+    let trP1 = '<tr class="vpkcolor">';
+    let trP2 = '</tr>';
+    let tdR = '<td width="40%" style="text-align: right; padding-right: 30px;" >';
+    let tdL = '<td width="60%">';
+    let tdP2 = '</td>';
+    return trP1 + tdR + '<b>' + v1 + ':</b>' + tdP2 + tdL + v2 + tdP2 + trP2;
+}
+
+function formatBytes (bytes, decimals = 2) {
+    if (bytes === 0) {
+        return '0 Bytes';
+    }
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+
+
+function showTooltip(evt, text) {
+    let tooltip = document.getElementById("tooltip");
+    let info = 'No information available';
+    if (typeof svgInfo[text] !== 'undefined') {
+        info = svgInfo[text]
+    }
+
+    tooltip.innerHTML = info;
+    tooltip.style.display = "block";
+    tooltip.style.left = evt.pageX + 10 + 'px';
+    tooltip.style.top = evt.pageY + 10 + 'px';
+}
+
+function hideTooltip() {
+    var tooltip = document.getElementById("tooltip");
+    tooltip.style.display = "none";
+}
+
+
+function pickData(tmp) {
+    tmp.trim();
+    if (tmp === 'Running cluster') {
+        getCluster();
+    } else {
+        changeDir();
+    } 
+}
+
+function showMessage(msg, type) {
+    if (typeof msg === 'undefined') {
+        msg = 'No message provided'
+    }
+    var msgClass = 'alert-secondary'
+    $("#messageText").html(msg)
+    $("#messageDiv").removeClass("hide");
+    $("#messageDiv").addClass("msgClass");
+    $("#messageDiv").addClass("show");
+}
+
+function hideMessage() {
+    $("#messageDiv").removeClass("show");
+    $("#messageDiv").addClass("hide");
+}
+
+// used by vpkBuildSecArray and vpkSecUsage
+function getSecRole(key) {
+    let html = key;
+    let info = k8cData['0000-@clusterRoles@'].Role;
+    if (typeof info !== 'undefined') {
+        for (let i = 0; i < info.length; i++) {
+            if (info[i].name === key) {
+                html = buildSecModalRole(info[i], key)
+            }
+        }
+    } else {
+        html = 'Unable to find information for role: ' + key;
+    }
+    $("#secInfoContent").html(html)
+    $("#secInfoModal").modal('show')
+}
+
+function checkIfDataLoaded() {
+    if (rootDir === 'No datasource connected' || rootDir === '-none-') {
+        showMessage('No datasource has been connected', 'fail');
+    } else {
+        hideMessage();
+    }
+}
+
+function setBaseDir(dir) {
+    if (dir === '-none-' || dir === '' ) {
+        dir = 'No datasource connected';
+    }
+    rootDir = dir;
+    $("#baseDir").empty();
+    $("#baseDir").html('');
+    $("#baseDir").html(dir);
+    $("#tableL").bootstrapTable('removeAll')
+}
 
 //----------------------------------------------------------
 console.log('loaded vpkcommon.js');

@@ -1,5 +1,5 @@
 // Build circle pack chart
-const chartCirclePack = (input) => {
+const chartCirclePack = (input, chType) => {
     const render = (data) => {
         let leafCnt = 0;
         let clipCnt = 0;
@@ -14,18 +14,32 @@ const chartCirclePack = (input) => {
                 (d3.hierarchy(data)
                     .sum(d => d.value)
                     .sort((a, b) => b.value - a.value));
-            $("#chartInfo").empty();
-            $("#chartInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over circles and pausing<span>');        
+            if (chType === 'g') {
+                $("#chartInfo").empty();
+                $("#chartInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over items. Blue dots can be clicked to view yaml.<span>');        
+            } else if (chType === 'x') {
+                $("#xrefInfo").empty();
+                $("#xrefInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over items. Blue dots can be clicked to view yaml.<span>');        
+            }
             return payload;
         }
 
         const root = pack(data);
 
-        const svg = d3.select('svg')
+        let svg;
+        if (chType === 'g') {
+            svg = d3.select('#graphicCharts2')
             .attr("viewBox", [0, 0, width, height])
             .style("font", "10px sans-serif")
             .style("overflow", "visible")
             .attr("text-anchor", "middle");
+        } else if (chType === 'x') {
+            svg = d3.select('#xrefCharts2')
+            .attr("viewBox", [0, 0, width, height])
+            .style("font", "10px sans-serif")
+            .style("overflow", "visible")
+            .attr("text-anchor", "middle");
+        }
 
         const node = svg.append("g")
             .attr("pointer-events", "all")
@@ -46,11 +60,11 @@ const chartCirclePack = (input) => {
             .attr("cid", d => {
                 let cid = eCount++;
                 let text = d.ancestors().map(d => d.data.name).reverse().join('::')
-                return 'cid' + cid + '$' + text;
+                return 'cid' + cid + '$' + text + '$' + chType;
             })
-            .on("mouseover", handleMouseOver)
-            .on("mouseout", handleMouseOut)
-            .on("click", handleClick);
+            .on("mouseover", handleCPMouseOver)
+            .on("mouseout", handleCPMouseOut)
+            .on("click", handleCPClick);
 
         const leaf = node.filter(d => !d.children);
 
@@ -59,9 +73,9 @@ const chartCirclePack = (input) => {
 
         leaf.select("circle")
             .attr("id", d => (d.leafUid = "leaf" + leafCnt++ ))
-            .on("mouseover", handleMouseOver)
-            .on("mouseout", handleMouseOut)
-            .on("click", handleClick);
+            .on("mouseover", handleCPMouseOver)
+            .on("mouseout", handleCPMouseOut)
+            .on("click", handleCPClick);
 
         leaf.append("clipPath")
             .attr("id", d => d.clipUid = "clip" + clipCnt++);
@@ -82,21 +96,25 @@ const chartCirclePack = (input) => {
 var lastMove;
 var elapsed;
 
-function handleMouseOver(d, i) {            
+function handleCPMouseOver(d, i) {            
     // elapsed = Date.now() - lastMove;
-    if ( elapsed < 200 ) { 
+    if ( elapsed < 300 ) { 
         return;
     }
     let cid;
     if (typeof this.attributes['cid'] !== 'undefined') {
         cid = this.attributes['cid'].nodeValue;
-        //console.log('cid: ' + cid + ' @ x;' + d.x + ' y:' + d.y)
+        console.log('cid: ' + cid + ' @ x;' + d.x + ' y:' + d.y)
         cid = cid.split('$');
         let text = cid[1];
+        let chartT = cid[2];
         text = text.split('::');
         let tip = '<div class="vpkfont-md">';
         let i = 0;
-        if (text.length > 2) {
+        let show = false;
+        // handle the graphics chart
+        if (text.length > 2 && chartT === 'g') {
+            show = true;
             for (i = 1; i < text.length; i++) {
                 let v1 = '';
                 if (text[i] === 'Namespaces') {
@@ -116,7 +134,20 @@ function handleMouseOver(d, i) {
                     }
                 }
             }
+        }
 
+        // handle the xref chart
+        if (chartT === 'x') {
+            if (text.length === 2) {
+                if (typeof text[1] !== 'undefined') {
+                    show = true;
+                    tip = '<b>Xref value: </b>' + text[1] + '<br>Click blue dot to view info about occurrence'
+                } 
+            }
+        }
+
+
+        if (show === true) {            
             // placement of the tool tip requires using both page and
             // client offsets
             let yOff = window.pageYOffset  
@@ -135,14 +166,28 @@ function handleMouseOver(d, i) {
     lastMove = Date.now();
 }
 
-function handleMouseOut(d, i) {
+function handleCPMouseOut(d, i) {
     hideTooltip();
 }
 
-function handleClick(d, i) {
+function handleCPClick(d, i, ct) {
+    // ct is the chType
     let cid = '';
+    let chartT = '';
     if (typeof this.attributes['cid'] !== 'undefined') {
         cid = this.attributes['cid'].nodeValue;
-        getCirclePackDef(cid)
+        cid = cid.split('$');
+        chartT = cid[2];
+    }
+
+    if (chartT === 'g') {
+        getFileByCid(cid)
+    } else if (chartT === 'x') {
+        let tmp = cid[1].split('::');
+        let fp = tmp.indexOf(':');
+        if (fp > -1 ) {
+            tmp = tmp.substring(0, fp);
+        }
+        getDef7(tmp[2])
     }
 }

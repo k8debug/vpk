@@ -21,21 +21,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // build security arrays
 //----------------------------------------------------------
 
-function initSecArrays() {
-	// security arrays
-	securityRoleInfo = {};				// roles
-	securityRoleBindingInfo = {};		// role bindings
-	securitySubjectInfo = {};			// subjects
-}
-
 function buildSecArrays() {
-	initSecArrays();
 	//Build the arrays
 	buildRBACs();	
 }
 
 //
 function buildRBACs() {
+	// check if data already loaded, if so skip realoading
+	if (securityArraysLoaded === true) {
+		return;
+	}
+
 	let keys = Object.keys(k8cData);
 	let newKeys = [];
 	let newKey;
@@ -71,6 +68,8 @@ function buildRBACs() {
 		buildRoles(secKey);
 		buildRoleBindings(secKey);
 		buildSubjects(secKey);
+
+		securityArraysLoaded = true;
 	}
 }
 
@@ -219,10 +218,10 @@ function buildSubjects(ns) {
 			+ '</tr>';
 			nsHtml = nsHtml + item
 			item = '<tr>' 
-			+ '<td width="10%"><hr></td>' 
-			+ '<td width="40%"><hr></td>' 
-			+ '<td width="10%"><hr></td>' 
-			+ '<td width="40%"><hr></td>' 
+			+ '<td width="10%">' + hrLow + '</td>' 
+			+ '<td width="40%">' + hrLow + '</td>' 
+			+ '<td width="10%">' + hrLow + '</td>' 
+			+ '<td width="40%">' + hrLow + '</td>' 
 			+ '</tr>';
 			nsHtml = nsHtml + item		
 		}
@@ -319,9 +318,9 @@ function buildRoleBindings(ns) {
 		+ '</tr>';
 		nsHtml = nsHtml + item
 		item = '<tr>' 
-		+ '<td width="34%"><hr></td>' 
-		+ '<td width="33%"><hr></td>' 
-		+ '<td width="33%"><hr></td>' 
+		+ '<td width="34%">' + hrLow + '</td>' 
+		+ '<td width="33%">' + hrLow + '</td>' 
+		+ '<td width="33%">' + hrLow + '</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item		
 	}
@@ -383,25 +382,32 @@ function buildRoles(ns) {
 
 		nsHtml = nsHtml + item
 		item = '<tr>' 
-		+ '<td width="15%"><hr></td>' 
-		+ '<td width="15%"><hr></td>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="20%"><hr></td>' 
-		+ '<td width="10%"><hr></td>' 
+		+ '<td width="15%">' + hrLow + '</td>' 
+		+ '<td width="15%">' + hrLow + '</td>' 
+		+ '<td width="20%">' + hrLow + '</td>' 
+		+ '<td width="20%">' + hrLow + '</td>' 
+		+ '<td width="20%">' + hrLow + '</td>' 
+		+ '<td width="10%">' + hrLow + '</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item		
 
 		if (typeof role.rules !== 'undefined' && role.rules !== 'null' && role.rules !== null) {
 
 			for (let c = 0; c < role.rules.length; c++) {
+				grpInfo = '&lt;null&gt;';
 				if (typeof role.rules[c].apiGroups !== 'undefined') {
-					grpInfo = parseArray(role.rules[c].apiGroups);
 					category = 'apiGroup'
+					if (role.rules[c].apiGroups !== null) {
+						grpInfo = parseArray(role.rules[c].apiGroups);
+						category = 'apiGroup'
+					}
 				}
 				if (typeof role.rules[c].nonResourceURLs !== 'undefined') {
-					grpInfo = parseArray(role.rules[c].nonResourceURLs);
 					category = 'nonResourceURLs'
+					if (role.rules[c].nonResourceURLs !== null) {
+						grpInfo = parseArray(role.rules[c].nonResourceURLs);
+						category = 'nonResourceURLs'
+					}
 				}
 				if (typeof role.rules[c].resourceNames !== 'undefined') {
 					resourceNames = parseArray(role.rules[c].resourceNames);
@@ -424,12 +430,12 @@ function buildRoles(ns) {
 				nsHtml = nsHtml + item
 
 				item = '<tr>' 
-				+ '<td width="15%"><hr></td>' 
-				+ '<td width="15%"><hr></td>' 
-				+ '<td width="20%"><hr></td>' 
-				+ '<td width="20%"><hr></td>' 
-				+ '<td width="20%"><hr></td>' 
-				+ '<td width="10%"><hr></td>'
+				+ '<td width="15%">' + hrLow + '/td>' 
+				+ '<td width="15%">' + hrLow + '</td>' 
+				+ '<td width="20%">' + hrLow + '</td>' 
+				+ '<td width="20%">' + hrLow + '</td>' 
+				+ '<td width="20%">' + hrLow + '</td>' 
+				+ '<td width="10%">' + hrLow + '</td>'
 				+ '</tr>';
 				nsHtml = nsHtml + item
 			} 
@@ -446,12 +452,12 @@ function buildRoles(ns) {
 			nsHtml = nsHtml + item
 
 			item = '<tr>' 
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="10%"><hr></td>'
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="20%"><hr></td>' 
-			+ '<td width="10%"><hr></td>' 
+			+ '<td width="20%">' + hrLow + '</td>' 
+			+ '<td width="10%">' + hrLow + '</td>'
+			+ '<td width="20%">' + hrLow + '</td>' 
+			+ '<td width="20%">' + hrLow + '</td>' 
+			+ '<td width="20%">' + hrLow + '</td>' 
+			+ '<td width="10%">' + hrLow + '</td>' 
 			+ '</tr>';
 			nsHtml = nsHtml + item
 		}

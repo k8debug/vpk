@@ -8,16 +8,27 @@
     
         <div id="main">
             <div id="header-bar" class="header">
-                <span onclick="about()">
-                <img style='vertical-align:middle;' src='images/vpk.png' width='30' height='30'  >
+                <!-- <span onclick="printDiv()"> -->
+                <span onclick="getDocumentation('toc')">
+                <img style='vertical-align:middle;' src='images/vpk.png' width='40' height='40'  >
                 <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont-lg pl-2'>
-                    Visual parsed Kubernetes
+                    <span class="font-weight-bold">V</span>isual 
+                    <span class="font-weight-bold">p</span>arsed 
+                    <span class="font-weight-bold">K</span>ubernetes
                 </div>
                 </span>
                 <div class="header-right">
-                    <a href="javascript:showConfig()">
-                        <i class="fas fa-cog fa-lg"></i>
+                    <a href="javascript:getDocumentation()">
+                        <i class="fas fa-question mr-3 vpkcolor"></i>
                     </a>
+                    <a href="javascript:about()">
+                        <i class="fas fa-info-circle fa-lg mr-3 vpkcolor"></i>
+                    </a>
+                    <a href="javascript:showConfig()">
+                        <i class="fas fa-cog fa-lg vpkcolor"></i>
+                    </a>
+                    
+
                 </div>
             </div> 
 
@@ -30,15 +41,15 @@
                     <option>Previous captured instance</option>
                 </select>
                 <div class="pl-3" style='vertical-align:middle; display:inline;'>
-                    <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md "
+                    <button class="btn btn-sm btn-outline-primary vpkfont-md "
                         onclick="dirStats()">
                         <span id="baseDir" class="float-left"></span>
                     </button>
                 </div>                    
             </div> 
 
-            <div id="messageDiv" class="collapse hide mt-1 mb-0">
-                <div id="messageType" class="alert alert-warning fade show" role="alert">
+            <div id="messageDiv" class="collapse hide mt-1 mb-0 alert-secondary vpkfont-md">
+                <div id="messageType" class="alert alert-warning fade show alert-secondary" role="alert">
                     <span id="messageText"></span>
                     <button type="button" class="close" onclick="hideMessage()">
                     <span>&times;</span>
@@ -47,11 +58,12 @@
             </div>
 
             <ul id="tabs" class="nav nav-tabs">
-                <li class="nav-item"><a id="instTab"      href="#instructions" data-target="#instructions" data-toggle="tab" class="nav-link small text-uppercase active">Instructions</a></li>
-                <li class="nav-item"><a id="tableTab"     href="#searchR"      data-target="#searchR"      data-toggle="tab" class="nav-link small text-uppercase">Table View</a></li>
-                <li class="nav-item"><a id="graphicTab"   href="#graphic"      data-target="#graphic"      data-toggle="tab" class="nav-link small text-uppercase">Graphic View</a></li>
-                <li class="nav-item"><a id="schematicTab" href="#schematic"    data-target="#schematic"    data-toggle="tab" class="nav-link small text-uppercase">Schematics</a></li>
-                <li class="nav-item"><a id="securityTab"  href="#security"     data-target="#security"     data-toggle="tab" class="nav-link small text-uppercase">Security</a></li>
+                <li class="nav-item"><a id="instTab"       href="#instructions" data-target="#instructions" data-toggle="tab" class="nav-link small text-uppercase active">Instructions</a></li>
+                <li class="nav-item"><a id="tableTab"      href="#searchR"      data-target="#searchR"      data-toggle="tab" class="nav-link small text-uppercase">Table View</a></li>
+                <li class="nav-item"><a id="graphicTab"    href="#graphic"      data-target="#graphic"      data-toggle="tab" class="nav-link small text-uppercase">Graphic View</a></li>
+                <li class="nav-item"><a id="schematicTab"  href="#schematic"    data-target="#schematic"    data-toggle="tab" class="nav-link small text-uppercase">Schematics</a></li>
+                <li class="nav-item"><a id="securityTab"   href="#security"     data-target="#security"     data-toggle="tab" class="nav-link small text-uppercase">Security</a></li>
+                <li class="nav-item"><a id="xreferenceTab" href="#xreference"   data-target="#xreference"   data-toggle="tab" class="nav-link small text-uppercase">X-Reference</a></li>
             </ul>
             <br>
 
@@ -87,7 +99,7 @@
                                     Namespace(s) 
                                 </div>                       
                                 <div id="bar1-select" class="ml-1 mr-1 mt-1 vpkfont-md">
-                                    <select id="ns-filter" class="js-example-basic-multiple" 
+                                    <select id="ns-filter"  
                                         multiple="multiple" 
                                         style="width: 550px"
                                         id="bar1-options" >
@@ -106,7 +118,7 @@
                                     Kind(s) 
                                 </div>
                                 <div id="bar2-select" class="ml-1 mr-1 mt-1 vpkfont-md">
-                                    <select id="kind-filter" class="js-example-basic-multiple" 
+                                    <select id="kind-filter"  
                                         multiple="multiple" 
                                         style="width: 550px"
                                         id="bar2-options" >
@@ -124,7 +136,7 @@
                                     Labels(s) 
                                 </div>
                                 <div id="bar3-select" class="ml-1 mr-1 mt-1 vpkfont-md">
-                                    <select id="label-filter" class="js-example-basic-multiple" 
+                                    <select id="label-filter"  
                                         multiple="multiple" 
                                         style="width: 550px"
                                         id="bar3-options" >
@@ -236,7 +248,7 @@
                                     Select namespaces to filter 
                                 </div>                       
                                 <div id="grachic-ns-select" class="ml-1 mr-1 vpkfont-md">
-                                    <select id="graphic-ns-filter" class="js-example-basic-multiple" 
+                                    <select id="graphic-ns-filter" 
                                         multiple="multiple" 
                                         style="width: 650px">
                                         <option>all-namespaces</option>
@@ -245,7 +257,6 @@
                                 </div>
                             </div>
                         </div>
-                    
 
                         <div class="row vpkButtons mb-1 ml-1">
                             <div class="vpkcolor vpkfont-md ml-2" style="width: 240px;">
@@ -277,14 +288,12 @@
                         <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
                     </div>
 
-
                     <div class="mt-2 vpkfont vpkcolor" id="chartInfo">
-                        
                     </div>
 
-                    <div id="charts" class="container mb-4 mt-4" >
-                        <svg width="950" height="50"></svg>
-                    </div>
+                    <!-- <svg id="graphicCharts" width="950" height="50"></svg> -->
+                    <svg id="graphicCharts2"></svg>
+
                 </div>
 
                 <div id="schematic" class="tab-pane">
@@ -311,7 +320,7 @@
                                 Select type 
                             </div>    
                             <div class="ml-1 mr-1 vpkfont-md">
-                                <select id="usage-type" class="js-example-basic-single" 
+                                <select id="usage-type" 
                                     style="width: 120px">
                                     <option></option>
                                     <option>All</option>
@@ -349,6 +358,11 @@
                             &nbsp;RBAC Usage&nbsp;
                             </button>
                         </div>
+                        <!-- <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewSchematic" onclick="showSecurityStats()">
+                            &nbsp;RBAC Stats&nbsp;
+                            </button>
+                        </div>                     -->
                     </div>
 
                     <div id="securityDetail" class="vpkfont">
@@ -362,431 +376,96 @@
                     </div>
                 </div>
 
+                <div id="xreference" class="tab-pane">
+                    <div class="vpkfont vpkcolor mb-3">Create, maintain, and view custom cross reference information of K8 resource elements.
+                        <span class="vpkfont ml-4">(click the wrench icon to create or maintain xref)</span>
+                    </div>
+
+
+                    <div id="xrefUsageType" class="mb-1 vpkcolor grid mt-0 border">
+                        
+                        <div class="row filterBack pl-1 ml-2 mt-1">
+                            <div class="vpkfont-lg mr-2 ">
+                                &nbsp;<button class="btn btn-sm" onclick="xrefEdit()"><i class="fas fa-wrench vpkcolor vpkfont-lg"></i></button>&nbsp;
+                            </div>
+
+                            <div class="mb-2 align-middle vpkfont-md">
+                                Select xref type 
+                            </div> 
+
+                            <div class="ml-1 mr-1 vpkfont-md">
+                                <select id="xref-type"  
+                                    style="width: 300px">
+                                    <option></option>
+                                    <option>Secrets : Secrets defined in environment</option>
+                                </select>
+                            </div>
+
+                            <div class="ml-4 mb-2 vpkfont-md">
+                                Select filter value 
+                            </div>                       
+                            <div class="ml-1 mr-1 mb-2 vpkfont-md">
+                                <select id="xref-filter"  
+                                    multiple="multiple" 
+                                    style="width: 650px">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row vpkButtons mb-1 ml-1">
+                        <div class="vpkcolor vpkfont-md ml-2" style="width: 240px;">
+                            Select xref view
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="xrefChart01" onclick="bldXrefChart('hierarchy')">
+                            &nbsp;Hierarchy&nbsp;
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="xrefChart02" onclick="bldXrefChart('collapsible')">
+                                &nbsp;Collapsible&nbsp;
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="xrefChart03" onclick="bldXrefChart('circlePack')">
+                                &nbsp;Circle Pack&nbsp;
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
+                    </div>
+
+                    <div class="mt-2 vpkfont vpkcolor" id="xrefInfo">
+                    </div>
+
+                    <svg id="xrefCharts2"></svg>
+                    <!-- <svg id="xrefCharts" width="950" height="50"></svg> -->
+                </div>
+
 
             </div>
 
             <!-- ==================================== -->
-            <!-- SVG images are shown here            -->		        
+            <!-- Tool tips are shown here             -->		        
             <!-- ==================================== -->
             <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
 
-            <!-- <div id="chartInfo">
-            </div>
-            <div id="charts" class="container" >
-                <svg width="950" height="50"></svg>
-            </div> -->
-
-            <div id="schematicOUT" >
-                <!-- ??? -->
-            </div>
-
         </div>
 
-
-        <!-- ==================================== -->
-        <!-- Configuration Modal section          -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="configHeader">
-                            <h6 class="modal-title vpkcolor">VpK Configuration</h6>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-
-                        <div id="size-sm" class="container  p-1 mb-1">
-                            <div class="row mb-1">
-                                <div class="col-10 px-3 py-1 vpkfont vpkcolor">
-                                    <p>Display the <b>"managedFields"</b> portion of resource metadata.  
-                                       &nbsp;Set to 'On' the "managedFields" will be shown.</p>
-                                </div>
-                                <!-- <div class="col-2 px-3 py-1 vpkfont vpkcolor">
-                                    <p>&nbsp;</p>
-                                </div> -->
-                                <div class="col-2 px-3 py-2 col-md-auto">
-                                    <input id="mgmFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" >
-                                </div>
-                            </div>
-
-                            <div class="row mb-1">
-                                <div class="col-10 px-3 py-1 vpkfont vpkcolor ">
-                                    <p>Display the <b>"status"</b> section of resource metadata.  
-                                        &nbsp;Set to 'On' the status information will be shown.</p>
-                                 </div>
-                                <div class="col-2 py-2">
-                                    <input id="statusFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" >
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-2 float-left"> 
-                        <button id="configBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="saveConfig()" style="margin: 5px;">
-                            Save settings
-                        </button>   
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Append the needed modals -->
+        <%- include('partials/modals') %>
 
 
-        <!-- ==================================== -->
-        <!-- Running cluster Modal section        -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="clusterModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="clusterHeader">
-                            <h6 class="modal-title vpkcolor">Cluster Information</h6>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-
-                        <!-- Drop down for cluster type is dynamically built -->
-                        <div class="form-group col-4 vpkcolor" style="margin: -15px; padding-bottom: 15px;">
-                            <label for="clusterType">Cluster type</label>
-                            <select class="form-control form-control-sm" id="clusterType">
-                                <option value="none">select cluster type</option>
-                            </select>
-                        </div>
-
-                        <div id="clusterInfo">
-                        </div>
-
-                        <div id="clusterRunning"class="row ml-4 mt-2">
-                            <img style="float:left" src="images/loading.gif"/>
-                            <div class="vpkfont vpkcolor ml-2 mt-2">
-                                <span >&nbsp;&nbsp;Processing</span>
-                            </div>
-                        </div>
-
-                        <div id="clusterStatus">
-                        </div>
-
-                    </div>
-                    <div id="clusterModalFooter" class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" onclick="closeGetCluster()">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================================== -->
-        <!-- Decode secret Modal section          -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="decodeModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="dirHeader">
-                            <span class="vpkfont">Decoded content for secret:&nbsp;&nbsp;</span>
-                            <span class="vpkfont vkpcolor" id="decodeName"></span>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                       
-                        <textarea id="decode" rows="33" cols="125" class="vpkfont-decode">
-                            <!-- content here -->
-                        </textarea> 
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================================== -->
-        <!-- Schematic Modal section              -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="schemModal" tabindex="-1" role="dialog">
-             <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="schemHeader" class="vpkfont vpkcolor">
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                        <div id="schemBody" class="vpkfont">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================================== -->
-        <!-- Change directory Modal section       -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="chgDirModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="dirHeader">
-                            <h6 class="modal-title vpkcolor">Previous captured instance</h6>
-                        </div>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-
-                    </div>
-                    <div class="modal-body">
-
-                        <!-- Drop down for exiting saved cluster info instances -->
-                        <div class="form-group col-4 mt-3" style="margin: -15px; padding-bottom: 15px;">
-                            <!-- <label for="dsInstances" class="vpkfont-md">Previous instances</label> -->
-                            <select id="dsInstances" 
-                                class="js-example-basic-singleXXX vpkfont-md"
-                                style="width: 500px; height: 30px; vertical-align:middle;">
-                            </select>
-                        </div>
-
-                        <div class="mt-2 float-left"> 
-                            <button id="validateBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="reload()" style="margin: 5px;">
-                                Connect
-                            </button>
-                            <div id="loadStatus"class="row ml-4 mt-2">
-                                <!-- <div class="col mt-1 ml-1"> -->
-                                    <img style="float:left" src="images/loading.gif"/>
-                                    <div class="vpkfont-md vpkcolor ml-2 mt-2">
-                                        <span>&nbsp;&nbsp;Processing datasource connect request </span>
-                                    <!-- </div> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="chgDirFooter" class="modal-footer">
-                        <button id="closeChgDir" type="button" class="btn btn-sm btn-primary" onclick="closeChgDir()">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================================== -->
-        <!-- About Modal section                  -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <img style='vertical-align:middle;' src='images/vpk.png' width='40' height='40'  >
-
-                        <h4 class="ml-4 modal-title vpkcolor">Visual parsed Kubernetes<br>
-                        </h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div style="background-color: #eee;">
-
-                        <div class="align-middle">
-                            <div class="ml-1 mr-1 mt-4 mb-4 vpkfont vpkcolor text-center" >
-                                <P><span id="version" class="ml-1 vpkfont vpkcolor"></span>
-                                    <br>
-                                    <span class="vpkfont font-weight-bold">
-                                        Free and Open Source Software
-                                    </span>
-                                    <br>
-                                    <span class="vpkfont ">
-                                        An application working to bring understanding and insight to the Kubernetes universe.
-                                    </span>
-                                    </P>
-                                
-                            </div>
-
-                            <div id="usageRunning"class="row ml-4 mt-2">
-                                <img style="float:left" src="images/loading.gif"/>
-                                <div class="vpkfont vpkcolor ml-2 mt-2">
-                                    <span >&nbsp;&nbsp;Retrieving usage information</span>
-                                </div>
-                            </div>                            
-
-                            <div id="usageResult" class="ml-2 mr-2 mt-4 mb-4 vpkfont-md vpkcolor" >
-                            </div>
-
-                            <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-sm vpkcolor" >
-                                <hr>
-                                Copyright 2018-2020 David A. Weilert
-                                <br><br>
-                                Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-                                and associated documentation files (the "Software"), to deal in the Software without restriction, 
-                                including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-                                and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
-                                subject to the following conditions:
-                                <br><br>
-                                The above copyright notice and this permission notice shall be included in all copies or substantial 
-                                portions of the Software.
-                                <br><br>
-                                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-                                LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-                                IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-                                WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
-                                SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- ==================================== -->
-        <!-- Security Info Modal section          -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="secInfoModal" tabindex="-1" role="dialog" >
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="secInfoHeader">
-                            <h6 class="modal-title vpkcolor">Security Information</h6>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                        <div id="secInfoContent" style="text-align: left;">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- ==================================== -->
-        <!-- Multi-List Modal section             -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="multiModal" tabindex="-1" role="dialog" >
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="multiHeader">
-                            <!-- <h6 class="modal-title vpkcolor">Select resource</h6> -->
-                            <span class="vkpfont vpkcolor">Multiple resources</span>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-						<div class="vpkfont-md vpkcolor">
-						    <p>Select item from resource list:
-						    </p>
-						</div>
-                        <div id="multiContents" style="text-align: left;">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================================== -->
-        <!-- Missing YAML Modal section           -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="yamlModal" tabindex="-1" role="dialog" >
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="yamlHeader">
-                            <h6 class="modal-title vpkcolor">No Resource Found</h6>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-						<div class="vpkfont vpkcolor">
-						    <p>Unable to display resource definition. Yaml for the selected resource was not located.  
-						    </p>
-						</div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================================== -->
-        <!-- Directory stats Modal section        -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" >
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="statsHeader">
-                            <h5 class="modal-title vpkfont">Data source stats</h5>
-                            <div class="float-right">
-                                <button type="button" class="btn btn-sm btn-outline-primary vpkfont-sm" onclick="buildStatsToggle()">Toggle Kind/Namespace</button>
-                                &nbsp;&nbsp;<span class="vpkfont-sm">Press button to toggle views between resource Kind and Namespace groupings. </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                        <div id="statContents" class="vpkfont-md">
-                            <p>Log file data</P>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================================== -->
-        <!-- editor Modal section                 -->
-        <!-- ==================================== -->
-        <div class="modal fade" id="editorModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div id="editTitle" class="ml-2">
-                        </div>
-                    </div>
-                    <div class="modal-body mb-0 pb-0">
-                        <div class="panel panel-default border">
-                            <div class="panel-body">
-                                <div id="file-content" style="display: none;"></div>
-                                <div id="editor"></div>
-                            </div>
-                        </div>
-
-                        <div class="form-row mt-1 mb-0">
-                            <div class="form-group col-md-1 text-right pr-1 pt-1 pb-0 vpkcolor mb-0">
-                                <span style="font-size: 65%">Theme:</span>&nbsp;
-                            </div>
-                            <div class="form-group col-md-2 pl-0 mb-0">
-                                <select class="form-control-sm vpkcolor" id="eTheme" name="eTheme">
-                                    '<option value="sqlserver" selected>Light</option>'
-                                    '<option value="solarized_light">Medium</option>'
-                                    '<option value="monokai">Dark</option>'
-                                </select>
-                            </div>
-                            <div class="form-group col-md-2 text-right pr-1 pt-1 vpkcolor mb-0">
-                                <span style="font-size: 65%">Font size:</span>&nbsp;
-                            </div>
-                            <div class="form-group col-md-1 pl-0 mb-0">
-                                <select class="form-control-sm vpkcolor" id="eFont" name="eFont">
-                                    '<option value="12" selected>Small</option>'
-                                    '<option value="14">Medium</option>'
-                                    '<option value="18">Large</option>'
-                                </select>
-                            </div>
-                        </div>        
-                    </div>
-                    <div class="modal-footer mt-0 pt-1">
-                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- End of editor Modal -->
     </div>  <!-- End of Wrapper -->
 </body>
   

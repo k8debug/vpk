@@ -229,7 +229,7 @@ function nsChange(ns) {
 	}
 	partsCnt++;
 	let divSection = '<div class="events" ><hr><table style="width:100%">'
-	let header = '<tr class="partsList"><th>API Version</th><th>Kind</th><th>Resource Name</th><th>ID # (click ID # to view)</th></tr>'
+	let header = '<tr class="partsList"><th>API Version</th><th>Kind</th><th>Resource Name</th></tr>'
 	let nsHtml = '';
 	let keys;
 	let key;
@@ -285,10 +285,10 @@ function nsChange(ns) {
 					getD = getDef8;
 				}
 				item = '<tr>' 
-				+ '<td width="25%">' + api + '</td>' 
-				+ '<td width="15%">' + key + '</td>' 
-				+ '<td width="47%">' + name + '</td>' 
-				+ '<td width="13%"><span onclick="' + getD + '(\'' + parm + '\')">' + fnum + '</span></td>'
+				+ '<td width="25%"><span onclick="' + getD + '(\'' + parm + '\')">' + api + '</td>' 
+				+ '<td width="25%"><span onclick="' + getD + '(\'' + parm + '\')">' + key + '</td>' 
+				+ '<td width="50%"><span onclick="' + getD + '(\'' + parm + '\')">' + name + '</td>' 
+				// + '<td width="13%"><span onclick="' + getD + '(\'' + parm + '\')">' + fnum + '</span></td>'
 				+ '</tr>';
 				nsHtml = nsHtml + item
 			}

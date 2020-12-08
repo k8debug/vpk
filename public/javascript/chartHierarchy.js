@@ -1,18 +1,35 @@
 // Build collapsible hierarchy chart
-const chartHierarchy = (input) => {
-
+const chartHierarchy = (input, chType) => {
+    let eCount = 0;
     let width = 1250;
     let height = 500;
-    const svg = d3.select('svg');
+    let svg;
+    
+    if (chType === 'x') {
+        svg = d3.select('#xrefCharts2')
+        .style("font", "11px sans-serif")
+        .style("overflow", "visible")
+        .attr("text-anchor", "middle");
+    } else {
+        svg = d3.select('#graphicCharts2')
+        .style("font", "11px sans-serif")
+        .style("overflow", "visible")
+        .attr("text-anchor", "middle");
+    }
+
 
     const tree = data => {
         const root = d3.hierarchy(data);
         root.dx = 16;
         root.dy = width / (root.height + 1);
-        $("#chartInfo").empty();
-        $("#chartInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
+        if (chType === 'g') {
+            $("#grpahicChartInfo").empty();
+            $("#graphicChartInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
+        } else if (chType === 'x') {
+            $("#xrefInfo").empty();
+            $("#xrefInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
+        }
         return d3.tree().nodeSize([root.dx, root.dy])(root);
-    
     }
 
     const render = data => { 
@@ -57,10 +74,6 @@ const chartHierarchy = (input) => {
             .join("g")
             .attr("transform", d => `translate(${d.y},${d.x})`);
 
-        node.append("circle")
-            .attr("fill", d => d.children ? "#29f" : "#f33")
-            .attr("r", 2.5);
-
         node.append("text")
             .attr("dy", "0.31em")
             .attr("x", d => d.children ? -6 : 6)
@@ -69,10 +82,63 @@ const chartHierarchy = (input) => {
             .clone(true).lower()
             .attr("stroke", "white");
 
+        node.append("circle")
+        .attr("fill", d => d.children ? "#999" : "#f33")
+        .attr("r", 4)
+        // ------ DaW -------
+        .attr("cid", d => {
+            let cid = eCount++;
+            let text = d.ancestors().map(d => d.data.name).reverse().join('::')
+            return 'cid' + cid + '$' + text + '$' + chType;
+        })
+        .on("click", handleHierarchyClick);
+
+
+
         return svg.node();
     };
 
     // input is a json data structure
     render(input);
+}
 
+
+const handleHierarchyClick = (d, i, ct) => {
+    // ct is the chType
+    let cid = '';
+    let chartT = '';
+    let text = '';
+    let fnum = '';
+    if (typeof d.currentTarget !== 'undefined') {
+        if (typeof d.currentTarget.attributes !== 'undefined') {
+            if (typeof d.currentTarget.attributes['fill'] !== 'undefined' ) {
+                if (typeof d.currentTarget.attributes['fill'].nodeValue !== 'undefined' ) {
+                    if (d.currentTarget.attributes['fill'].nodeValue !== '#f33' ) {
+                        return;
+                    } else {
+                        if (typeof d.currentTarget.attributes['cid'] !== 'undefined') {
+                            cid = d.currentTarget.attributes['cid'].nodeValue;
+                            cid = cid.split('$');
+                            chartT = cid[2];
+                            if (chartT === 'g') {
+                                getFileByCid(cid);  
+                            } else if (chartT = 'x') {
+                                text = cid[1];
+                                text = text.split('::');
+                                if (text.length > 1) {
+                                    fnum = text[ text.length - 1];
+                                    fnum = fnum.split(':')
+                                    if (typeof fnum[0] !== 'undefined') {
+                                        getDef7(fnum[0]);
+                                    }
+                                } 
+                            }
+                        } else {
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

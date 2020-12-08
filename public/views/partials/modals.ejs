@@ -1,0 +1,474 @@
+        <!-- ==================================== -->
+        <!-- Configuration Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="configHeader">
+                            <h6 class="modal-title vpkcolor">VpK Configuration</h6>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div id="size-sm" class="container  p-1 mb-1">
+                            <div class="row mb-1">
+                                <div class="col-10 px-3 py-1 vpkfont vpkcolor">
+                                    <p>Display the <b>"managedFields"</b> portion of K8 resource yaml.  
+                                       &nbsp;'On' the "managedFields" will be shown.</p>
+                                </div>
+                                <!-- <div class="col-2 px-3 py-1 vpkfont vpkcolor">
+                                    <p>&nbsp;</p>
+                                </div> -->
+                                <div class="col-2 px-3 py-2 col-md-auto">
+                                    <input id="mgmFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" >
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <div class="col-10 px-3 py-1 vpkfont vpkcolor ">
+                                    <p>Display the <b>"status"</b> section of K8 resource yaml.  
+                                        &nbsp;'On' the status information will be shown.</p>
+                                 </div>
+                                <div class="col-2 py-2">
+                                    <input id="statusFlds" type="checkbox" data-style="w-40" data-toggle="toggle" data-size="sm" >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 float-left"> 
+                        <button id="configBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="saveConfig()" style="margin: 5px;">
+                            Save settings
+                        </button>   
+                        </div>
+                    </div>
+                    <!-- <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- Running cluster Modal section        -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="clusterModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="clusterHeader">
+                            <h6 class="modal-title vpkcolor">Cluster Information</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- Drop down for cluster type is dynamically built -->
+                        <div class="form-group col-4 vpkcolor" style="margin: -15px; padding-bottom: 15px;">
+                            <label for="clusterType">Cluster type</label>
+                            <select class="form-control form-control-sm" id="clusterType">
+                                <option value="none">select cluster type</option>
+                            </select>
+                        </div>
+
+                        <div id="clusterInfo">
+                        </div>
+
+                        <div id="clusterRunning"class="row ml-4 mt-2">
+                            <img style="float:left" src="images/loading.gif" width="50" height="50"/>
+                            <div class="vpkfont vpkcolor ml-2 mt-2">
+                                <span >&nbsp;&nbsp;Processing</span>
+                            </div>
+                        </div>
+
+                        <div id="clusterStatus">
+                        </div>
+
+                    </div>
+                    <div id="clusterModalFooter" class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="closeGetCluster()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Decode secret Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="decodeModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="dirHeader">
+                            <span class="vpkfont">Decoded content for secret:&nbsp;&nbsp;</span>
+                            <span class="vpkfont vkpcolor" id="decodeName"></span>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                       
+                        <textarea id="decode" rows="33" cols="162" class="vpkfont-decode">
+                            <!-- content here -->
+                        </textarea> 
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- xref edit Modal section              -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="xrefEditModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document">
+               <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="ml-1 modal-title vpkcolor">X-Reference create or maintain</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>                
+                    </div>
+
+                   <div class="modal-body">
+
+                        <div class="row pl-1 ml-2 mt-1 vpkcolor">
+                            <div class="mb-2 mr-2 ml-2 align-middle vpkfont vpkcolor">
+                                Select xref to edit 
+                            </div>    
+                            <div class="ml-1 mr-1 vpkfont vpkcolor">
+                                <select id="xrefEdit-type"  
+                                    style="width: 500px" class="vpkfont">
+                                    <option></option>
+                                    <option>Secrets : Secrets defined in environment</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="xrefEditFld" class="row pl-1 ml-2 mt-1 vpkfont vpkcolor">
+                            <div class="col-12 vpkfont vpkcolor">
+                                <hr>
+
+                                <hr>
+                            </div>    
+                        </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+
+        <!-- ==================================== -->
+        <!-- Schematic Modal section              -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="schemModal" tabindex="-1" role="dialog">
+             <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="schemHeader" class="vpkfont vpkcolor">
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="schemBody">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Documentation Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="docsModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document">
+               <div class="modal-content">
+                    <div class="modal-header">
+                        <img style="float: left;" class="mr-2" src="docs/docimages/vpk.png" width="30" height="30">
+                        <span class="modal-title vpkcolor">Documentation</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>                
+                    </div>
+
+                   <div class="modal-body">
+                       <div id="docsBody" class="docsTable ml-5 mr-5 mt-2 mb-5">
+                       </div>
+                   </div>
+                   <!-- <div class="modal-footer">
+                       <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                   </div> -->
+               </div>
+           </div>
+       </div>
+
+
+        <!-- ==================================== -->
+        <!-- Change directory Modal section       -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="chgDirModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="dirHeader">
+                            <h6 class="modal-title vpkcolor">Previous captured instance</h6>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- Drop down for existing saved cluster info instances -->
+                        <div class="form-group col-4 mt-3" style="margin: -15px; padding-bottom: 15px;">
+                            <select id="dsInstances" 
+                                class="vpkfont-md"
+                                style="width: 500px; height: 30px; vertical-align:middle;">
+                            </select>
+                        </div>
+
+                        <div class="mt-2 float-left"> 
+                            <button id="validateBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="reload()" style="margin: 5px;">
+                                Connect
+                            </button>
+                            <div id="loadStatus"class="row ml-4 mt-2">
+                                <!-- <div class="col mt-1 ml-1"> -->
+                                    <img style="float:left" src="images/loading.gif" width="50" height="50"/>
+                                    <div class="vpkfont-md vpkcolor ml-2 mt-2">
+                                        <span>&nbsp;&nbsp;Processing datasource connect request </span>
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="chgDirFooter" class="modal-footer">
+                        <button id="closeChgDir" type="button" class="btn btn-sm btn-primary" onclick="closeChgDir()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- About Modal section                  -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <img style='vertical-align:middle;' src='images/vpk.png' width='40' height='40'  >
+
+                        <h4 class="ml-4 modal-title vpkcolor">Visual parsed Kubernetes<br>
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div style="background-color: #eee;">
+
+                        <div class="align-middle">
+                            <div class="ml-1 mr-1 mt-4 mb-4 vpkfont vpkcolor text-center" >
+                                <P><span id="version" class="ml-1 vpkfont vpkcolor"></span>
+                                    <br>
+                                    <span class="vpkfont font-weight-bold">
+                                        Free and Open Source Software
+                                    </span>
+                                    <br>
+                                    <span class="vpkfont ">
+                                        An application working to bring understanding and insight to the Kubernetes universe.
+                                    </span>
+                                    </P>
+                                
+                            </div>
+
+                            <div id="usageRunning"class="row ml-4 mt-2">
+                                <img style="float:left" src="images/loading.gif" width="50" height="50"/>
+                                <div class="vpkfont vpkcolor ml-2 mt-2">
+                                    <span >&nbsp;&nbsp;Retrieving usage information</span>
+                                </div>
+                            </div>                            
+
+                            <div id="usageResult" class="ml-2 mr-2 mt-4 mb-4 vpkfont-md vpkcolor" >
+                            </div>
+
+                            <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-sm vpkcolor" >
+                                <hr>
+                                Copyright 2018-2020 David A. Weilert
+                                <br><br>
+                                Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+                                and associated documentation files (the "Software"), to deal in the Software without restriction, 
+                                including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+                                and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+                                subject to the following conditions:
+                                <br><br>
+                                The above copyright notice and this permission notice shall be included in all copies or substantial 
+                                portions of the Software.
+                                <br><br>
+                                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+                                LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+                                IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+                                WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+                                SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- Security Info Modal section          -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="secInfoModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="secInfoHeader">
+                            <h6 class="modal-title vpkcolor">Security Information</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="secInfoContent" style="text-align: left;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================================== -->
+        <!-- Multi-List Modal section             -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="multiModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="multiHeader">
+                            <!-- <h6 class="modal-title vpkcolor">Select resource</h6> -->
+                            <span class="vkpfont vpkcolor">Multiple resources</span>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+						<div class="vpkfont-md vpkcolor">
+						    <p>Select item from resource list:
+						    </p>
+						</div>
+                        <div id="multiContents" style="text-align: left;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Missing YAML Modal section           -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="yamlModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="yamlHeader">
+                            <h6 class="modal-title vpkcolor">No Resource Found</h6>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+						<div class="vpkfont vpkcolor">
+						    <p>Unable to display resource definition. Yaml for the selected resource was not located.  
+						    </p>
+						</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- Directory stats Modal section        -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="statsHeader">
+                            <h5 class="modal-title vpkfont">Data source stats</h5>
+
+                            <div class="float-right">
+                                <button type="button" class="btn btn-sm btn-outline-primary vpkfont-sm" onclick="buildStatsToggle()">Toggle Kind/Namespace</button>
+                                &nbsp;&nbsp;<span class="vpkfont-sm">Press button to toggle views between resource Kind and Namespace groupings. </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="statContents" class="vpkfont-md">
+                            <p>Log file data</P>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================== -->
+        <!-- editor Modal section                 -->
+        <!-- ==================================== -->
+        <div class="modal fade" id="editorModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div id="editTitle" class="ml-2">
+                        </div>
+                    </div>
+                    <div class="modal-body mb-0 pb-0">
+                        <div class="panel panel-default border">
+                            <div class="panel-body">
+                                <div id="file-content" style="display: none;"></div>
+                                <div id="editor"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-row mt-1 mb-0">
+                            <div class="form-group col-md-1 text-right pr-1 pt-1 pb-0 vpkcolor mb-0">
+                                <span style="font-size: 65%">Theme:</span>&nbsp;
+                            </div>
+                            <div class="form-group col-md-2 pl-0 mb-0">
+                                <select class="form-control-sm vpkcolor" id="eTheme" name="eTheme">
+                                    '<option value="sqlserver" selected>Light</option>'
+                                    '<option value="solarized_light">Medium</option>'
+                                    '<option value="monokai">Dark</option>'
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2 text-right pr-1 pt-1 vpkcolor mb-0">
+                                <span style="font-size: 65%">Font size:</span>&nbsp;
+                            </div>
+                            <div class="form-group col-md-1 pl-0 mb-0">
+                                <select class="form-control-sm vpkcolor" id="eFont" name="eFont">
+                                    '<option value="12" selected>Small</option>'
+                                    '<option value="14">Medium</option>'
+                                    '<option value="18">Large</option>'
+                                </select>
+                            </div>
+                        </div>        
+                    </div>
+                    <div class="modal-footer mt-0 pt-1">
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End of editor Modal -->

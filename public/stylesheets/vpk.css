@@ -30,6 +30,7 @@
     font-size: 1.50rem;
 }
 .vpkcolor {
+    /* color: rgb(18, 100, 187); */
     color: rgb(0, 123, 255);
 }
 .vpkcolorRed {
@@ -329,12 +330,53 @@ body {
 }
 
 .modal { 
-    /*simple fix for multiple bootstrap modal backdrop issue: 
-    don't need to recalculate backdrop z-index;
-    https://stackoverflow.com/questions/19305821/multiple-modals-overlay/21816777 */
-      background: rgba(0, 0, 128, 0.2);
+    /* modal background: rgba(0, 0, 128, 0.2);  */
+    background: rgba(2, 117, 216, 0.4)
 }
+
 #decodeModal {
     /* sequence this modal to the top of other modals */
     z-index: 2000; 
 }
+
+table.docsTable  {
+    border: 0.5px solid black;
+    color: darkgray;
+}
+
+table.docsTable th {
+    border: 0.5px solid gray;
+    text-align: center;
+    color: black;
+}
+table.docsTable td {
+    border: 0.5px solid gray;
+    background-color:  white;
+    text-align: left;
+    color: rgb(58, 50, 50);
+    padding-left: 10px;
+    padding-right: 10px;;
+}
+
+
+
+#docsBody pre {
+    border: darkgray;
+    background-color: #fcf2d4;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+/* .wp-content a[href*="//"]:not([href*="developer.ibm.com"]):not([href*="localhost"]):not([href*="ibm.com"]):after {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    background-image: url("images/launch-box.svg");
+    background-size: cover;
+    content: '';
+    line-height: 20px;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    position: relative;
+    margin-top: -.1rem; } */

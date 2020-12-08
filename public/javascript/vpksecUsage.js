@@ -23,14 +23,35 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 function initVars() {
-    RoleBindingCnt = 0;
-    ClusterRoleBindingCnt = 0;
-    RoleRef_RoleCnt = 0;
-    RoleRef_ClusterRoleCnt = 0;    
+    coleBindingCnt = 0;
+    clusterRoleBindingCnt = 0;
+    roleRefRoleCnt = 0;
+    roleRefClusterRoleCnt = 0; 
+    unknownKindCnt = 0;   
     bindingStatCounts = [];
 }
 
+function updateSecurityBindingCounts(ns) {
+    bindingStatCounts.push({
+        'namespace': ns.substring(5),
+        'roleBindingCnt': roleBindingCnt,
+        'clusterRoleBindingCnt': clusterRoleBindingCnt,
+        'roleRefRoleCnt': roleRefRoleCnt,
+        'roleRefClusterRoleCnt': roleRefClusterRoleCnt
+    });		
+    roleBindingCnt = 0;
+    clusterRoleBindingCnt = 0;
+    roleRefRoleCnt = 0;
+    roleRefClusterRoleCnt = 0; 
+    unknownKindCnt = 0; 
+
+}
+
+
 function securityUsage() {
+    // load security arrays if not loaded
+    buildRBACs();
+
 	let cLevel = '';
 	//Clear and initialize the variables
 	initVars();
@@ -39,7 +60,7 @@ function securityUsage() {
     $("#securityDetail").empty();
     $("#securityDetail").html('');
 
-    //Build the RBAC lists
+    //Build the RBAC lists and stats
     buildRBACUsage();
 
     //Build the stats table
@@ -131,7 +152,7 @@ function buildRoleRefTable () {
 function lookupSubjectName(name, ns, kind) {
     let nsKey = '0000-' + ns;
     let saList = [];
-    let sFnum = '';
+
     if (typeof k8cData[nsKey] !== 'undefined') {
         if (typeof k8cData[nsKey].ServiceAccount !== 'undefined') {
             saList = k8cData[nsKey].ServiceAccount
@@ -166,25 +187,23 @@ function subjectTextColor(kind) {
     return color; 
 }
 
-function updateSecurityBindingCounts(ns) {
-    bindingStatCounts.push({
-        'namespace': ns.substring(5),
-        'RoleBindingCnt': RoleBindingCnt,
-        'ClusterRoleBindingCnt': ClusterRoleBindingCnt,
-        'RoleRef_RoleCnt': RoleRef_RoleCnt,
-        'RoleRef_ClusterRoleCnt': RoleRef_ClusterRoleCnt
-    });		
-
-    RoleBindingCnt = 0;
-    ClusterRoleBindingCnt = 0;
-    RoleRef_RoleCnt = 0;
-    RoleRef_ClusterRoleCnt = 0;
-
+// STATS in not currently in use or shown in UI
+function showSecurityStats() {
+    if (typeof k8cData === 'undefined') {
+        showMessage('No data loaded','fail');
+        return;
+    }
+    buildRBACs();
+    buildRBACUsage();
+    $("#schemHeader").html('RBAC Security statistics');
+    if (typeof bindingStatCounts[0] !== 'undefined') {
+        $("#schemBody").html(buildSecStatsTable() );
+    } else {
+        $("#schemBody").html('No security statistics available');
+    }
+    $("#schemModal").modal('show');
 }
 
-
-
-// not currently invoked
 function buildSecStatsTable () {
     let rtn = '';
     let item = '';
@@ -198,10 +217,10 @@ function buildSecStatsTable () {
     for (let i = 0; i < bindingStatCounts.length; i++) {
         item = bindingStatCounts[i];
         line = '<tr class="vpkcolor"><td>' + item.namespace 
-        + '</td><td>' + item.ClusterRoleBindingCnt
-        + '</td><td>' + item.RoleBindingCnt
-        + '</td><td>' + item.RoleRef_ClusterRoleCnt
-        + '</td><td>' + item.RoleRef_RoleCnt
+        + '</td><td>' + item.clusterRoleBindingCnt
+        + '</td><td>' + item.roleBindingCnt
+        + '</td><td>' + item.roleRefClusterRoleCnt
+        + '</td><td>' + item.roleRefRoleCnt
         + '</td></tr>'
         rtn = rtn + line;
     }
