@@ -85,21 +85,15 @@ node server.js  -p 3000
 
 <br><br>
 
-After starting the server a message will be shown indicating the port to be used when opening the browser.  
-
-<img style="float: center;" src="https://raw.githubusercontent.com/k8debug/vpk/main/public/images/server.png">
-
-
+After starting the server a message is shown indicating the port to be used when opening the browser.  The default value is 4200. 
 
 Open a browser using the defined port:
 
-<b>
+```
 http://localhost:4200 
-</b> 
+``` 
 
 <br><br>
-
-
 
 
 ## Maintainer
