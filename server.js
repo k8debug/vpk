@@ -862,9 +862,11 @@ io.on('connection', client => {
     client.on('getXrefDef', data => {
         utl.logMsg('vpkMNL067 - Get xref def request ' );
         let result = '{"empty": true}';
-        if (typeof data.xref !== 'undefined') {
-            result = xref.getXrefs(data)
-        } 
+        if (typeof data !== 'undefined') {
+            if (typeof data.xref !== 'undefined') {
+                result = xref.getXrefs(data)
+            } 
+        }
         client.emit('getXrefDefResult', result );
     });
         

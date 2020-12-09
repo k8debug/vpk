@@ -406,9 +406,9 @@ function checkImage(kind, api) {
 	if (image === 'other/unk') {
 		if (typeof api !== 'undefined') {
 			if (api.indexOf('openshift') > -1 ) {
-				image = 'openshift/ocp';
+				image = 'other/ocp';
 			} else if (api.indexOf('.coreos') > -1 ) {
-				image = 'openshift/ocp';
+				image = 'other/ocp';
 			} else if (api.indexOf('k8s.io') > -1) {
 				image = 'k8/k8';
 			} else if (api.indexOf('.ibm.') > -1) {
@@ -429,6 +429,8 @@ function checkImage(kind, api) {
 				image = 'other/rook';
 			} else if (api.indexOf('.konghq.com') > -1) {
 				image = 'other/kong';
+			} else if (api.indexOf('.cattle') > -1) {
+				image = 'other/rancher';
 			}
 		}
 	}

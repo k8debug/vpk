@@ -28,9 +28,14 @@ What is VpK?
                                     Video requires network connection to YouTube   
 ```
 
+
+DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
+
 <div style="margin-left: 150px;">
-    <img src="docs/docimages/videoComingSoon.png" width="700" height="390">
+    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
+    </iframe>
 </div>
+
 
 ---
 

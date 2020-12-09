@@ -20,7 +20,7 @@ Vpk is an application that runs on your computer using required software. The pr
                                     Video requires network connection to YouTube   
 ```
 
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO MUST BE REPLACED WITH VERSION 5 VIDEO
+DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
 
 
 <div style="margin-left: 150px;">

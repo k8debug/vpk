@@ -11,7 +11,7 @@
 
 This table view provides a list of all K8 resources.  The default view shown in the table displays three fields, namespace, kind, and name.     
 
-blah, blah, blah
+Information displayed in the table can be __clicked on__ to view the associated resoure yaml.
 
 
 ```
@@ -24,8 +24,11 @@ The user must press the Populate table button as the first task to view informat
                                     Video requires network connection to YouTube   
 ```
 
+DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
+
 <div style="margin-left: 150px;">
-    <img src="docs/docimages/videoComingSoon.png" width="700" height="390">
+    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
+    </iframe>
 </div>
 
 ---

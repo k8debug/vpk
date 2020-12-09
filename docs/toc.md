@@ -17,13 +17,6 @@
 | <a href="javascript:docNextTopic('xreference')">X-Reference</a> | &nbsp;Cross reference Kubernetes resource object elements |
 
 
- - [x] Write the press release
- - [ ] Update the website
- - [ ] Contact the media
-
-
-&#128512;We are happy.
-
 ---
 ```
                                     Video requires network connection to YouTube   
