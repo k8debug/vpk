@@ -71,7 +71,7 @@ There is no automated process to update an existing version of this software.   
 
 ## Start parameters
 
-Run the VpK servoer by running either of the followings command from the directory where the software is installed.
+Start the VpK server by running either of the followings command from the directory where the software is installed.
 
 ```
 npm start (or) node server.js  
