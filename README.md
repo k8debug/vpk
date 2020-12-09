@@ -60,10 +60,6 @@ Change to the directory where the files were placed. Run the following command t
 
 Once the above has successfully completed the application can be started.  
 
-Test the program installation by running either of the followings command from the directory where the above command was executed.
-
-
-	npm start (or) node server.js  
 
 <br><br>
 
@@ -75,19 +71,20 @@ There is no automated process to update an existing version of this software.   
 
 ## Start parameters
 
-VpK has two optional start parameters, directory and port. Examples of there usage are shown below:  
+Run the VpK servoer by running either of the followings command from the directory where the software is installed.
 
-Example using port other than the default:
+```
+npm start (or) node server.js  
+```
+
+
+VpK has an optional start parameters for the port of where the browser can access the application.   The default value for the port is 4200.  The following example starts the server using port 3000 and not the default.
 
 ```
 node server.js  -p 3000   
 ``` 
 
-<br><br>
-
-After starting the server a message is shown indicating the port to be used when opening the browser.  The default value is 4200. 
-
-Open a browser using the defined port:
+Once the server is started open a browser using the appropriate port.
 
 ```
 http://localhost:4200 
