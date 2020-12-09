@@ -1,43 +1,31 @@
 # VpK - Visual parsed Kubernetes 
 <br>
 
-VpK was created as the result of wanting a tool to aid in understanding what is defined in Kubernetes.   
+<b>VpK</b> was created as the result of needing a tool to understand what is defined in all those Kubernetes yaml files.
 
-VpK is comprised of a server and browser components.  The server component is a node.js application that communictes with running instances of K8 using the kubectl CLI application.  When using K8 versions that require a custom CLI tool to query Kubernets, e.g. OpenShift, MicroK8s, etc. the associated tool is used to query the cluster.  Using the kubectl api-resource command, a list of all known resources can be obtained.  Using this information all K8 resources support the 'get' verb are quired using kubectl get.  The output from the get requests used to create a seperate file for each unique resource.  These files are created on the user laptop.  At this point VpK no longer communicates with the K8 instance. 
-
-The user interface (UI), browser component, provides graphical and tabular views of resources defined and deployed in the cluster.
-
-What is VpK? 
-
-- VpK is designed to capture a point-in-time snapshot of the cluster.
-- Vpk provides the ability to view the captured snapshot in a disconnected fashion.  Once the snapshot is created the user no longer needs to be connected to the cluster.
-- Vpk will __not__ modify a K8 cluster.  It is designed as read-only.
-- VpK is __not__ a realtime monitoring tool. 
+<b>VpK</b> is comprised of a server and browser features.  The server portion is a node.js application that reads and parses Kubernetes definition 'yaml' files.  The browser portion uses javascript and BootStrap.  Communication between the browser and server use both http and web sockets. 
 
 
-![Architecture](https://github.com/k8debug/raw/master/public/docs/docimages/architecture.png)
-
+![HOME](https://github.com/IBM-ICP-CoC/VpK/raw/master/docimages/architecture3.png)
 
 
 Application features include:
 
-- Access running K8 instances via CLI and saving results in locally stored directory.
-
-- The locally stored K8 query results allow disconnected use of VpK once a successful retrieval of K8 resource information.
+- Read and parse definition files from a directory.  Includes processing all sub-directories.  The application does <b>not</b> update or modify any of the definition files.
  
-- Tabular viewing of resources with the abilty to filter by namespaces, kinds, labels, and resource names.
+- Upload files and or directories along with compressed files, i.e. zip, gz, tar.
 
-- Fully expanded or collapsible hierarchial views of K8 resources.  
+- Access a running instance of IBM Cloud Private and create configuration files for all deployed assets.
 
-- Circlepack view of K8 resouces.  
+- Search parsed defintion files.
 
-- Schematic views of running workloads in the cluster.
+- View single or multiple items returned in the search results.
 
-- Views of roles, bindings, and subject used to define RBAC.
+- Rendering of selected item using SVG (Scalable Vector Graphics)
+ 
+- View server logs from browser interface
 
-- Usage of RBAC definitions.
-
-- Create and view custom cross reference information of K8 resource elements.	
+	
 
 
 ## Installation
@@ -50,7 +38,7 @@ You cannot install and run this application without first installing node.js and
 
 Download the source files and place in a directory.  The source files are available on github and can be downloaded using the following clone command or retrieved 
 
-git clone http://github.com/k8debug/vpk.git/ 
+git clone http://github.com/daveweilert/vpk.git/ 
 
 Change to the directory where the files were placed. Run the following 
 NPM command to install the required Node modules:
@@ -506,7 +494,7 @@ https://github.com/IBM-ICP-CoC/VpK
 
 ## License
 
-Copyright 2018-2020 David A. Weilert
+Copyright 2018 Dave Weilert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
