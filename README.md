@@ -1,6 +1,3 @@
-
-style="float: center;" 
-
 <img style="float: center;" src="https://raw.githubusercontent.com/k8debug/vpk/main/public/images/vpk.png" width="70" height="70">
 
 ## Visual parsed Kubernetes 
@@ -43,14 +40,13 @@ What is VpK?
 
 ## Vpk Architecture
 
-![Architecture](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs//docimages/architecture.png){:height="200px" width="100px"}
-
+![Architecture](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs//docimages/architecture.png)
 
 <br><br>
 
 ## Installation
 	
-__Node.js and npm are required to install and execute this application.
+__Node.js__ and __npm__ are required to install and execute this application.
 
 You cannot install and run this application without first installing node.js and npm.  Once the prerequisites are installed proceed to the next step. 
 
@@ -58,18 +54,17 @@ Download the source files and place in a directory.  The source files are availa
 
 git clone http://github.com/k8debug/vpk.git/ 
 
-Change to the directory where the files were placed. Run the following 
-NPM command to install the required Node modules:
+Change to the directory where the files were placed. Run the following command to install the required Node modules:
 
 	npm install
 
-Once the above has successfully completed the application can be run.  
+Once the above has successfully completed the application can be started.  
 
-Test the program installation by entering the following command from the directory where the above command was executed.
+Test the program installation by running either of the followings command from the directory where the above command was executed.
 
 <b>
 
-node server.js   
+npm start (or) node server.js  
 </b> 
 
 ## Updating software
