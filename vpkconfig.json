@@ -1,8 +1,4 @@
 {
-    "defaults": {
-        "managedFields": false,
-        "statusSection": true
-    },
     "providers": [
         {
             "name": "usekubeconn",
@@ -80,10 +76,10 @@
             "name": "microk8",
             "dropdown": "MicroK8 existing connection",
             "getCmd": {
-                "command": "microk8 kubectl get "
+                "command": "microk8s kubectl get "
             },
             "authCmd": {
-                "command": "microk8 kubectl ",
+                "command": "microk8s kubectl ",
                 "parms": [
                     {
                         "key": "-a",
@@ -94,7 +90,7 @@
                     {
                         "key": "dirName",
                         "value": "{{datasource_prefix}}",
-                        "default": "microk8",
+                        "default": "microk8s",
                         "sal": true
                     }
                 ],
@@ -155,6 +151,12 @@
                     {
                         "key": "--skip-ssl-validation",
                         "value": ""
+                    },
+                    {
+                        "key": "dirName",
+                        "value": "{{datasource_prefix}}",
+                        "default": "iks",
+                        "sal": true
                     }
                 ],
                 "test": "cv:icp",
@@ -187,13 +189,19 @@
                     {
                         "key": "-p",
                         "value": "{{password}}",
-                        "default": "ILWgF-VfgcQ-p6mJ4-Jztez",
+                        "default": "hxYtC-KLeQC-kfNkm-ppi8i",
                         "swe": true
                     },
                     {
                         "key": "-n",
                         "value": "{{namespace}}",
                         "default": "all-namespaces",
+                        "sal": true
+                    },
+                    {
+                        "key": "dirName",
+                        "value": "{{datasource_prefix}}",
+                        "default": "crc",
                         "sal": true
                     }
                 ],
@@ -297,5 +305,100 @@
             "pass": "",
             "fail": "fail"
         }
-    ]
+    ],
+    "xrefNames": {
+        "secrets": {
+            "xon": true,
+            "xtype": "s",
+            "desc": "Secrets defined in the environment"
+        },
+        "configs": {
+            "xon": true,
+            "xtype": "s",
+            "desc": "ConfigMaps defined in the environment"
+        },
+        "podUids": {
+            "xon": true,
+            "xtype": "s",
+            "desc": "UID of each pod"
+        },
+        "labelsApp": {
+            "xon": true,
+            "xtype": "s",
+            "desc": "Labels for app"
+        },
+        "routeHosts": {
+            "xon": true,
+            "xtype": "s",
+            "desc": "host on route"
+        }
+    },
+    "xrefRules": {
+        "Pod": [
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "x0",
+                "xrk": "configs",
+                "xrw": "spec.containers[*].env[*].valueFrom.configMapKeyRef.name"
+            },
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "1",
+                "xrk": "configs",
+                "xrw": "spec.volumes[*].configMap[*].name"
+            },
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "x2",
+                "xrk": "podUids",
+                "xrw": "metadata.uid"
+            },
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "x3",
+                "xrk": "secrets",
+                "xrw": "spec.volumes[*].secret.secretName"
+            },
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "x4",
+                "xrk": "labelsApp",
+                "xrw": "metadata.labels.app{{prometheus}}"
+            }
+        ],
+        "ServiceAccount": [
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "x0",
+                "xrk": "secrets",
+                "xrw": "secrets[*].name"
+            },
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "x1",
+                "xrk": "secrets",
+                "xrw": "imagePullSecrets[*].name"
+            }
+        ],
+        "Route": [
+            {
+                "xon": true,
+                "xtype": "s",
+                "xid": "x0",
+                "xrk": "routeHosts",
+                "xrw": "spec.host"
+            }
+        ]
+    },
+    "defaults": {
+        "managedFields": false,
+        "statusSection": false
+    }
 }

@@ -1,3 +1,26 @@
+<!--
+        Copyright (c) 2018-2020 Dave Weilert
+
+        Permission is hereby granted, free of charge, to any person obtaining
+        a copy of this software and associated documentation files (the
+        "Software"), to deal in the Software without restriction, including
+        without limitation the rights to use, copy, modify, merge, publish,
+        distribute, sublicense, and/or sell copies of the Software, and to
+        permit persons to whom the Software is furnished to do so, subject to
+        the following conditions:
+
+        The above copyright notice and this permission notice shall be
+        included in all copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -58,7 +81,7 @@
             </div>
 
             <ul id="tabs" class="nav nav-tabs">
-                <li class="nav-item"><a id="instTab"       href="#instructions" data-target="#instructions" data-toggle="tab" class="nav-link small text-uppercase active">Instructions</a></li>
+                <li class="nav-item"><a id="instTab"       href="#instructions" data-target="#instructions" data-toggle="tab" class="nav-link small text-uppercase active">Overview</a></li>
                 <li class="nav-item"><a id="tableTab"      href="#searchR"      data-target="#searchR"      data-toggle="tab" class="nav-link small text-uppercase">Table View</a></li>
                 <li class="nav-item"><a id="graphicTab"    href="#graphic"      data-target="#graphic"      data-toggle="tab" class="nav-link small text-uppercase">Graphic View</a></li>
                 <li class="nav-item"><a id="schematicTab"  href="#schematic"    data-target="#schematic"    data-toggle="tab" class="nav-link small text-uppercase">Schematics</a></li>
@@ -69,7 +92,10 @@
 
             <div id="tabsContent" class="tab-content">
                 <div id="instructions" class="tab-pane active show">
-                    <div id="instDetail" class="vpkfont vpkcolor">
+
+                    <!-- Append the needed UI components -->
+                    <%- include('partials/carousel') %>
+                    <!-- <div id="instDetail" class="vpkfont vpkcolor">
                         <ul>
                             <li class="pt-1">From dropdown select datasource and connect.
                                 &nbsp;&nbsp;The message 'No datasource connected' button 
@@ -85,7 +111,7 @@
                         <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
                         <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
                         <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div id="searchR" class="tab-pane">
@@ -378,18 +404,15 @@
 
                 <div id="xreference" class="tab-pane">
                     <div class="vpkfont vpkcolor mb-3">Create, maintain, and view custom cross reference information of K8 resource elements.
-                        <span class="vpkfont ml-4">(click the wrench icon to create or maintain xref)</span>
+                        <span class="vpkfont text-secondary ml-1">(click the wrench icon to create or maintain xref definition)</span>
                     </div>
 
 
                     <div id="xrefUsageType" class="mb-1 vpkcolor grid mt-0 border">
                         
                         <div class="row filterBack pl-1 ml-2 mt-1">
-                            <div class="vpkfont-lg mr-2 ">
-                                &nbsp;<button class="btn btn-sm" onclick="xrefEdit()"><i class="fas fa-wrench vpkcolor vpkfont-lg"></i></button>&nbsp;
-                            </div>
 
-                            <div class="mb-2 align-middle vpkfont-md">
+                            <div class="mb-2 pt-1 align-middle vpkfont-md">
                                 Select xref type 
                             </div> 
 
@@ -401,7 +424,7 @@
                                 </select>
                             </div>
 
-                            <div class="ml-4 mb-2 vpkfont-md">
+                            <div class="ml-4 mb-2 pt-1 vpkfont-md">
                                 Select filter value 
                             </div>                       
                             <div class="ml-1 mr-1 mb-2 vpkfont-md">
@@ -417,7 +440,7 @@
 
 
                     <div class="row vpkButtons mb-1 ml-1">
-                        <div class="vpkcolor vpkfont-md ml-2" style="width: 240px;">
+                        <div class="vpkcolor vpkfont-md ml-2 pt-1" style="width: 240px;">
                             Select xref view
                         </div>
 
@@ -464,6 +487,7 @@
 
         <!-- Append the needed modals -->
         <%- include('partials/modals') %>
+        <%- include('partials/xrefModal') %>
 
 
     </div>  <!-- End of Wrapper -->

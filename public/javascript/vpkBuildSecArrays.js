@@ -94,21 +94,21 @@ function parseRBSubject(data, printAllLines, fnum) {
 			linkValue = linkValue + data[i].name + '@';
 			if (typeof data[i].kind !== 'undefined' ) {
 				if (data[i].kind === 'ServiceAccount' ) {
-					line1Color = 'text-light bg-info';
+					line1Color = 'bg-subjectServiceAccount';
 				} else if (data[i].kind === 'Group' ) {
-					line1Color = 'bg-warning';
+					line1Color = 'bg-subjectGroup';
 				} else if (data[i].kind === 'User' ) {
-					line1Color = 'text-light bg-danger';
+					line1Color = 'bg-subjectUser';
 				} else if (data[i].kind === 'SystemGroup' ) {
-					line1Color = 'text-light bg-primary';
+					line1Color = 'bg-subjectSystemGroup';
 				} else if (data[i].kind === 'SystemUser' ) {
-					line1Color = 'text-light bg-secondary';
+					line1Color = 'bg-subjectSystemUser';
 				} else {
-					line1Color = '';
+					line1Color = 'bg-unknown';
 					console.log('Unmanaged kind for Subject: ' + data[i].kind)
 				}
 			} else {
-				line1Color = '';
+				line1Color = 'bg-unknown';
 			}
 		}
 		if (printAllLines === true) {
@@ -211,8 +211,8 @@ function buildSubjects(ns) {
 			}
 
 			item = '<tr>' 
-			+ '<td width="10%">' + elem.kind + '</td>' 
-			+ '<td width="40%">' + subject + '</td>' 
+			+ '<td width="10%">' + elem.kind  + '</td>' 
+			+ '<td width="40%">' + subject + '<span class="pt-0 pb-0">Namespace: ' + elem.namespace+ '</span></td>' 
 			+ '<td width="10%">' + roleK + '</td>' 
 			+ '<td width="40%"><span class="bg-success text-light" onclick="getSecRole(\'' + roleRefName + '\')">' + roleRefName + '</span></td>' 
 			+ '</tr>';
@@ -252,7 +252,7 @@ function buildRoleBindings(ns) {
 	let used = {};
 	let nsKey = ns;
 	let divSection = '<div class="events" ><hr><table style="width:100%">';
-	let header = '<tr class="partsList"><th>RoleBinding Name</th><th>Role Name</th><th>Subject Name & Kind</th></tr>';
+	let header = '<tr class="partsList"><th>Binding</th><th>Role</th><th>Subject</th></tr>';
 	let bind;
 	let hl;
 	let item;
@@ -260,8 +260,11 @@ function buildRoleBindings(ns) {
 	let fnum;
 	let subject;
 	let roleName;
+	let roleType;
 	let uKey;
 	let bKind;
+	let rColor;
+	let bColor;
 	let nsHtml = divSection + RBAClegend + header;
 	let bindings = k8cData[nsKey].RoleBinding;
 	bindings.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
@@ -311,9 +314,30 @@ function buildRoleBindings(ns) {
 			subject = '<span class="noSubject">&lt;No subjects defined&gt;</span>'
 		}
 
+		if (bind.kind === 'ClusterRoleBinding') {
+			bColor = 'bg-clusterRoleBinding';
+		} else if (bind.kind === 'RoleBinding') {
+			bColor = 'bg-roleBinding';
+		} else {
+			bColor = 'bg-roleBindingUnk';
+		}
+
+		//TODO is this all that is needed for Roles
+		let crHl = k8cData['0000-@clusterRoles@'].Role.length
+		rColor = 'bg-role';
+		roleType = 'n';
+
+		for (let f = 0; f < crHl; f++ ) {
+			if (k8cData['0000-@clusterRoles@'].Role[f].name === roleName) {
+				rColor = 'bg-clusterRole';
+				roleType = 'c'
+				break;
+			}
+		}
+
 		item = '<tr>' 
-		+ '<td width="34%" class="align-top"><span class="text-light bg-rbn" onclick="getDef7(\'' + fnum + '\')">' + name + '</td>' 
-		+ '<td width="33%" class="align-top"><span class="text-light bg-success" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
+		+ '<td width="34%" class="align-top"><span class="' + bColor + '" onclick="getDef7(\'' + fnum + '\')">' + name + '</td>' 
+		+ '<td width="33%" class="align-top"><span class="' + rColor + '" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
 		+ '<td width="33%" class="align-top" >' + subject + '</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item

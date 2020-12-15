@@ -24,6 +24,23 @@ $(document).ready(function() {
 
     // get version from server
     getVersion();
+
+
+    $('.carousel-item', '.multi-item-carousel').each(function(){
+        var next = $(this).next();
+        if (! next.length) {
+          next = $(this).siblings(':first');
+        }
+        next.children(':first-child').clone().appendTo($(this));
+      }).each(function(){
+        var prev = $(this).prev();
+        if (! prev.length) {
+          prev = $(this).siblings(':last');
+        }
+        prev.children(':nth-last-child(2)').clone().prependTo($(this));
+      });
+
+
  
     $('.modal').on("hidden.bs.modal", function (e) {
         --bootstrapModalCounter;
@@ -268,23 +285,27 @@ $(document).ready(function() {
 // socket io definitions for incoming and out-bound 
 //----------------------------------------------------------
 //----------------------------------------------------------
-function saveConfig() {
-    let sFlds = document.getElementById('statusFlds').checked;
-    let mFlds = document.getElementById('mgmFlds').checked;
+function saveConfig(what) {
+    if (typeof what === 'undefined') {
+        let sFlds = document.getElementById('statusFlds').checked;
+        let mFlds = document.getElementById('mgmFlds').checked;
 
-    if (typeof sFlds === 'undefined') {
-        sFlds = false;
+        if (typeof sFlds === 'undefined') {
+            sFlds = false;
+        }
+        if (typeof mFlds === 'undefined') {
+            mFlds = false;
+        }
+        socket.emit('saveConfig', { "managedFields": mFlds, "statusSection": sFlds} );
+    } else {
+        socket.emit('saveConfig', { "xrefData": xrefData} );
     }
-    if (typeof mFlds === 'undefined') {
-        mFlds = false;
-    }
-    socket.emit('saveConfig', { "managedFields": mFlds, "statusSection": sFlds} );
 }
 //...
 socket.on('saveConfigResult', function(data) {
     $("#configModal").modal('hide'); 
     if (data.result.status === 'PASS') {
-        showMessage(data.result.message, 'pass')
+        //showMessage(data.result.message, 'pass')
     } else {
         showMessage(data.result.message, 'fail')
     }
@@ -953,7 +974,7 @@ function bldXrefChart(type) {
         filter = ':all:-xref:';
     }
     data = {'xref': xref, 'filter': filter};
-    socket.emit('xreference', data);
+    socket.emit('xreference', data); 
 }
 //...
 socket.on('xrefResult', function(data) {
@@ -976,11 +997,31 @@ socket.on('xrefResult', function(data) {
 
 
 //----------------------------------------------------------
-function pickXref(tmp) {
-    tmp.trim();
-    socket.emit('getXrefDef');
-}//...
+function xrefGetData(tmp) {
+    hideMessage();
+    socket.emit('getXrefRules');
+}
+//...
+socket.on('getXrefRulesResult', function(data) {
+    xrefData = data; 
+    xrefEditModalDialog();
+}); 
 //==========================================================
+
+
+//----------------------------------------------------------
+// send request to server to get xref list
+function getXrefFilter(data) {
+    socket.emit('getXrefFilter', data);
+}
+//...
+socket.on('getXrefFilterResults', function(data) {
+    console.log(JSON.stringify(data, null, 4))
+});
+//==========================================================
+
+
+
 
 //----------------------------------------------------------
 function getConfig() {
@@ -992,6 +1033,19 @@ function getConfig() {
 //----------------------------------------------------------
 //...
 //==========================================================
+
+
+//----------------------------------------------------------
+// item was selected from xref edit dialog
+function pickXref(tmp) {
+    tmp = tmp.split(':');
+    tmp = tmp[0].trim();
+    xrefData.picked = tmp;
+    xrefHhandleSelection();
+}
+
+//==========================================================
+
 
 
 //----------------------------------------------------------

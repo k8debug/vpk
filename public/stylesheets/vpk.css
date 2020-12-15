@@ -325,9 +325,6 @@ body {
     background-color: black;
     color: white;
 }
-.bg-rbn {
-    background-color: #ae6ec2
-}
 
 .modal { 
     /* modal background: rgba(0, 0, 128, 0.2);  */
@@ -335,6 +332,11 @@ body {
 }
 
 #decodeModal {
+    /* sequence this modal to the top of other modals */
+    z-index: 2000; 
+}
+
+#docsModal {
     /* sequence this modal to the top of other modals */
     z-index: 2000; 
 }
@@ -380,3 +382,113 @@ table.docsTable td {
     margin-right: 0.5rem;
     position: relative;
     margin-top: -.1rem; } */
+
+.rulesList {
+    font-size: 1.0 rem;
+    background-color:#b4b4b4;
+    color: white;
+} 
+
+.rulesText {
+    font-size: 1.0rem;
+    background-color: #ffffff;
+    color: black;
+}
+
+/* RBAC colors */
+.bg-role {
+    background-color:#3ad35d;
+    color: black;
+}
+.bg-roleBinding {
+    background-color: #016601;
+    color: white;
+}
+.bg-clusterRole {
+    background-color: #dec4f7;
+    color: black;
+}
+.bg-clusterRoleBinding {
+    background-color: #6e03d3af;
+    color: white;
+}
+.bg-roleBindingUnk {
+    background-color: #525252;
+    color: white;
+}
+.bg-unknown {
+    background-color: #525252;
+    color: white;
+}
+.bg-subjectServiceAccount {
+    background-color: #17a2b8; 
+    color: white
+}
+.bg-subjectUser {
+    background-color: #dc3545;
+    color: white;
+}
+.bg-subjectGroup {
+    background-color: #f0ad4e;
+    color: black;
+}
+
+.bg-subjectSystemUser {
+    background-color: #6c757d;
+    color: white;
+}
+.bg-subjectSystemGroup {
+    background-color: #007bff;
+    color: white;
+}
+
+
+
+.text-black {
+    color: #000000;
+}
+
+.text-white {
+    color: #ffffff;
+}
+
+.text-gray {
+    color: #949494;
+}
+
+.aligncenter {
+    text-align: center;
+}
+
+.multi-item-carousel {
+    overflow: hidden;
+  }
+  .multi-item-carousel .carousel-indicators {
+    margin-right: 25%;
+    margin-left: 25%;
+  }
+  .multi-item-carousel .carousel-control-prev,
+  .multi-item-carousel .carousel-control-next {
+    background: rgba(255, 255, 255, 0.3);
+    width: 25%;
+    z-index: 11; /* .carousel-caption has z-index 10 */
+  }
+  .multi-item-carousel .carousel-inner {
+    width: 150%;
+    left: -25%;
+  }
+  .multi-item-carousel .carousel-item-next:not(.carousel-item-left),
+  .multi-item-carousel .carousel-item-right.active {
+    -webkit-transform: translate3d(33%, 0, 0);
+    transform: translate3d(33%, 0, 0);
+  }
+  .multi-item-carousel .carousel-item-prev:not(.carousel-item-right),
+  .multi-item-carousel .carousel-item-left.active {
+    -webkit-transform: translate3d(-33%, 0, 0);
+    transform: translate3d(-33%, 0, 0);
+  }
+  .multi-item-carousel .item__third {
+    float: left;
+    position: relative;
+    width: 33.33333333%;
+  }

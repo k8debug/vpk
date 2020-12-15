@@ -131,23 +131,29 @@ let usageJSHeapSizeLimit = 0;
 let usageJSHeapTotal = 0;
 let usageJSHeapUsed = 0;
 
+let xrefData = '';				// JSON struc of xref rules and names
+let xrefSelectedRule = '';
+let xrefSelectedRuleKey = '';
+let xrefRuleCountFound = 0;
 
 // color legend for security 
-let RBAClegend = '<div class="vpkfont-md text-dark ml-2 mb-2 mt-2"><span class="pr-1">Legend:</span>'
-+ '<span class="text-light bg-rbn pl-1 pr-1">RoleBinding name</span>'
-+ '&nbsp;&nbsp;'
-+ '<span class="text-light bg-success pl-1 pr-1">Role name</span>'
-+ '<span class="pl-4 pr-1 text-dark">Subject kind:</span>'
-+ '<span style="width: 80px;" class="text-light bg-info pl-1 pr-1">ServiceAccount</span>'
-+ '&nbsp;&nbsp;'
-+ '<span style="width: 80px;" class="bg-warning pl-1 pr-1">Group</span>'
-+ '&nbsp;&nbsp;'
-+ '<span style="width: 80px;" class="text-light bg-danger pl-1 pr-1">User</span>'
-+ '&nbsp;&nbsp;'
-+ '<span style="width: 80px;" class="text-light bg-primary pl-1 pr-1">SystemGroup</span>'
-+ '&nbsp;&nbsp;'
-+ '<span style="width: 80px;" class="text-light bg-secondary pl-1 pr-1">SystemUser</span>'
-+ '<span class="pl-4 vpkfont-md">(click color bars in table for additional info)</span>';
+let RBAClegend = '<div class="vpkfont-md mb-2 mt-2">'
++ '<span class="pr-1 text-dark">Binding:</span>'
++ '<span class="bg-roleBinding pl-1 pr-1">RoleBinding</span>'
++ '<span class="bg-clusterRoleBinding pl-1 pr-1">ClusterRoleBinding</span>'
+
++ '<span class="pl-3 pr-1 text-dark">Roles:</span>'
++ '<span class="bg-role pl-1 pr-1">Role</span>'
++ '<span class="bg-clusterRole pl-1 pr-1">ClusterRole</span>'
+
++ '<span class="pl-3 pr-1 text-dark">Subjects:</span>'
++ '<span class="bg-subjectServiceAccount pl-1 pr-1">ServiceAccount</span>'
++ '<span class="bg-subjectUser pl-1 pr-1">User</span>'
++ '<span class="bg-subjectGroup pl-1 pr-1">Group</span>'
++ '<span class="bg-subjectSystemUser pl-1 pr-1">System User</span>'
++ '<span class="bg-subjectSystemGroup pl-1 pr-1">System Group</span>'
+
++ '<span class="pl-1 vpkfont-md">(click colors in table for additional info)</span>';
 
 
 function openAll(type) {
@@ -294,6 +300,10 @@ function checkImage(kind, api) {
 		image = 'k8/api';
 	} else if (kind === 'Alertmanager') {
 		image = 'other/ocp';
+	} else if (kind === 'CatalogSource') {
+		image = 'other/ocp';
+	} else if (kind === 'CephCluster') {
+		image = 'other/rook';
 	} else if (kind === 'CertificateSigningRequest') {
 		image = 'k8/k8';
 	} else if (kind === 'ClusterRole') {
@@ -350,6 +360,8 @@ function checkImage(kind, api) {
 		image = 'other/ocp';
 	} else if (kind === 'NetworkPolicy') {
 		image = 'k8/netpol';
+	} else if (kind === 'NooBaa' ) {
+		image = 'other/redhat';
 	} else if (kind === 'Node') {
 		image = 'k8/node';
 	} else if (kind === 'OCP-CRD') {
@@ -417,23 +429,30 @@ function checkImage(kind, api) {
 				image = 'other/ibm';
 			} else if (api.indexOf('.ansible.com') > -1) {
 				image = 'other/redhat';
-			} else if (api.indexOf('.core.hybridapp.io') > -1) {
+			} else if (api.indexOf('core.hybridapp.io') > -1) {
 				image = 'other/ibm';
-			} else if (api.indexOf('.tools.hybridapp.io') > -1) {
+			} else if (api.indexOf('tools.hybridapp.io') > -1) {
 				image = 'other/ibm';
-			} else if (api.indexOf('.deploy.hybridapp.io') > -1) {
+			} else if (api.indexOf('deploy.hybridapp.io') > -1) {
 				image = 'other/ibm';
-			} else if (api.indexOf('.noobaa.io') > -1) {
+			} else if (api.indexOf('noobaa.io') > -1) {
 				image = 'other/redhat';
 			} else if (api.indexOf('.rook.') > -1) {
 				image = 'other/rook';
 			} else if (api.indexOf('.konghq.com') > -1) {
 				image = 'other/kong';
-			} else if (api.indexOf('.cattle') > -1) {
+			} else if (api.indexOf('.cattle.') > -1) {
 				image = 'other/rancher';
+			} else if (api.indexOf('.volcano.') > -1) {
+				image = 'other/volcano';
 			}
-		}
+		}  
 	}
+
+	if (image === 'other/unk') {
+		console.log('Kind: ' + kind + ' API: ' + api)
+	}
+
 	return image;
 	
 }
@@ -1180,6 +1199,64 @@ function setBaseDir(dir) {
     $("#baseDir").html(dir);
     $("#tableL").bootstrapTable('removeAll')
 }
+
+function bldXrefRulesTable() {
+	xrefRuleCountFound = 0;
+	let ruleCnt = 0;
+	let picked = xrefData.picked;
+	let rules;
+	let divSection = '<hr><table style="width:100%">';
+	let header = '<tr class="rulesList vpkfont"><th class="text-center">K8 Kind</th>' 
+	+ '<th class="text-center">Path</th><th class="text-center">Enabled</th></tr>'
+	+ '<td width="10%">' + hrLow + '</td>' 
+	+ '<td width="80%">' + hrLow + '</td>' 
+	+ '<td width="10%">' + hrLow + '</td>'
+	+ '</tr>';
+
+	let tbl = divSection + header;
+	let ruleKeys = Object.keys(xrefData.rules);
+	let rKey;
+	let item;
+	let nsHtml = '';
+	let onOff;
+	try {
+		for (let r = 0; r < ruleKeys.length; r++) {
+			rKey = ruleKeys[r];
+			rules = xrefData.rules[rKey];
+			for (let x = 0; x < rules.length; x++) {
+				if (rules[x].xrk === picked) {
+					ruleCnt++;
+					if (rules[x].xon === true) {
+						onOff = 'true';
+					} else {
+						onOff = 'false'
+					}
+					item = '<tr>' 
+					+ '<td width="10%" class="pl-5 pr-5 text-center vpkfont">' + rKey + '</td>' 
+					+ '<td width="80%" class="ml-4 vpkfont" onclick="xrefEditPathRule(\'' + rKey + ':' + x + '\')">' + rules[x].xrw + '</td>' 
+					+ '<td width="10%" class="ml-4 text-center vpkfont">' + onOff + '</td>' 
+					+ '</tr>';
+					nsHtml = nsHtml + item
+	
+					item = '<tr>' 
+					+ '<td width="10%">' + hrLow + '</td>' 
+					+ '<td width="80%">' + hrLow + '</td>' 
+					+ '<td width="10%">' + hrLow + '</td>'
+					+ '</tr>';
+					nsHtml = nsHtml + item
+				}
+			}
+		}
+		tbl = tbl + nsHtml + '</table>';
+
+		$("#xrefTable").html(tbl);
+		xrefRuleCountFound = ruleCnt;
+
+	} catch (err) {
+		console.log('Error building xrefRulesTable: ' + err);
+	}
+}
+
 
 //----------------------------------------------------------
 console.log('loaded vpkcommon.js');

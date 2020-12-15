@@ -38,7 +38,7 @@ var xref = require('./lib/xreference')
 var docm = require('./lib/documentation')
 
 var fs = require('fs-extra');
-var Q = require('q');
+//var Q = require('q');
 var bodyParser = require('body-parser');
 var YAML = require('js-yaml');
 var commandLineArgs = require('command-line-args');
@@ -46,22 +46,22 @@ var commandLineUsage = require('command-line-usage');
 var chalk = require('chalk');
 //var multer = require('multer');
 
-var path = require('path');
+//var path = require('path');
 var http = require('http');
 var express = require('express');
-var bodyParser = require('body-parser');
+//var bodyParser = require('body-parser');
 var socketio = require('socket.io');
 
 var app = express();
 var server = http.createServer(app);
 var io = socketio(server);
 
-var expressLayouts = require('express-ejs-layouts');
+//var expressLayouts = require('express-ejs-layouts');
 var partials = require('express-partials');
 
 var compression = require('compression');
 var cors = require('cors');
-const { text } = require('express');
+//const { text } = require('express');
 
 
 //------------------------------------------------------------------------------
@@ -186,6 +186,9 @@ var vf = 'vpkconfig.json';
 var gcstatus = utl.readConfig(vf);
 if (gcstatus === 'OK') {
     //console.log(JSON.stringify(vpk.configFile));
+    // get userconfig.json data
+    vf = 'userconfig.json';
+    utl.readConfig(vf);
 } else {
     utl.logMsg('vpkMNL095 - Terminating application unable to find configuration file: ' + vf);
     process.exit(-1);
@@ -571,14 +574,20 @@ io.on('connection', client => {
         utl.logMsg('vpkMNL699 - Connect to K8 request' );
         var dynDir = process.cwd();
         var tmpDir = '';
+        var dTmp;
+        var fsps;
+        var kga;           // Kubernetes Get Array
+        var ca;
+        var msg;
+        var slp;
         // set the new directory name
         if (typeof data.datasource_prefix !== 'undefined') {
-            var dTmp = data.datasource_prefix;
+            dTmp = data.datasource_prefix;
             dTmp.trim();
             // check for spaces and only use what is before the first space
-            var fs = dTmp.indexOf(' ');
-            if (fs > -1 ){
-                dTmp = dTmp.substring(0,fs);
+            fsps = dTmp.indexOf(' ');
+            if (fsps > -1 ){
+                dTmp = dTmp.substring(0,fsps);
             }
             tmpDir = dTmp;
         } else {
@@ -586,8 +595,8 @@ io.on('connection', client => {
         }
         tmpDir = tmpDir + '-' + utl.dirDate();
 
-        var kga;       // Kubernetes Get Array
-        var slp = tmpDir.lastIndexOf('/');
+        kga;       // Kubernetes Get Array
+        slp = tmpDir.lastIndexOf('/');
 
         if (slp > -1) {
             slp++;
@@ -597,17 +606,17 @@ io.on('connection', client => {
         dynDir = dynDir + '/cluster/' + tmpDir;
         vpk.clusterDirectory = dynDir;
 
-        //TODO: should this be async
-        var ca = kube.getAuth(data);
+        //TODO: check, should this be async
+        ca = kube.getAuth(data);
         if (ca === 'PASS') {
             
-            var msg = 'Authentication completed successfully';
+            msg = 'Authentication completed successfully';
             client.emit('getKStatus', msg);
 
             // Using kubectl or other CLI get list of api resources in the cluster
             kga = kube.getAPIs(data);
             if (kga === 'FAIL') {
-                var msg = 'Failed to retrieve api resource data, check log messages';
+                msg = 'Failed to retrieve api resource data, check log messages';
                 utl.logMsg('vpkMNL697 - ' + msg );
                 client.emit('getKStatus', msg);
                 // kube.logout(data);
@@ -617,7 +626,7 @@ io.on('connection', client => {
                 getK(data, kga, client, dynDir);
             }
         } else {
-            var msg = 'Failed Authentication';
+            msg = 'Failed Authentication';
             client.emit('getKStatus', msg);
         }
     });
@@ -650,14 +659,12 @@ io.on('connection', client => {
             tmp = vpk.fileContent[fn];
             tmp = tmp[0].content;
             data = tmp.data;
-            console.log(typeof data);
             if (typeof data === 'object') {
                 let keys = Object.keys(data);
                 let key;
         
                 for (let d = 0; d < keys.length; d++) {
                     key = keys[d];
-                    console.log(key);
                     buff = new Buffer.from(data[key], 'base64');
                     text = buff.toString('ascii');
                     if (text.startsWith('{')) {
@@ -700,7 +707,7 @@ io.on('connection', client => {
         client.emit('hierarchyResult', result);
     });    
 
-    client.on('getUsage', data => { 
+    client.on('getUsage', () => { 
         utl.logMsg('vpkMNL477 - GetUsage request' );
         var result = '{"empty": true}';
         var dumpFile = process.cwd() + '/usage/usageInfo.json';
@@ -745,7 +752,7 @@ io.on('connection', client => {
         }
     });
 
-    client.on('getDirStats', data => {
+    client.on('getDirStats', () => {
         utl.logMsg('vpkMNL006 - DirStats request' );
         utl.logMsg('vpkMNL007 - Emit dirStatsResults' );
         var result = {'kind': vpk.fileCnt, 'ns': vpk.namespaceCnt}
@@ -763,13 +770,13 @@ io.on('connection', client => {
             'validDir': validDir,
             'providers': vpk.providers,
             'labels': labels,
-            'xRefs': vpk.configFile.xrefKinds
+            'xRefs': vpk.configFile.xrefNames
         };
         utl.logMsg('vpkMNL047 - Emit selectListsResult' );
         client.emit('selectListsResult', result);
     });
 
-    client.on('getVersion', data => {
+    client.on('getVersion', () => {
         utl.logMsg('vpkMNL091 - Get software version request ' );
         var result = {'version': softwareVersion};
         utl.logMsg('vpkMNL049 - Emit version' );
@@ -777,7 +784,7 @@ io.on('connection', client => {
     });
 
     client.on('reload', data => {
-        utl.logMsg('vpkMNL009 - Load directory: ' + data );
+        utl.logMsg('vpkMNL009 - Snapshot directory: ' + data );
         vpk.clusterDirectory = data;
         reload(data);
         // setTimeout( () => {
@@ -843,12 +850,12 @@ io.on('connection', client => {
     });
 
 //TODO verify if this is dead code
-    client.on('uploadDir', data => {
-        utl.logMsg('vpkMNL045 - Upload directory request' );
-        var result = uploadDir(data);
-        utl.logMsg('vpkMNL044 - Emit uploadDir' );
-        client.emit('uploadDirResult', result);
-    });
+    // client.on('uploadDir', data => {
+    //     utl.logMsg('vpkMNL045 - Upload directory request' );
+    //     var result = uploadDir(data);
+    //     utl.logMsg('vpkMNL044 - Emit uploadDir' );
+    //     client.emit('uploadDirResult', result);
+    // });
 
     client.on('xreference', data => {
         utl.logMsg('vpkMNL067 - Get xreference request ' );
@@ -859,21 +866,18 @@ io.on('connection', client => {
         client.emit('xrefResult', result );
     });
 
-    client.on('getXrefDef', data => {
-        utl.logMsg('vpkMNL067 - Get xref def request ' );
+    client.on('getXrefRules', () => {
+        utl.logMsg('vpkMNL067 - Get xref rules request ' );
         let result = '{"empty": true}';
-        if (typeof data !== 'undefined') {
-            if (typeof data.xref !== 'undefined') {
-                result = xref.getXrefs(data)
-            } 
-        }
-        client.emit('getXrefDefResult', result );
+        result = xref.getXrefRules()
+        client.emit('getXrefRulesResult', result );
     });
         
 
 });
 
 function getFileContents(data) {
+    var result;
     try {
         var part = data.split('::');
         if (typeof part[1] === 'undefined') {
@@ -893,7 +897,7 @@ function getFileContents(data) {
             if (typeof vpk.fileContent[ nData ] === 'undefined' ) {
                 utl.logMsg('vpkMNL387 - Invalid key locating file: ' + data);
 
-                var result = {
+                result = {
                     'filePart': part[1],
                     'lines': 'File not found',
                     'defkey': part[0]
@@ -924,7 +928,7 @@ function getFileContents(data) {
             }   
         }
         fileData = YAML.safeDump(fileData);
-        var result = {
+        result = {
             'filePart': part[1],
             'lines': fileData,
             'defkey': part[0]
@@ -1012,9 +1016,9 @@ function write2(yf, dynDir) {
             reload(dynDir);
             
         } else {
-            utl.logMsg('vpkMNL605 - Unable to create directory: ' + dynDir + ' message: ' + err );
+            utl.logMsg('vpkMNL605 - Unable to create directory: ' + dynDir );
             rdata.status = 'FAIL';
-            rdata.message = 'vpkMNL605 - Unable to create directory: ' + dynDir + ' message: ' + err;
+            rdata.message = 'vpkMNL605 - Unable to create directory: ' + dynDir ;
         }
     } catch (err) {
         utl.logMsg('vpkMNL606 - Error creating directory: ' + dynDir + ' message: ' + err );
@@ -1101,15 +1105,205 @@ function checkLoop() {
         saveStatMsg('Skipped', vpk.xCnt);
         saveStatMsg('dl', ' ');
 
+        if (typeof vpk.configFile.xrefNames !== 'undefined') {
+            var keys = Object.keys(vpk.configFile.xrefNames);
+            let key;
+            for (let i = 0; i < keys.length; i++) {
+                key = 'xRef' + keys[i]
+                if (typeof vpk[key] !== 'undefined') {
+                    utl.logMsg('Located xref items for:                 ' + keys[i]);
+                } else {
+                    utl.logMsg('Did not locate xref items for:          ' + keys[i]);   
+                }
+            }
+            saveStatMsg('dl', ' ');
+        }
+        saveStatMsg('RoleBinding subjects null', vpk.subjectNullCnt);
+        saveStatMsg('RoleBinding subjects not defined', vpk.subjectMissingCnt);
+        saveStatMsg('dl', ' ');
+
         // After reading and parsing of files start server
         if (resetReq) {
             resetReq = false;
         } else {
             startServer();
         }
-
+        chkUidChain();
         //vpkSize();
     }
+}
+
+function chkUidChain() {
+    let cLvl = 0;
+    let pLvl = 0;
+    let gpLvl = 0;
+    let ggpLvl = 0;
+
+    let keys = Object.keys(vpk.ownerUids);
+    let key;
+    let childKey;
+
+    let child;
+    let cUid;
+    let parent;
+    let pUid;
+    let gParent;
+    let gUid;
+    let ggParent;
+    let ggUid;
+    let gggParent;
+    let gggUid;
+
+    try {
+        for (let i = 0; i < keys.length; i++) {
+            key = keys[i];
+            // populate child and check if it's what we want
+            child = vpk.ownerUids[key];
+            for (let k = 0; k < child.length; k++) {
+                if (child[k].ownerId !== 'self') {
+                    // child has what we looking for 
+                    
+                    childKey = child[k].childUid;
+                    cUid = '';
+                    pUid = '';
+                    gUid = '';
+                    ggUid = '';
+                    gggUid = '';
+                    // output the level
+                    if (typeof vpk.ownerChains[childKey] === 'undefined') {
+                        vpk.ownerChains[childKey] = [];
+                    } 
+                    cLvl++
+                    vpk.ownerChains[childKey].push({
+                        'level': 'child',
+                        'uid':  child[k].childUid,
+                        'kind': child[k].childKind,
+                        'name': child[k].childName,
+                        'ns':   child[k].childNS,
+                        'fnum': child[k].childFnum,
+                        'ownerUid': child[k].ownerId,
+                        'ownerKind': child[k].ownerKind
+                    })
+                    cUid = child[k].ownerId;
+
+                    // vpk.childUids contains the child and parent info.  Check this array to see if 
+                    // there is a defined parent, grandParent, greatGrandParent
+
+                    // check for parent level
+                    if (typeof vpk.childUids[cUid] !== 'undefined') {
+                        pLvl++;
+                        parent = vpk.childUids[cUid];
+                        vpk.ownerChains[childKey].push({
+                            'level':'parent',
+                            'uid': child[k].ownerId,
+                            'kind': parent.childKind,
+                            'name': parent.childName,
+                            'ns': parent.childNS,
+                            'fnum': parent.childFnum 
+                        })
+                        pUid = parent.parentUid;
+
+                        // check for grandParent level
+                        if (typeof vpk.childUids[pUid] !== 'undefined') {
+                            gpLvl++;
+                            gParent = vpk.childUids[pUid];
+                            vpk.ownerChains[childKey].push({
+                                'level':'grand',
+                                'uid': parent.parentUid,
+                                'kind': gParent.childKind,
+                                'name': gParent.childName,
+                                'ns': gParent.childNS,
+                                'fnum': gParent.childFnum
+                            })
+                            gUid = gParent.parentUid;
+
+                            // check for greatGrandParent level
+                            if (typeof vpk.childUids[gUid] !== 'undefined') {
+                                ggpLvl++;
+                                ggParent = vpk.childUids[gUid];
+                                vpk.ownerChains[childKey].push({
+                                    'level': 'greatGrand',
+                                    'uid': gParent.parentUid,
+                                    'kind': ggParent.childKind,
+                                    'name': ggParent.childName,
+                                    'ns': ggParent.childNS,
+                                    'fnum': ggParent.childFnum
+                                });
+                                //console.log(JSON.stringify(vpk.ownerChains[childKey] ,null, 2))
+                                ggUid = ggParent.parentUid;
+
+                                // check for greatGreatGrandParent level
+                                if (typeof vpk.childUids[ggUid] !== 'undefined') {
+                                    gggpLvl++;
+                                    gggParent = vpk.childUids[ggUid];
+                                    vpk.ownerChains[childKey].push({
+                                        'level': 'greatGreat',
+                                        'uid': ggParent.parentUid,
+                                        'kind': gggParent.childKind,
+                                        'name': gggParent.childName,
+                                        'ns': gggParent.childNS,
+                                        'fnum': gggParent.childFnum
+                                    });
+                                }
+                            } 
+                        }
+
+
+                        // // child Uid is the key
+                        // vpk.ownerChains[childKey].push({
+                        //     'cUid': cUid,
+                        //     'cKind': cKind,
+                        //     'cName': cName,
+                        //     'cNS': cNS,
+                        //     'cFnum': cFnum,
+
+                        //     'pUid': pUid,
+                        //     'pKind': pKind,
+                        //     'pName': pName,
+                        //     'ptNS': pNS,
+                        //     'pFnum': pFnum,
+
+                        //     'gPUid': gPUid,
+                        //     'gPKind': gPKind,
+                        //     'gPName': gPName,
+                        //     'gPNS': gPNS,
+                        //     'gPFnum': gPFnum,
+
+                        //     'ggPUid': ggPUid,
+                        //     'ggPKind': ggPKind,
+                        //     'ggPName': ggPName,
+                        //     'ggPNS': ggPNS,
+                        //     'ggPFnum': ggPFnum,
+
+                        //     'gggPUid': gggPUid,
+                        //     'gggPKind': gggPKind,
+                        //     'gggPName': gggPName,
+                        //     'gggPNS': gggPNS,
+                        //     'gggPFnum': gggPFnum
+
+                        // });
+
+                        // if (vpk.ownerChains[childKey].length > 1) {
+                        //     console.log('research')
+                        // }
+                    }
+                }
+            }
+        }
+
+    } catch (err) {
+        utl.logMsg('vpkMLN129 - Error checking owner chains: ' + err);
+        utl.logMsg(err.stack);
+    }
+
+    saveStatMsg('Child-level', cLvl)
+    saveStatMsg('Parent-level', pLvl)
+    saveStatMsg('GrandParent-level', gpLvl)
+    saveStatMsg('GreatGrandParent-level', ggpLvl)
+    saveStatMsg('dl', ' ');
+
+    // delete the arrays no longer needed
+
 }
 
 

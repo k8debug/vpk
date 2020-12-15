@@ -74,27 +74,33 @@ function populateSelectLists(data) {
             });
         }
     
-        // xref-type dropdown
-        if (typeof data.xRefs !== 'undefined') {
-            options = buildXrefType(data.xRefs);
-
-            $("#xref-type").empty();
-            $("#xref-type").select2({ 
-                data: options,
-                dropdownCssClass: "vpkfont-md",
-                containerCssClass: "vpkfont-md"
-            });
-
-            // Populate xrefEdit-type with the same content as xref-type
-            $("#xrefEdit-type").empty();
-            $("#xrefEdit-type").select2({ 
-                data: options,
-                dropdownCssClass: "vpkfont-md",
-                containerCssClass: "vpkfont-md"
-            });
-        }    
+        populateXrefLists(data);
     }
 }
+
+
+function populateXrefLists(data) {
+    // xref-type dropdown
+    if (typeof data.xRefs !== 'undefined') {
+        options = buildXrefType(data.xRefs);
+
+        $("#xref-type").empty();
+        $("#xref-type").select2({ 
+            data: options,
+            dropdownCssClass: "vpkfont-md",
+            containerCssClass: "vpkfont-md"
+        });
+
+        // Populate xrefEdit-type with the same content as xref-type
+        $("#xrefEdit-type").empty();
+        $("#xrefEdit-type").select2({ 
+            data: options,
+            dropdownCssClass: "vpkfont-md",
+            containerCssClass: "vpkfont-md"
+        });
+    }
+}
+
 
 function buildXrefType(data) {
     // "secrets" : {"desc": "Secrets defined in the environment"},

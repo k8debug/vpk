@@ -228,8 +228,10 @@ function nsChange(ns) {
 		titleNS = 'namespace'; 
 	}
 	partsCnt++;
-	let divSection = '<div class="events" ><hr><table style="width:100%">'
-	let header = '<tr class="partsList"><th>API Version</th><th>Kind</th><th>Resource Name</th></tr>'
+	let divSection = '<div class="events" ><hr><table style="width:100%">';
+	let header1 = '<tr class="partsList"><th class="pt-1 pb-1 pr-1 pl-1">';
+	let headerImg;
+	let header2 = 'API Version</th><th>Kind</th><th>Resource Name</th></tr>';
 	let nsHtml = '';
 	let keys;
 	let key;
@@ -247,6 +249,8 @@ function nsChange(ns) {
 	let getDef8 = 'getDef8';
 	let getDefSec = 'getDef5';
 	let getD;
+	let api4Hdr;
+	let hdrImage;
 	if (typeof k8cData[nsKey] !== 'undefined'){
 		nsHtml = divSection;
 		keys = Object.keys(k8cData[nsKey]);
@@ -257,8 +261,13 @@ function nsChange(ns) {
 			if (key === 'display' || key === 'CRB' || key === 'Pods') {
 				continue;
 			}
-			nsHtml = nsHtml + header;
 			parts = k8cData[nsKey][key];
+			api4Hdr = parts[0].api
+
+			hdrImage = checkImage(key, api4Hdr);	
+			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '.svg" width="35" height="35">&nbsp;';
+			nsHtml = nsHtml + header1 + headerImg + header2;
+
 			let nArray = [];
 
 			hl = parts.length;
@@ -610,10 +619,10 @@ function process(fnum) {
 	+ '<rect  x="5" y="0" width="845" height="' 
 	+ height 
 	+ '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>'
-	+ '<text x="15" y="67" class="workloadText">Workload: ' 
+	+ '<text x="15" y="67" class="workloadText">Pod: ' 
 	+ outterName 
 	+ '</text>'
-	+ '<text x="15" y="80" class="pickIcon">(Click icons to view detail)&nbsp;&nbsp;' + fnum + '</text>'
+	+ '<text x="15" y="80" class="pickIcon">(Click icons to view additional detail)</text>'
 
 	+ '<line  x1="15" x2="55" y1="95" y2="95" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 	+ '<line  x1="55" x2="50" y1="95" y2="90" stroke="black" stroke-width="1" stroke-linecap="round"/>'
@@ -714,11 +723,12 @@ function svgHeader(data, fnum) {
 	+ '<image x="10"  y="22" width="45"  height="45" href="images/k8/ns.svg" onmousemove="showTooltip(evt, \''
 	+ buildSvgInfo(data.namespace, fnum, 'Namespace')
 	+ '\');" onmouseout="hideTooltip()"  onclick="getNsTable(\'' + data.namespace +'\')"/>'
+	+ '<text x="80" y="50" fill="white" class="workloadText">Namespace level resources</text>'
 
 	+ '<image x="1065" y="22" width="45"  height="45" href="images/k8/k8.svg" onmousemove="showTooltip(evt, \''
 	+ buildSvgInfo('cluster', fnum, 'Cluster')
 	+ '\');" onmouseout="hideTooltip()"  onclick="getDef7(\'' + fnum +'\')"/>'
-	+ '<text x="890" y="50" fill="white" class="workloadText">Cluster level resources</text>'
+	+ '<text x="890" y="50" fill="white" class="workloadText">Cluster level resources</text>';
 
 	let roleNs = '0000-' + data.namespace;
 	if (typeof k8cData[roleNs].RoleBinding !== 'undefined') {
@@ -733,7 +743,7 @@ function svgHeader(data, fnum) {
 
 		+ '<image x="600"  y="22" width="45"  height="45" href="images/k8/subjects.svg" onmousemove="showTooltip(evt, \''
 		+ buildSvgInfo(data.namespace, fnum, 'Subject')
-		+ '\');" onmouseout="hideTooltip()"  onclick="getSecSubjectsByNs(\'' + data.namespace +'\')"/>'
+		+ '\');" onmouseout="hideTooltip()"  onclick="getSecSubjectsByNs(\'' + data.namespace +'\')"/>';
 	}
 
 	if (bnds.show === true) {
@@ -1080,7 +1090,6 @@ function svgGenerators(data, fnum) {
 		if (typeof data.CRD !== 'undefined') {
 			if (typeof data.CRD[0].level1CRD !== 'undefined') {
 				if (data.CRD[0].level1CRD === true) {
-					console.log('CRD-Level1: ' + data.namespace);
 					if (typeof data.creationChain.level2API !== 'undefined') {
 						let chkVal = data.creationChain.level2API;
 						if (chkVal.indexOf('openshift') > -1 ) {
@@ -1117,7 +1126,6 @@ function svgGenerators(data, fnum) {
 
 			if (typeof data.CRD[0].level2CRD !== 'undefined') {
 				if (data.CRD[0].level2CRD === true) {
-					console.log('CRD-Level2: ' + data.namespace);
 					if (typeof data.creationChain.level2API !== 'undefined') {
 						let chkVal = data.creationChain.level2API;
 						if (chkVal.indexOf('openshift') > -1 ) {
