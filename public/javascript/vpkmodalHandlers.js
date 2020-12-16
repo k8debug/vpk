@@ -388,11 +388,15 @@ function getRoleBindingByNs(ns) {
 }
 
 function getSecRoleByNs(ns) {
+    let level = 'ns'
+    if (ns === '0000-@clusterRoles@') {
+        level = 'cl';
+    }
     buildRBACs();
     let key = formatNsKey(ns);
     let showNs = formatShowNs(ns);
     if (typeof securityRoleInfo[key] === 'undefined') {
-        buildRoles(key);
+        buildRoles(key, level);
     } 
     $("#schemBody").html(securityRoleInfo[key]);
     $("#schemHeader").html('Roles for <span class="font-weight-bold">' + showNs + '</span>');

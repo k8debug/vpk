@@ -1118,8 +1118,7 @@ function checkLoop() {
             }
             saveStatMsg('dl', ' ');
         }
-        saveStatMsg('RoleBinding subjects null', vpk.subjectNullCnt);
-        saveStatMsg('RoleBinding subjects not defined', vpk.subjectMissingCnt);
+        saveStatMsg('Binding subjects not defined', vpk.subjectMissingCnt);
         saveStatMsg('dl', ' ');
 
         // After reading and parsing of files start server
@@ -1247,45 +1246,6 @@ function chkUidChain() {
                                 }
                             } 
                         }
-
-
-                        // // child Uid is the key
-                        // vpk.ownerChains[childKey].push({
-                        //     'cUid': cUid,
-                        //     'cKind': cKind,
-                        //     'cName': cName,
-                        //     'cNS': cNS,
-                        //     'cFnum': cFnum,
-
-                        //     'pUid': pUid,
-                        //     'pKind': pKind,
-                        //     'pName': pName,
-                        //     'ptNS': pNS,
-                        //     'pFnum': pFnum,
-
-                        //     'gPUid': gPUid,
-                        //     'gPKind': gPKind,
-                        //     'gPName': gPName,
-                        //     'gPNS': gPNS,
-                        //     'gPFnum': gPFnum,
-
-                        //     'ggPUid': ggPUid,
-                        //     'ggPKind': ggPKind,
-                        //     'ggPName': ggPName,
-                        //     'ggPNS': ggPNS,
-                        //     'ggPFnum': ggPFnum,
-
-                        //     'gggPUid': gggPUid,
-                        //     'gggPKind': gggPKind,
-                        //     'gggPName': gggPName,
-                        //     'gggPNS': gggPNS,
-                        //     'gggPFnum': gggPFnum
-
-                        // });
-
-                        // if (vpk.ownerChains[childKey].length > 1) {
-                        //     console.log('research')
-                        // }
                     }
                 }
             }
@@ -1296,10 +1256,10 @@ function chkUidChain() {
         utl.logMsg(err.stack);
     }
 
-    saveStatMsg('Child-level', cLvl)
-    saveStatMsg('Parent-level', pLvl)
-    saveStatMsg('GrandParent-level', gpLvl)
-    saveStatMsg('GreatGrandParent-level', ggpLvl)
+    saveStatMsg('OwnerRef Single-level', cLvl)
+    saveStatMsg('OwnerRef Double-level', pLvl)
+    saveStatMsg('OwnerRef Triple-level', gpLvl)
+    saveStatMsg('OwnerRef Quad-level', ggpLvl)
     saveStatMsg('dl', ' ');
 
     // delete the arrays no longer needed

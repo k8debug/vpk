@@ -670,6 +670,9 @@ function buildTipContent(data, type, fnum) {
 				}			
 			}
 		}	
+	} else if (type === 'Node') {
+		content = 'Name: ' + data.name + '<br>';
+	
 	} else if (type === 'Ref') {
 		content = '';
 		content = content + data;  
@@ -865,7 +868,7 @@ function populateWhereRoleBound(binding) {
 
 
 // build the Role information to populate the secInfoModal for Role
-function buildSecModalRole(data, key) {
+function buildSecModalRole(data, key, rColor) {
 	let role = data;
 	let item;
 	let rtn = '';
@@ -885,7 +888,8 @@ function buildSecModalRole(data, key) {
 
 	let roleId = 
 	  '<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
-	+ '  <div>Role Name:&nbsp;<span class="text-light bg-success vpkfont-md">' + key + '</span></div>'
+//	+ '  <div>Role Name:&nbsp;<span class="text-light bg-success vpkfont-md">' + key + '</span></div>'
+	+ '  <div>Role Name:&nbsp;<span class="vpkfont-md ' + rColor + '">' + key + '</span></div>'
 	+ '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef7(\'' + fnum + '\')">' + fnum + '</span>'
 	+ '  <span class="vpkfont-sm vpkcolor pl-1">(click # to view)</span></div>'
 	+ '</div><hr>';
@@ -1165,18 +1169,31 @@ function hideMessage() {
 }
 
 // used by vpkBuildSecArray and vpkSecUsage
-function getSecRole(key) {
+function getSecRole(key, rColor, ns) {
     let html = key;
     let info = k8cData['0000-@clusterRoles@'].Role;
     if (typeof info !== 'undefined') {
         for (let i = 0; i < info.length; i++) {
             if (info[i].name === key) {
-                html = buildSecModalRole(info[i], key)
+                html = buildSecModalRole(info[i], key, rColor)
             }
         }
     } else {
         html = 'Unable to find information for role: ' + key;
-    }
+	}
+	
+	// if equal not found at cluster level, now check namespace level
+	if (html === key) {
+		let info = k8cData[ns].Role;
+		if (typeof info !== 'undefined') {
+			for (let i = 0; i < info.length; i++) {
+				if (info[i].name === key) {
+					html = buildSecModalRole(info[i], key, rColor)
+				}
+			}
+		}
+	}
+
     $("#secInfoContent").html(html)
     $("#secInfoModal").modal('show')
 }

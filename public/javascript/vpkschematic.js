@@ -103,6 +103,7 @@ function buildNoPods() {
 	let newKey;
 	for (let i = 0; i < keys.length; i++) {
 		key = keys[i];
+		line = '';
 		if (key.startsWith('0000-@') ) {
 			continue; 
 		}
@@ -117,21 +118,29 @@ function buildNoPods() {
 			if (typeof k8cData[key].Pods === 'undefined'){
 				wCnt++  // increment the workload found counter, even though there is no workload Pods
 				newKey = key.substring(5);
-				breakID++;
-				// output the bar
-				line = '<div class="breakBar"><button type="button" ' 
-				+ ' class="btn btn-warning btn-sm vpkButtons" data-toggle="collapse" data-target="#collid-' 
-				+ breakID + '">&nbsp;&nbsp;' + newKey + '&nbsp;&nbsp;</button>'
-				+ '&nbsp;&nbsp;<hr></div>'
-				+ '<div id="collid-' + breakID + '" class="collapse">';
-				collapseIDs.push(breakID);
-
 				// generate the list of resources in the namespace
-				nsData = nsChange(newKey);
-				// append the data
-				noPo = noPo + line + nsData 
-				+ '<div class="mb-4"><span class="vpkcolor vpkfont-md ml-4 mt-2 mb-4 ">No Pods deployed in this namespace</span></div>'
-				+ '</div>';
+				nsChange(newKey);
+
+				breakID++;
+
+				// output the bar
+				line = '<div class="breakBar">' 
+				+ 	'<button type="button" class="btn btn-warning btn-sm vpkButtons" ' 
+				+ 		'data-toggle="collapse" data-target="#collid-' + breakID + '">&nbsp;&nbsp;' + newKey + '&nbsp;&nbsp;' 
+				+ 	'</button>'
+				+ 	'<hr>' 
+				+ '</div>'
+				+ '<div id="collid-' + breakID + '" class="collapse">'
+				+ 	'<div class="mb-1">' 
+				+ 		'<span class="vpkcolor vpkfont-md ml-4 mt-2">Press icon to view resources in namespace</span>' 
+				+ 	'</div>'
+				+ 	'<div class="ml-4 mb-1"><img style="vertical-align:middle;" src="images/k8/ns.svg" width="50" height="40" ' 
+				+ 		' onclick="getNsTable(\'' + newKey +'\')">' 
+				+ 	'</div>'
+				+ '</div>'
+
+				noPo = noPo + line; 
+				collapseIDs.push(breakID);
 			}
 		}
 
@@ -707,10 +716,22 @@ function bldEvents(fnum) {
 
 
 function svgHeader(data, fnum) {
+	let nodeInfo = {'name': 'Node', 'fnum': '<unk>'};
+	if (typeof k8cData['0000-clusterLevel'] !== 'undefined') {
+		if (typeof k8cData['0000-clusterLevel'].Node !== 'undefined') {
+			if (typeof k8cData['0000-clusterLevel'].Node[0].name !== 'undefined') {
+				nodeInfo.name = k8cData['0000-clusterLevel'].Node[0].name;
+			}
+			if (typeof k8cData['0000-clusterLevel'].Node[0].fnum !== 'undefined') {
+				nodeInfo.fnum = k8cData['0000-clusterLevel'].Node[0].fnum;
+			}
+		}
+	}
 	let rect1 = '<rect  x="0"   y="20" width="845" height="50" rx="15" stroke-dasharray="1, 2" ' 
 	+ ' stroke-width="1"  stroke="none" fill="#c4c3be"/>';
 
-	let rect2 = '<rect  x="870" y="20" width="250" height="50" rx="15" fill="#326ce5"/>';
+//	let rect2 = '<rect  x="870" y="20" width="250" height="50" rx="15" fill="#326ce5"/>';
+	let rect2 = '<rect  x="870" y="20" width="250" height="50" rx="15" fill="#626262"/>';
 	
 	let rectH = 45;
 	let rtn = '';
@@ -725,9 +746,9 @@ function svgHeader(data, fnum) {
 	+ '\');" onmouseout="hideTooltip()"  onclick="getNsTable(\'' + data.namespace +'\')"/>'
 	+ '<text x="80" y="50" fill="white" class="workloadText">Namespace level resources</text>'
 
-	+ '<image x="1065" y="22" width="45"  height="45" href="images/k8/k8.svg" onmousemove="showTooltip(evt, \''
-	+ buildSvgInfo('cluster', fnum, 'Cluster')
-	+ '\');" onmouseout="hideTooltip()"  onclick="getDef7(\'' + fnum +'\')"/>'
+	+ '<image x="1065" y="22" width="48"  height="48" href="images/k8/node.svg" onmousemove="showTooltip(evt, \''
+	+ buildSvgInfo(nodeInfo, nodeInfo.fnum, 'Node')
+	+ '\');" onmouseout="hideTooltip()"  onclick="getDef7(\'' + nodeInfo.fnum +'\')"/>'
 	+ '<text x="890" y="50" fill="white" class="workloadText">Cluster level resources</text>';
 
 	let roleNs = '0000-' + data.namespace;
@@ -751,10 +772,6 @@ function svgHeader(data, fnum) {
 	}
 	return {'bnds': bnds, 'rtn': rtn}
 }
-
- 
-
-
 
 
 function svgPVC(data, fnum) {
@@ -1000,6 +1017,7 @@ function svgGenerators(data, fnum) {
 			+ '<image x="150" y="25"  width="50" height="50" href="images/' + image + '.svg" '
 			+ 'onmousemove="showTooltip(evt, \'' 
 			+ buildSvgInfo(data, fnum, kind) 
+//			+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + fnum +'\')"/>' 
 			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'level1@' + fnum +'\')"/>' 
 			+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
 			+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round"/>'

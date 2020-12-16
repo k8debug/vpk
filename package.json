@@ -31,5 +31,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/k8debug/VpK.git"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0"
   }
 }

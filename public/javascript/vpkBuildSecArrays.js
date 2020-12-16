@@ -37,6 +37,7 @@ function buildRBACs() {
 	let newKeys = [];
 	let newKey;
 	let secKey;
+	let level;
 
 	for (let p = 0; p < keys.length; p++) {
 		newKey = keys[p];
@@ -65,7 +66,13 @@ function buildRBACs() {
 			continue;
 		}
 	
-		buildRoles(secKey);
+		level = 'ns';
+		if (secKey === '0000-@clusterRoles@') {
+			level = 'cl';
+		}
+
+
+		buildRoles(secKey, level);
 		buildRoleBindings(secKey);
 		buildSubjects(secKey);
 
@@ -286,18 +293,18 @@ function buildRoleBindings(ns) {
 				if (typeof bind.subjects[0].kind !== 'undefined') {
 					bKind = bind.subjects[0].kind
 				} else {
-					console.log('RoleBinding ns: ' + ns)
-					console.log('No bind.subjects[0].kind, skipping: ' + JSON.stringify(bind, null, 2))
+					//console.log('RoleBinding ns: ' + ns)
+					//console.log('No bind.subjects[0].kind, skipping: ' + JSON.stringify(bind, null, 2))
 					bKind = '<blank>';
 				}		
 			} else {
-				console.log('RoleBinding ns: ' + ns)
-				console.log('No bind.subjects[0], skipping: ' + JSON.stringify(bind, null, 2))
+				//console.log('RoleBinding ns: ' + ns)
+				//console.log('No bind.subjects[0], skipping: ' + JSON.stringify(bind, null, 2))
 				bKind = '<blank>';
 			}
 		} else {
-			console.log('RoleBinding ns: ' + ns)
-			console.log('No bind.subjects, skipping: ' + JSON.stringify(bind, null, 2))
+			//console.log('RoleBinding ns: ' + ns)
+			//console.log('No bind.subjects, skipping: ' + JSON.stringify(bind, null, 2))
 			bKind = '<blank>';
 		}
 
@@ -322,7 +329,7 @@ function buildRoleBindings(ns) {
 			bColor = 'bg-roleBindingUnk';
 		}
 
-		//TODO is this all that is needed for Roles
+		//TODO is this all that is needed for
 		let crHl = k8cData['0000-@clusterRoles@'].Role.length
 		rColor = 'bg-role';
 		roleType = 'n';
@@ -337,7 +344,8 @@ function buildRoleBindings(ns) {
 
 		item = '<tr>' 
 		+ '<td width="34%" class="align-top"><span class="' + bColor + '" onclick="getDef7(\'' + fnum + '\')">' + name + '</td>' 
-		+ '<td width="33%" class="align-top"><span class="' + rColor + '" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
+//		+ '<td width="33%" class="align-top"><span class="' + rColor + '" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
+		+ '<td width="33%" class="align-top"><span class="' + rColor + '" onclick="getSecRole(\'' + roleName + '\',\'' + rColor + '\',\'' + ns + '\')">' + roleName + '<span></td>' 
 		+ '<td width="33%" class="align-top" >' + subject + '</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item
@@ -363,7 +371,7 @@ function buildRoleBindings(ns) {
 }
 
 //Build the Role information
-function buildRoles(ns) {
+function buildRoles(ns, level) {
 	// skip cluster level subject and roles, do not add these to role bindings array
 	if (ns === '0000-@subjects@' || ns === '0000-@clusterRoleBinding@') {
 		return;
@@ -387,6 +395,13 @@ function buildRoles(ns) {
 	let verbs;
 	let nsHtml = divSection + RBAClegend + header;
 	let roles = k8cData[nsKey].Role;
+	let rColor;
+
+	if (level === 'ns') {
+		rColor = 'bg-role';
+	} else {
+		rColor = 'bg-clusterRole';
+	}
 	roles.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1 );
 	hl = roles.length;
 
@@ -400,7 +415,7 @@ function buildRoles(ns) {
 		name = role.name;
 		fnum = role.fnum;
 		item = '<tr class="roleRBAC">' 
-		+ '<td width="50%" colspan="3" class="top"><span class="text-light bg-success" onclick="getDef7(\'' + fnum + '\')">' + name + '</span></td>' 
+		+ '<td width="50%" colspan="3" class="top"><span class="' + rColor + '" onclick="getDef7(\'' + fnum + '\')">' + name + '</span></td>' 
         + '<td></td>  <td></td>' 
         + '<td></td>  </tr>';
 
