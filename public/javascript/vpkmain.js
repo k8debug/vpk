@@ -26,6 +26,22 @@ $(document).ready(function() {
     getVersion();
 
 
+    document.addEventListener("keypress", function onPress(event) {
+        if (event.key === "p" && event.ctrlKey) {
+            // Do something awesome
+            console.log('got it, ctrl Z')
+        }
+    });
+
+    // $(document).bind("keyup keydown", function(e) {
+    //     if (e.ctrlKey && e.keyCode === 80) {
+    //         console.log('kp false');
+    //     }
+    //     console.log('kp true');
+        
+    // }); 
+
+
     $('.carousel-item', '.multi-item-carousel').each(function(){
         var next = $(this).next();
         if (! next.length) {

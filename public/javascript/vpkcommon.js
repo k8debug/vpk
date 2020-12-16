@@ -234,7 +234,7 @@ function formatJSON(content) {
 
 // print Div 
 function printDiv(id) {  
-    //id = 'schemModal';
+    id = '#' + id;
     //ToDo replace this with parsing of public/views/partials/head.ejs
     let = html = '<html><head><meta charset="UTF-8" />'
     + '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
@@ -261,7 +261,7 @@ function printDiv(id) {
        along with the link to the external CSS file and finally the IFRAME document is printed using the 
        JavaScript Window Print command and the IFRAME is removed from the pag
     */
-    var contents = $("#schemModal").html();
+    var contents = $(id).html();
     var frame1 = $('<iframe />');
     frame1[0].name = "frame1";
     frame1.css({
@@ -273,12 +273,16 @@ function printDiv(id) {
     var frameDoc = frame1[0].contentWindow ? frame1[0].contentWindow : frame1[0].contentDocument.document ? frame1[0].contentDocument.document : frame1[0].contentDocument;
     frameDoc.document.open();
     //Create a new HTML document.
-    //frameDoc.document.write('<html><head><title>DIV Contents</title>');
-    frameDoc.document.write(html);   //added this to ensure iframe has needed css and scripts
+    frameDoc.document.write('<html><head><title>VpK Print</title>');
+	frameDoc.document.write(html);   //added this to ensure iframe has needed css and scripts
+	frameDoc.document.write('<style> body { background-color:white !important; }' 
+	+ ' @page { size: 14.0in 8.5in; margin: 1cm 2cm 1cm 1cm; } ' 
+	+ ' @page :left :footer { content: "Page " decimal(pageno); } '
+	+ ' @page :right :footer { content: "Page " decimal(pageno); } '
+	+ '</style>');
     frameDoc.document.write('</head><body>');
-    //Append the external CSS file.
-    frameDoc.document.write('<link href="style.css" rel="stylesheet" type="text/css" />');
-    //Append the DIV contents.
+    // Append the contents.
+    // frameDoc.document.write('<div class="m-3">' + contents + '</div>');
     frameDoc.document.write(contents);
     frameDoc.document.write('</body></html>');
     frameDoc.document.close();

@@ -50,8 +50,6 @@
                     <a href="javascript:showConfig()">
                         <i class="fas fa-cog fa-lg vpkcolor"></i>
                     </a>
-                    
-
                 </div>
             </div> 
 
@@ -92,26 +90,8 @@
 
             <div id="tabsContent" class="tab-content">
                 <div id="instructions" class="tab-pane active show">
-
                     <!-- Append the needed UI components -->
                     <%- include('partials/carousel') %>
-                    <!-- <div id="instDetail" class="vpkfont vpkcolor">
-                        <ul>
-                            <li class="pt-1">From dropdown select datasource and connect.
-                                &nbsp;&nbsp;The message 'No datasource connected' button 
-                                will be updated with the connected datasource once completed. </li>
-                            <li class="pt-2">Once a datasource is connected, optionally click the datasource name button 
-                                to view statistics for the datasource.</li>
-                            <li class="pt-2">Select the desired tab, Table, Graphics, Schematics, Security to view related information.</li>
-                        </ul>
-                    </div>
-
-                    <div class="row ml-1">
-                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                        <div class="col-3 hr-width m-0 p-0"><hr class="mt-1 mb-1"></div>
-                    </div> -->
                 </div>
 
                 <div id="searchR" class="tab-pane">
@@ -318,7 +298,9 @@
                     </div>
 
                     <!-- <svg id="graphicCharts" width="950" height="50"></svg> -->
-                    <svg id="graphicCharts2"></svg>
+                    <div id="prtGraphic">
+                        <svg id="graphicCharts2"></svg>
+                    </div>
 
                 </div>
 
@@ -471,8 +453,9 @@
                     <div class="mt-2 vpkfont vpkcolor" id="xrefInfo">
                     </div>
 
-                    <svg id="xrefCharts2"></svg>
-                    <!-- <svg id="xrefCharts" width="950" height="50"></svg> -->
+                    <div id="prtXref">
+                        <svg id="xrefCharts2"></svg>
+                    </div>
                 </div>
 
 

@@ -99,7 +99,6 @@ function buildNoPods() {
 	let key;
 	let noPo = '';
 	let line;
-	let nsData;
 	let newKey;
 	for (let i = 0; i < keys.length; i++) {
 		key = keys[i];
@@ -210,6 +209,17 @@ function buildCSVG() {
 			+ breakID + '">&nbsp;&nbsp;' + k8cData[fnum].namespace + '&nbsp;&nbsp;</button>'
 			+ '&nbsp;&nbsp;<hr></div>'
 			+ '<div id="collid-' + breakID + '" class="collapse">';
+
+			// print button
+			breakData = breakData + '<div class="header-right">'
+			+    '<a href="javascript:printDiv(\'collid-' + breakID + '\')">'
+			+        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+			+    '</a>'
+			+ '</div>';  
+
+			//
+
+
 
 			collapseIDs.push(breakID);
 
@@ -648,8 +658,6 @@ function process(fnum) {
 
 	// let nBar = '<div class="eventBar" data-toggle="collapse" data-target="#events-' + evtCnt + '"></div>'
 	// + '<div id="events-' + evtCnt + '" class="collapse">'
-
-
 
 	iCnt++;
 	height = height + 50;  // adding visual space between svg

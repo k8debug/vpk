@@ -16,10 +16,21 @@ const chartCirclePack = (input, chType) => {
                     .sort((a, b) => b.value - a.value));
             if (chType === 'g') {
                 $("#chartInfo").empty();
-                $("#chartInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over items. Blue dots can be clicked to view yaml.<span>');        
+                $("#chartInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over item. Blue dots can be clicked to view yaml.<span>'
+                + '<div class="header-right">'
+                +    '<a href="javascript:printDiv(\'prtGraphic\')">'
+                +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+                +    '</a>'
+                + '</div>');
+
             } else if (chType === 'x') {
                 $("#xrefInfo").empty();
-                $("#xrefInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over items. Blue dots can be clicked to view yaml.<span>');        
+                $("#xrefInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over item. Blue dots can be clicked to view yaml.<span>'
+                + '<div class="header-right">'
+                +    '<a href="javascript:printDiv(\'prtXref\')">'
+                +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+                +    '</a>'
+                + '</div>');
             }
             return payload;
         }
@@ -104,7 +115,7 @@ function handleCPMouseOver(d, i) {
     let cid;
     if (typeof this.attributes['cid'] !== 'undefined') {
         cid = this.attributes['cid'].nodeValue;
-        console.log('cid: ' + cid + ' @ x;' + d.x + ' y:' + d.y)
+        //console.log('cid: ' + cid + ' @ x;' + d.x + ' y:' + d.y)
         cid = cid.split('$');
         let text = cid[1];
         let chartT = cid[2];

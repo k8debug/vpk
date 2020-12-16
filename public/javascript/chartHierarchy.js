@@ -6,17 +6,33 @@ const chartHierarchy = (input, chType) => {
     let svg;
     
     if (chType === 'x') {
+
+        $("#xrefInfo").empty();
+        $("#xrefInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy</span>'
+        + '<div class="header-right">'
+        +    '<a href="javascript:printDiv(\'prtXref\')">'
+        +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+        +    '</a>'
+        + '</div>');
+
         svg = d3.select('#xrefCharts2')
         .style("font", "11px sans-serif")
         .style("overflow", "visible")
         .attr("text-anchor", "middle");
     } else {
+        $("#chartInfo").empty();
+        $("#chartInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy</span>'
+        + '<div class="header-right">'
+        +    '<a href="javascript:printDiv(\'prtGraphic\')">'
+        +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+        +    '</a>'
+        + '</div>');
+
         svg = d3.select('#graphicCharts2')
         .style("font", "11px sans-serif")
         .style("overflow", "visible")
         .attr("text-anchor", "middle");
     }
-
 
     const tree = data => {
         const root = d3.hierarchy(data);
