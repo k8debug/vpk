@@ -38,7 +38,7 @@ function getDef2(def) {
         data = k8cData[parts[1]];
         if (typeof data !== 'undefined') {
             if (typeof data.src === 'undefined') {
-                showMessage('Unable to locate data source yaml...','fail');
+                showMessage('Unable to locate source yaml...','fail');
                 return;
             }
         } 
@@ -81,7 +81,7 @@ function getDef3(def) {
     //$("#multiModal").modal('hide');
     selectedDef = def;
     if (selectedDef.indexOf('undefined') > -1) {
-        showMessage('Unable to locate data source yaml.','fail');
+        showMessage('Unable to locate source yaml.','fail');
     } else {
         editObj();
     }

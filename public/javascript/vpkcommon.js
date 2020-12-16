@@ -1203,8 +1203,8 @@ function getSecRole(key, rColor, ns) {
 }
 
 function checkIfDataLoaded() {
-    if (rootDir === 'No datasource connected' || rootDir === '-none-') {
-        showMessage('No datasource has been connected', 'fail');
+    if (rootDir === 'No snapshot connected' || rootDir === '-none-') {
+        showMessage('No snapshot has been connected', 'fail');
     } else {
         hideMessage();
     }
@@ -1212,7 +1212,7 @@ function checkIfDataLoaded() {
 
 function setBaseDir(dir) {
     if (dir === '-none-' || dir === '' ) {
-        dir = 'No datasource connected';
+        dir = 'No snapshot connected';
     }
     rootDir = dir;
     $("#baseDir").empty();

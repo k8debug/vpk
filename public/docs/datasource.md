@@ -9,7 +9,7 @@
 ###### Datasource
 ---
 
-Viewing any infomation within VpK requires the user to connect to a datasource.  This is the first task any time the application is started.  Using the dropdown with the _"Select data source"_ value shown select the desired option.  
+Viewing any infomation within VpK requires the user to connect to a snapshot of K8 information.  This is the first task any time the application is started.  Using the dropdown with the _"Select snapshot"_ value shown select the desired option.  
 
 <img style="float: center;" src="docs/docimages/dataSourceDropDown.png" width="180" height="112">
 

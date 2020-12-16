@@ -157,7 +157,7 @@ $(document).ready(function() {
     $('#pickDataSource').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
-        placeholder: "Select data source"
+        placeholder: "Select snapshot"
     });
 
     $('#pickDataSource').on('select2:select', function (e) { 
@@ -459,7 +459,7 @@ function getDef4(def, secret) {
     //$("#multiModal").modal('hide');
     selectedDef = def;
     if (selectedDef.indexOf('undefined') > -1) {
-        showMessage('Unable to locate data source yaml.','fail');
+        showMessage('Unable to locate source yaml.','fail');
     } else {
         data = {"file": selectedDef, "secret": secret}
         socket.emit('getDecode', data);
