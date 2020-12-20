@@ -30,61 +30,40 @@ var utl = require('./lib/utl');
 var vpkReset = require('./lib/vpkReset');
 var fileio = require('./lib/fileio');
 var search = require('./lib/search');
-//var gensvg = require('./lib/svgGenDrv');
 var kube = require('./lib/kube');
 var hier = require('./lib/hierarchy');
 var schematic = require('./lib/svgSchematic');
 var xref = require('./lib/xreference')
 var docm = require('./lib/documentation')
-
 var fs = require('fs-extra');
-//var Q = require('q');
 var bodyParser = require('body-parser');
 var YAML = require('js-yaml');
 var commandLineArgs = require('command-line-args');
 var commandLineUsage = require('command-line-usage');
 var chalk = require('chalk');
-//var multer = require('multer');
-
-//var path = require('path');
 var http = require('http');
 var express = require('express');
-//var bodyParser = require('body-parser');
 var socketio = require('socket.io');
-
 var app = express();
 var server = http.createServer(app);
 var io = socketio(server);
-
-//var expressLayouts = require('express-ejs-layouts');
 var partials = require('express-partials');
-
 var compression = require('compression');
 var cors = require('cors');
-//const { text } = require('express');
-
 
 //------------------------------------------------------------------------------
 // Define express routes / urls
 //------------------------------------------------------------------------------
 app.use(express.static(__dirname + '/public'));
-
 app.use(bodyParser.json());
 app.use(compression());
 app.use(cors());
-
-// EJS
-//app.use(expressLayouts);
-
 // Partials 
 app.use(partials());
-
 // Express 
 app.use(express.urlencoded({ extended: true }));
-
 // Routes
 app.use('/', require('./public/routes/index.js'));
-
 // Views location and processing engine
 app.set('views', __dirname + '/public/views');
 app.set('view engine', 'ejs');
@@ -117,31 +96,6 @@ var optionDefinitions = [{
         alias: 'h'
     }
 ];
-
-var bb = chalk.green;
-var VPK_TITLE = chalk.bold.underline('Visual parsed Kubernetes' );
-var VPK_VERSION = chalk.bold.underline('Version: ' + softwareVersion );
-
-// Do not change the spacing of the following VPK_HEADER, and 
-// do not delete the single tick mark
-var VPK_HEADER = `
-${bb('-----------------------------------------------------------------')}
- ${''}              
-  ${bb('\\˜˜\\')}        ${bb('/˜˜/')}        ${bb('|˜˜|  /˜˜/')}   ${bb(VPK_TITLE)}
-   ${bb('\\  \\')}      ${bb('/  /')}         ${bb('|  | /  /')}    ${bb(VPK_VERSION)}                  
-    ${bb('\\  \\')}    ${bb('/  /')}          ${bb('|  |/  /')} 
-     ${bb('\\  \\')}  ${bb('/  /')}           ${bb('|      \\')}
-      ${bb('\\  \\')}${bb('/  /')}   ${bb('||˜˜˜\\\\')}  ${bb('|  |˜\\  \\')}
-       ${bb('\\')}${bb('    /')}    ${bb('||   ||')}  ${bb('|  |  \\  \\')} 
-        ${bb('\\')}${bb('__/')}     ${bb('||___//')}  ${bb('|__|   \\__\\')}
-                 ${bb('||')}
-                 ${bb('||')}
-${bb('-----------------------------------------------------------------')}              
-  `
-//Do not delete the single tick mark above
-
-// reset all vars that are used for parsing
-vpkReset.resetAll();
 
 //------------------------------------------------------------------------------
 // process start parameters if provided
@@ -177,6 +131,33 @@ if (typeof options.port !== 'undefined' && options.port !== null) {
     }
 }
 
+var bb = chalk.green;
+var VPK_TITLE = chalk.bold.underline('Visual parsed Kubernetes' );
+var VPK_VERSION = chalk.bold('Version: ' + softwareVersion );
+var VPK_PORT = chalk.bold('Server Port: ' + port)
+
+// Do not change the spacing of the following VPK_HEADER, and 
+// do not delete the single tick mark
+var VPK_HEADER = `
+  ${bb('------------------------------------------------------------------')}
+  | ${''}                                                               |              
+  |  ${bb('\\˜˜\\')}        ${bb('/˜˜/')}        ${bb('|˜˜|  /˜˜/')}   ${bb(VPK_TITLE)} |
+  |   ${bb('\\  \\')}      ${bb('/  /')}         ${bb('|  | /  /')}    ${bb(VPK_VERSION)}           |                  
+  |    ${bb('\\  \\')}    ${bb('/  /')}          ${bb('|  |/  /')}     ${bb(VPK_PORT)}        | 
+  |     ${bb('\\  \\')}  ${bb('/  /')}           ${bb('|      \\')}                              |
+  |      ${bb('\\  \\')}${bb('/  /')}   ${bb('||˜˜˜\\\\')}  ${bb('|  |˜\\  \\')}                             |
+  |       ${bb('\\')}${bb('    /')}    ${bb('||   ||')}  ${bb('|  |  \\  \\')}                            | 
+  |        ${bb('\\')}${bb('__/')}     ${bb('||___//')}  ${bb('|__|   \\__\\')}                           |
+  |                 ${bb('||')}                                             |
+  |                 ${bb('||')}                                             |
+  ${bb('------------------------------------------------------------------')}              
+  `
+//Do not delete the single tick mark above
+
+
+// reset all vars that are used for parsing
+vpkReset.resetAll();
+
 // if not defined create the 'cluster' and 'usage' directories 
 makedir('cluster');
 makedir('usage');
@@ -185,7 +166,6 @@ makedir('usage');
 var vf = 'vpkconfig.json';
 var gcstatus = utl.readConfig(vf);
 if (gcstatus === 'OK') {
-    //console.log(JSON.stringify(vpk.configFile));
     // get userconfig.json data
     vf = 'userconfig.json';
     utl.readConfig(vf);
@@ -460,7 +440,7 @@ app.get('/ping', function(req, res) {
         'Content-Type': 'text/plain'
     });
     utl.logMsg('vpkMNL788 - Pinged');
-    res.end('VPK server is OK\n');
+    res.end('VpK server is OK\n');
 });
 
 
@@ -763,6 +743,10 @@ io.on('connection', client => {
     client.on('getSelectLists', () => {
         utl.logMsg('vpkMNL008 - Get select lists request' );
         var labels = Object.keys(vpk.labelKeys);
+        let explains = ''
+        if (vpk.explains !== '') {
+            explains = vpk.explains;
+        }
         var result = {
             'kinds': vpk.kinds,
             'namespaces': vpk.definedNamespaces,
@@ -770,7 +754,8 @@ io.on('connection', client => {
             'validDir': validDir,
             'providers': vpk.providers,
             'labels': labels,
-            'xRefs': vpk.configFile.xrefNames
+            'xRefs': vpk.configFile.xrefNames,
+            'explains': explains
         };
         utl.logMsg('vpkMNL047 - Emit selectListsResult' );
         client.emit('selectListsResult', result);
@@ -786,6 +771,11 @@ io.on('connection', client => {
     client.on('reload', data => {
         utl.logMsg('vpkMNL009 - Snapshot directory: ' + data );
         vpk.clusterDirectory = data;
+        let explains = ''
+        if (vpk.explains !== '') {
+            explains = vpk.explains;
+        }
+        var labels = Object.keys(vpk.labelKeys);
         reload(data);
         // setTimeout( () => {
             var result = {
@@ -793,7 +783,10 @@ io.on('connection', client => {
                 'namespaces': vpk.definedNamespaces,
                 'baseDir': vpk.startDir,
                 'validDir': validDir,
-                'providers': vpk.providers
+                'providers': vpk.providers,
+                'labels': labels,
+                'xRefs': vpk.configFile.xrefNames,
+                'explains': vpk.explains 
             };
             utl.logMsg('vpkMNL010 - Emit selectListsResult' );
             client.emit('selectListsResult', result);
@@ -849,14 +842,6 @@ io.on('connection', client => {
         client.emit('searchResult', result);
     });
 
-//TODO verify if this is dead code
-    // client.on('uploadDir', data => {
-    //     utl.logMsg('vpkMNL045 - Upload directory request' );
-    //     var result = uploadDir(data);
-    //     utl.logMsg('vpkMNL044 - Emit uploadDir' );
-    //     client.emit('uploadDirResult', result);
-    // });
-
     client.on('xreference', data => {
         utl.logMsg('vpkMNL067 - Get xreference request ' );
         let result = '{"empty": true}';
@@ -872,8 +857,6 @@ io.on('connection', client => {
         result = xref.getXrefRules()
         client.emit('getXrefRulesResult', result );
     });
-        
-
 });
 
 function getFileContents(data) {
@@ -962,7 +945,7 @@ async function getK(data, kga, client, dynDir) {
         client.emit('getKStatus', msg);
     }
     // logout of current K8s environment
-    kube.logout(data);
+    // kube.logout(data);
     returnData(client, dynDir);
 
 }
@@ -1098,29 +1081,32 @@ function checkLoop() {
         checkAgain();
     } else {
 
-        saveStatMsg('dl', ' ');
-        saveStatMsg('Dirs read', vpk.dCnt);
-        saveStatMsg('Files read', vpk.fCnt);
-        saveStatMsg('Valid yaml', vpk.yCnt);
-        saveStatMsg('Skipped', vpk.xCnt);
-        saveStatMsg('dl', ' ');
-
-        if (typeof vpk.configFile.xrefNames !== 'undefined') {
-            var keys = Object.keys(vpk.configFile.xrefNames);
-            let key;
-            for (let i = 0; i < keys.length; i++) {
-                key = 'xRef' + keys[i]
-                if (typeof vpk[key] !== 'undefined') {
-                    utl.logMsg('Located xref items for:                 ' + keys[i]);
-                } else {
-                    utl.logMsg('Did not locate xref items for:          ' + keys[i]);   
-                }
-            }
+        if (vpk.fCnt > 0) {
+            saveStatMsg('dl', ' ');
+            saveStatMsg('Dirs read', vpk.dCnt);
+            saveStatMsg('Files read', vpk.fCnt);
+            saveStatMsg('Valid yaml', vpk.yCnt);
+            saveStatMsg('Skipped', vpk.xCnt);
             saveStatMsg('dl', ' ');
         }
-        saveStatMsg('Binding subjects not defined', vpk.subjectMissingCnt);
-        saveStatMsg('dl', ' ');
 
+        if (vpk.fCnt > 0) {
+            if (typeof vpk.configFile.xrefNames !== 'undefined') {
+                var keys = Object.keys(vpk.configFile.xrefNames);
+                let key;
+                for (let i = 0; i < keys.length; i++) {
+                    key = 'xRef' + keys[i]
+                    if (typeof vpk[key] !== 'undefined') {
+                        utl.logMsg('Located xref items for:                 ' + keys[i]);
+                    } else {
+                        utl.logMsg('Did not locate xref items for:          ' + keys[i]);   
+                    }
+                }
+                saveStatMsg('dl', ' ');
+            }
+            saveStatMsg('Binding subjects not defined', vpk.subjectMissingCnt);
+            saveStatMsg('dl', ' ');
+            }
         // After reading and parsing of files start server
         if (resetReq) {
             resetReq = false;
@@ -1262,6 +1248,7 @@ function chkUidChain() {
     saveStatMsg('OwnerRef Quad-level', ggpLvl)
     saveStatMsg('dl', ' ');
 
+    utl.processExplains();
     // delete the arrays no longer needed
 
 }
@@ -1292,17 +1279,9 @@ function checkAgain() {
 
 function startServer() {
     splash();
-    utl.logMsg('vpkMNL014 - VpK Server started, port: ' + port );
     server.listen(port);
     docm.buildDocumentation();
 }
-
-// function vpkSize() {
-//     utl.logMsg('vpkMNL313 - Calculating size of vpk')
-//     var vsize = utl.sizeof(vpk);
-//     utl.logMsg('vpkMNL314 - Estimated size of vpk: ' + vsize +' bytes')
-
-// }
 
 function help() {
     var usage = commandLineUsage([{
