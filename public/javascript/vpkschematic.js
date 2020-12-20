@@ -191,12 +191,12 @@ function buildCSVG() {
 			breakID++;
 			if (first) {
 				first = false;
-				rdata = rdata + '<span class="breakBar vpkcolor"><hr>' 
-				+ '&nbsp;&nbsp;Press the buttons below to view the schematics for the listed namespace' 
-				+ '&nbsp;&nbsp;<button type="button" class="btn btn-outline-primary btn-sm vpkButtons"' 
-				+ ' onclick="openAll(\'collid-\')">&nbsp;&nbsp;Open all&nbsp;&nbsp;</button>'
-				+ '&nbsp;&nbsp;<button type="button" class="btn btn-outline-primary btn-sm vpkButtons"'
-				+ ' onclick="closeAll(\'collid-\')">&nbsp;&nbsp;Close all&nbsp;&nbsp;</button>'
+				rdata = rdata + '<span class="breakBar vpkcolor mt-2 ml-5">' 
+				+ 'Press the buttons below to view the schematics for the listed namespace' 
+				+ '<span class="ml-4"><button type="button" class="btn btn-outline-primary btn-sm vpkButtons pr-4 pl-4"' 
+				+ ' onclick="openAll(\'collid-\')">Open all</button></span>'
+				+ '<span class="ml-4"><button type="button" class="btn btn-outline-primary btn-sm vpkButtons pr-4 pl-4"'
+				+ ' onclick="closeAll(\'collid-\')">Close all</button></span>'
 				+ '<hr class="mt-1"><span>'
 
 			} else {
@@ -205,9 +205,9 @@ function buildCSVG() {
 			// output the break bar
 			breakData = 
 			  '<div class="breakBar"><button type="button" ' 
-			+ ' class="btn btn-primary btn-sm vpkButtons" data-toggle="collapse" data-target="#collid-' 
-			+ breakID + '">&nbsp;&nbsp;' + k8cData[fnum].namespace + '&nbsp;&nbsp;</button>'
-			+ '&nbsp;&nbsp;<hr></div>'
+			+ ' class="btn btn-primary btn-sm vpkButtons pl-4 pr-4" data-toggle="collapse" data-target="#collid-' 
+			+ breakID + '">' + k8cData[fnum].namespace + '</button>'
+			+ '<hr></div>'
 			+ '<div id="collid-' + breakID + '" class="collapse">';
 
 			// print button
@@ -284,7 +284,8 @@ function nsChange(ns) {
 			api4Hdr = parts[0].api
 
 			hdrImage = checkImage(key, api4Hdr);	
-			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '.svg" width="35" height="35">&nbsp;';
+			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '.svg" ' 
+			+ ' onclick="getExplain(\'' + key + '\')" width="35" height="35">&nbsp;'
 			nsHtml = nsHtml + header1 + headerImg + header2;
 
 			let nArray = [];
@@ -598,7 +599,7 @@ function process(fnum) {
 		html = html 
 		+ '<rect  x="875" y="0" width="250" height="' 
 		+ height 
-		+ '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>';
+		+ '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>';
 	}
 
 	if (rtnGen.bnds.clusterBar === true) {
@@ -606,9 +607,9 @@ function process(fnum) {
 		if (typeof rtnGen.bnds.crd1 !== 'undefined') {
 			crdRefCnt++;
 			let what1 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img1 + '.svg" '
-			+ 'onmousemove="showTooltip(evt, \'' 
+			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr1, crdRefCnt, 'Ref')
-			+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd1 +'\')"/>';
+			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd1 +'\')"/>';
 			html = html + what1;
 
 			let note1 = '<circle cx="'+ (xPos - 6) + '" cy="97" r="10" stroke="black" stroke-width="1.5" fill="#000" />'
@@ -620,9 +621,9 @@ function process(fnum) {
 		if (typeof rtnGen.bnds.crd2 !== 'undefined') {
 			crdRefCnt++;
 			let what2 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img2 + '.svg" '
-			+ 'onmousemove="showTooltip(evt, \'' 
+			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr2, crdRefCnt, 'Ref')
-			+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd2 +'\')"/>' 
+			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd2 +'\')"/>' 
 			html = html + what2;
 
 			let note2 = '<circle cx="'+ (xPos - 6) + '" cy="97" r="10" stroke="black" stroke-width="1.5" fill="#000" />'
@@ -637,7 +638,7 @@ function process(fnum) {
 	let outterBox = '<g>'
 	+ '<rect  x="5" y="0" width="845" height="' 
 	+ height 
-	+ '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>'
+	+ '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="none"/>'
 	+ '<text x="15" y="67" class="workloadText">Pod: ' 
 	+ outterName 
 	+ '</text>'
@@ -655,9 +656,6 @@ function process(fnum) {
 
 	+ '</g>'
 	html = html + outterBox;	
-
-	// let nBar = '<div class="eventBar" data-toggle="collapse" data-target="#events-' + evtCnt + '"></div>'
-	// + '<div id="events-' + evtCnt + '" class="collapse">'
 
 	iCnt++;
 	height = height + 50;  // adding visual space between svg
@@ -708,12 +706,13 @@ function bldEvents(fnum) {
 		// show the events icon if there are events
 		if (hl > 0) {
 			let evtMsg = '' + hl + ' events'
-			let evtBtn = '<rect  x="200" y="90" width="75" height="75" rx="15" stroke-dasharray="1, 2" ' 
+			let evtBtn = '<rect  x="200" y="90" width="75" height="75" rx="5" stroke-dasharray="1, 2" ' 
 			+ ' stroke-width="1"  stroke="black" fill="#c5a3ff"/>'
+			+ '<text x="241" y="102" class="pickIcon">Events</text>'
 			
-			+ '<image x="218"  y="105" width="40"  height="40" href="images/k8/evt.svg" onmousemove="showTooltip(evt, \''
+			+ '<image x="218"  y="105" width="40"  height="40" href="images/k8/evt.svg" onmousemove="showVpkTooltip(evt, \''
 			+ buildSvgInfo(evtMsg, fnum, 'Events')
-			+ '\');" onmouseout="hideTooltip()"  onclick="getEvtsTable(\'' + fnum +'\')" />'
+			+ '\');" onmouseout="hideVpkTooltip()"  onclick="getEvtsTable(\'' + fnum +'\')" />'
 			html = html + evtBtn;
 			
 		}
@@ -735,11 +734,10 @@ function svgHeader(data, fnum) {
 			}
 		}
 	}
-	let rect1 = '<rect  x="0"   y="20" width="845" height="50" rx="15" stroke-dasharray="1, 2" ' 
+	let rect1 = '<rect  x="0"   y="20" width="845" height="50" rx="5" stroke-dasharray="1, 2" ' 
 	+ ' stroke-width="1"  stroke="none" fill="#c4c3be"/>';
 
-//	let rect2 = '<rect  x="870" y="20" width="250" height="50" rx="15" fill="#326ce5"/>';
-	let rect2 = '<rect  x="870" y="20" width="250" height="50" rx="15" fill="#626262"/>';
+	let rect2 = '<rect  x="870" y="20" width="250" height="50" rx="5" fill="#626262"/>';
 	
 	let rectH = 45;
 	let rtn = '';
@@ -749,30 +747,30 @@ function svgHeader(data, fnum) {
 	rectH = 45;
 	bnds.height = 45;
 	rtn = rtn
-	+ '<image x="10"  y="22" width="45"  height="45" href="images/k8/ns.svg" onmousemove="showTooltip(evt, \''
+	+ '<image x="10"  y="22" width="45"  height="45" href="images/k8/ns.svg" onmousemove="showVpkTooltip(evt, \''
 	+ buildSvgInfo(data.namespace, fnum, 'Namespace')
-	+ '\');" onmouseout="hideTooltip()"  onclick="getNsTable(\'' + data.namespace +'\')"/>'
+	+ '\');" onmouseout="hideVpkTooltip()"  onclick="getNsTable(\'' + data.namespace +'\')"/>'
 	+ '<text x="80" y="50" fill="white" class="workloadText">Namespace level resources</text>'
 
-	+ '<image x="1065" y="22" width="48"  height="48" href="images/k8/node.svg" onmousemove="showTooltip(evt, \''
+	+ '<image x="1065" y="22" width="48"  height="48" href="images/k8/node.svg" onmousemove="showVpkTooltip(evt, \''
 	+ buildSvgInfo(nodeInfo, nodeInfo.fnum, 'Node')
-	+ '\');" onmouseout="hideTooltip()"  onclick="getDef7(\'' + nodeInfo.fnum +'\')"/>'
+	+ '\');" onmouseout="hideVpkTooltip()"  onclick="getDef7(\'' + nodeInfo.fnum +'\')"/>'
 	+ '<text x="890" y="50" fill="white" class="workloadText">Cluster level resources</text>';
 
 	let roleNs = '0000-' + data.namespace;
 	if (typeof k8cData[roleNs].RoleBinding !== 'undefined') {
 		rtn = rtn
-		+ '<image x="750"  y="22" width="45"  height="45" href="images/k8/rb.svg" onmousemove="showTooltip(evt, \''
+		+ '<image x="750"  y="22" width="45"  height="45" href="images/k8/rb.svg" onmousemove="showVpkTooltip(evt, \''
 		+ buildSvgInfo(data.namespace, fnum, 'RoleBinding')
-		+ '\');" onmouseout="hideTooltip()"  onclick="getRoleBindingByNs(\'' + data.namespace +'\')"/>'
+		+ '\');" onmouseout="hideVpkTooltip()"  onclick="getRoleBindingByNs(\'' + data.namespace +'\')"/>'
 
-		+ '<image x="675"  y="22" width="45"  height="45" href="images/k8/role.svg" onmousemove="showTooltip(evt, \''
+		+ '<image x="675"  y="22" width="45"  height="45" href="images/k8/role.svg" onmousemove="showVpkTooltip(evt, \''
 		+ buildSvgInfo(data.namespace, fnum, 'Roles')
-		+ '\');" onmouseout="hideTooltip()"  onclick="getSecRoleByNs(\'' + data.namespace +'\')"/>'	
+		+ '\');" onmouseout="hideVpkTooltip()"  onclick="getSecRoleByNs(\'' + data.namespace +'\')"/>'	
 
-		+ '<image x="600"  y="22" width="45"  height="45" href="images/k8/subjects.svg" onmousemove="showTooltip(evt, \''
+		+ '<image x="600"  y="22" width="45"  height="45" href="images/k8/subjects.svg" onmousemove="showVpkTooltip(evt, \''
 		+ buildSvgInfo(data.namespace, fnum, 'Subject')
-		+ '\');" onmouseout="hideTooltip()"  onclick="getSecSubjectsByNs(\'' + data.namespace +'\')"/>';
+		+ '\');" onmouseout="hideVpkTooltip()"  onclick="getSecSubjectsByNs(\'' + data.namespace +'\')"/>';
 	}
 
 	if (bnds.show === true) {
@@ -785,7 +783,8 @@ function svgHeader(data, fnum) {
 function svgPVC(data, fnum) {
 	let rectP1a = '<rect  x="0" y="0" width="';
 	let rectP1b = '" height="';
-	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#fcdc79"/>';
+	let rectP2 = '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#fcdc79"/>'
+	+ '<text x="5" y="12" class="pickIcon">Storage</text>';
 	let rectH = 0;
 	let rectW = 0	
 	let rtn = '';
@@ -797,9 +796,9 @@ function svgPVC(data, fnum) {
 		rectW = rectW + 150;
 		bnds.show = true;
 		rtn = rtn
-		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/pvc.svg" onmousemove="showTooltip(evt, \'' 
+		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/pvc.svg" onmousemove="showVpkTooltip(evt, \'' 
 		+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'PersistentVolumeClaim') 
-		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'PVC@' +  fnum +'\')"/>' 
+		+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'PVC@' +  fnum +'\')"/>' 
 		+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
@@ -808,9 +807,9 @@ function svgPVC(data, fnum) {
 			rectW = rectW + 200;
 			bnds.clusterBar = true;
 			rtn = rtn
-			+ '<image x="250"  y="25" width="50"  height="50" href="images/k8/pv.svg" onmousemove="showTooltip(evt, \'' 
+			+ '<image x="250"  y="25" width="50"  height="50" href="images/k8/pv.svg" onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'PersistentVolume') 
-			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'PersistentVolume@' +  data.PersistentVolumeClaim[0].pvFnum +'\')"/>' 
+			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'PersistentVolume@' +  data.PersistentVolumeClaim[0].pvFnum +'\')"/>' 
 			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
@@ -826,9 +825,9 @@ function svgPVC(data, fnum) {
 			rectW = rectW + 75;
 			bnds.clusterBar = true;
 			rtn = rtn
-			+ '<image x="350"  y="25" width="50"  height="50" href="images/k8/sc.svg" onmousemove="showTooltip(evt, \'' 
+			+ '<image x="350"  y="25" width="50"  height="50" href="images/k8/sc.svg" onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo(data.PersistentVolumeClaim, fnum, 'StorageClass') 
-			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'StorageClass@' +  data.PersistentVolumeClaim[0].storageClassFnum +'\')"/>' 
+			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'StorageClass@' +  data.PersistentVolumeClaim[0].storageClassFnum +'\')"/>' 
 			+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 			+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 			+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
@@ -849,13 +848,10 @@ function svgPVC(data, fnum) {
 function svgIAM(data, fnum) {
 	let rectP1a = '<rect  x="0" y="0" width="';
 	let rectP1b = '" height="';
-	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#bfffda"/>';
+	let rectP2 = '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#bfffda"/>'
+	+ '<text x="5" y="12" class="pickIcon">Security</text>';
 	let rectH = 0;
 	let rectW = 150;	
-
-	// let rectP1 = '<rect  x="0" y="0" width="150" height="' 
-	// let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#bfffda"/>'
-	// let rectH = 0;	
 	let rtn = '';
 	let bnds = {'height': 0, 'width': 250, 'show': false};
 	// config ServiceAccounts
@@ -864,9 +860,9 @@ function svgIAM(data, fnum) {
 		rectH = rectH + 100;
 		bnds.show = true;
 		rtn = rtn
-		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/sa.svg" onmousemove="showTooltip(evt, \'' 
+		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/sa.svg" onmousemove="showVpkTooltip(evt, \'' 
 		+ buildSvgInfo(data.ServiceAccount, fnum, 'ServiceAccount') 
-		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'ServiceAccount@' +  fnum +'\')"/>' 
+		+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'ServiceAccount@' +  fnum +'\')"/>' 
 		+ '<line  x1="50" x2="-50" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="50" x2="45" y1="50"  y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="50" x2="45" y1="50"  y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
@@ -887,9 +883,9 @@ function svgIAM(data, fnum) {
 						if (crb[c].subName === saName ) {
 							let cFnum = crb[c].crbFnum;
 							rtn = rtn
-							+ '<image x="250"  y="25" width="50"  height="50" href="images/k8/crb.svg" onmousemove="showTooltip(evt, \'' 
+							+ '<image x="250"  y="25" width="50"  height="50" href="images/k8/crb.svg" onmousemove="showVpkTooltip(evt, \'' 
 							+ buildSvgInfo(crb[c],cFnum , 'ClusterRoleBinding') 
-							+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>'
+							+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>'
 							+ '<line  x1="100" x2="250" y1="50" y2="50"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 							+ '<line  x1="100" x2="105" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 							+ '<line  x1="100" x2="105" y1="50" y2="45"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
@@ -901,9 +897,9 @@ function svgIAM(data, fnum) {
 
 							cFnum = crb[c].roleRefFnum
 							rtn = rtn
-							+ '<image x="350"  y="25" width="50"  height="50" href="images/k8/c-role.svg" onmousemove="showTooltip(evt, \'' 
+							+ '<image x="350"  y="25" width="50"  height="50" href="images/k8/c-role.svg" onmousemove="showVpkTooltip(evt, \'' 
 							+ buildSvgInfo(crb[c], cFnum , 'ClusterRole') 
-							+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>';
+							+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>';
 							rectW = rectW + 275;
 							bnds.clusterBar = true;
 
@@ -925,7 +921,9 @@ function svgIAM(data, fnum) {
 
 function svgNetwork(data, fnum) {
 	let rectP1 = '<rect  x="0" y="0" width="250" height="' 
-	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#c4faf8"/>'
+	let rectP2 = '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="#a2d5fa"/>'
+	+ '<text x="205" y="12" class="pickIcon">Network</text>';
+
 	let rectH = 0;	
 	let rtn = '';
 	let bnds = {'height': 0, 'width': 250, 'show': false};
@@ -935,9 +933,9 @@ function svgNetwork(data, fnum) {
 		rectH = rectH + 100;
 		bnds.show = true;
 		rtn = rtn
-		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/svc.svg" onmousemove="showTooltip(evt, \'' 
+		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/svc.svg" onmousemove="showVpkTooltip(evt, \'' 
 		+ buildSvgInfo(data.Services, fnum, 'Service') 
-		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'Service@' + fnum +'\')"/>' 
+		+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'Service@' + fnum +'\')"/>' 
 		+ '<line  x1="100" x2="150" y1="50" y2="50" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
 		+ '<line  x1="150" x2="145" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round"/>'
 		+ '<line  x1="150" x2="145" y1="50" y2="55" stroke="red" stroke-width="2" stroke-linecap="round"/>';
@@ -948,9 +946,9 @@ function svgNetwork(data, fnum) {
 				if (data.Services[0].eps !== '') {
 					svcDef = true;
 					rtn = rtn
-					+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/eps.svg" onmousemove="showTooltip(evt, \'' 
+					+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/eps.svg" onmousemove="showVpkTooltip(evt, \'' 
 					+ buildSvgInfo(data.Services, fnum, 'EndPointSlice') 
-					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'EndPointSlice@' + fnum +'\')"/>' 
+					+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'EndPointSlice@' + fnum +'\')"/>' 
 					+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 					+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
@@ -960,9 +958,9 @@ function svgNetwork(data, fnum) {
 				if (svcDef !== true) {
 					if (data.Services[0].ep !== '') {
 						rtn = rtn
-						+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/ep.svg" onmousemove="showTooltip(evt, \'' 
+						+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/ep.svg" onmousemove="showVpkTooltip(evt, \'' 
 						+ buildSvgInfo(data.Services, fnum, 'EndPoint') 
-						+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'EndPoint@' + fnum +'\')"/>' 
+						+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'EndPoint@' + fnum +'\')"/>' 
 						+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 						+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 						+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>';
@@ -971,8 +969,8 @@ function svgNetwork(data, fnum) {
 			}
 			if (data.Services[0].eps !== '' && data.Services[0].ep !== '') {
 				rtn = rtn 
-				+ '<text x="120" y="12" class="pickIcon">(ep and eps both located</text>'
-				+ '<text x="124" y="20" class="pickIcon">only showing one item)</text>'
+				+ '<text x="90" y="12" class="pickIcon">(ep and eps both located</text>'
+				+ '<text x="94" y="20" class="pickIcon">only showing one item)</text>'
 			}
 		}
 		if (bnds.show = true) {
@@ -986,8 +984,9 @@ function svgGenerators(data, fnum) {
 	let rectP1a = '<rect  x="' 
 	let rectP1b = '"   y="0"  width="' 
 	let rectP1c = '" height="' 
-	let rectP2a = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="';
-	let rectP2b = '"/>';
+	let rectP2a = '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="';
+	let rectP2b = '"/>'
+	+ '<text x="195" y="12" class="pickIcon">Generators</text>';;
 	let rectFill = 'pink';
 	let rectH = 0;
 	let rtn = '';
@@ -1009,9 +1008,9 @@ function svgGenerators(data, fnum) {
 				image = checkImage('Unknown');
 				rtn = rtn 
 				+ '<image x="150" y="25"  width="50" height="50" fill="red" href="images/' + image + '.svg" '
-				+ 'onmousemove="showTooltip(evt, \'' 
+				+ 'onmousemove="showVpkTooltip(evt, \'' 
 				+ buildSvgInfo('', fnum, 'Unknown') 
-				+ '\');" onmouseout="hideTooltip()" />' 
+				+ '\');" onmouseout="hideVpkTooltip()" />' 
 			}
 		}
 
@@ -1023,10 +1022,10 @@ function svgGenerators(data, fnum) {
 			image = checkImage(kind);
 			rtn = rtn 
 			+ '<image x="150" y="25"  width="50" height="50" href="images/' + image + '.svg" '
-			+ 'onmousemove="showTooltip(evt, \'' 
+			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo(data, fnum, kind) 
-//			+ '\');" onmouseout="hideTooltip()" onclick="getDef7(\'' + fnum +'\')"/>' 
-			+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'level1@' + fnum +'\')"/>' 
+//			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + fnum +'\')"/>' 
+			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'level1@' + fnum +'\')"/>' 
 			+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
 			+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round"/>'
 			+ '<line  x1="300" x2="295" y1="50" y2="55" stroke="red" stroke-width="2" stroke-linecap="round"/>'
@@ -1043,9 +1042,9 @@ function svgGenerators(data, fnum) {
 				bnds.width = width;
 				rtn = rtn 
 				+ '<image x="50" y="25"  width="50" height="50" href="images/' + image + '.svg" '
-				+ 'onmousemove="showTooltip(evt, \'' 
+				+ 'onmousemove="showVpkTooltip(evt, \'' 
 				+ buildSvgInfo(data, fnum, kind) 
-				+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'level2@' + fnum +'\')"/>' 
+				+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'level2@' + fnum +'\')"/>' 
 				+ '<line  x1="100" x2="150" y1="50" y2="50" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
 				+ '<line  x1="150" x2="145" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round"/>'
 				+ '<line  x1="150" x2="145" y1="50" y2="55" stroke="red" stroke-width="2" stroke-linecap="round"/>'
@@ -1063,9 +1062,9 @@ function svgGenerators(data, fnum) {
 					let crFnum = data.ControllerRevision[0].fnum
 					rtn = rtn 
 					+ '<image x="150" y="100"  width="50" height="50" href="images/' + image + '.svg" '
-					+ 'onmousemove="showTooltip(evt, \'' 
+					+ 'onmousemove="showVpkTooltip(evt, \'' 
 					+ buildSvgInfo(data.ControllerRevision, crFnum, kind) 
-					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'ControllerRevision@' + crFnum +'\')"/>' 
+					+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'ControllerRevision@' + crFnum +'\')"/>' 
 					+ '<line  x1="175" x2="175" y1="75" y2="100"  stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
 
 					+ '<line  x1="175" x2="170" y1="100" y2="95" stroke="red" stroke-width="2" stroke-linecap="round"  stroke-dasharray="3, 3"/>'
@@ -1094,9 +1093,9 @@ function svgGenerators(data, fnum) {
 				if (typeof data.HPA.spec !== 'undefined') {
 					rtn = rtn 
 					+ '<image x="' + hPos + '" y="100"  width="50" height="50" href="images/' + image + '.svg" '
-					+ 'onmousemove="showTooltip(evt, \'' 
+					+ 'onmousemove="showVpkTooltip(evt, \'' 
 					+ buildSvgInfo(data.HPA, hpaFnum, kind) 
-					+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'HorizontalPodAutoscaler@' + hpaFnum +'\')"/>' 
+					+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'HorizontalPodAutoscaler@' + hpaFnum +'\')"/>' 
 
 					if (hPos === 50) {  // Deployment 
 						rtn = rtn
@@ -1132,9 +1131,9 @@ function svgGenerators(data, fnum) {
 					let cFnum1 = data.CRD[0].level1Fnum;
 					let action1 = buildSvgInfo('Refer to cluster level CRD', refLetter, 'Ref')
 					let what1 = '<circle cx="134" cy="23" r="10" stroke="black" stroke-width="0.5" fill="#000'
-					+ ' onmousemove="showTooltip(evt, \'' 
+					+ ' onmousemove="showVpkTooltip(evt, \'' 
 					+ action1
-					+ '\');" onmouseout="hideTooltip()" />'
+					+ '\');" onmouseout="hideVpkTooltip()" />'
 					+ '<text x="126" y="27" fill="white" font-weight="bold">' + refLetter + '</text>'
 					+ '<line  x1="175" x2="175" y1="20" y2="26"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 					+ '<line  x1="175" x2="147" y1="20" y2="20"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
@@ -1168,9 +1167,9 @@ function svgGenerators(data, fnum) {
 					let cFnum2 = data.CRD[0].level2Fnum;
 					let action2 = buildSvgInfo('Refer to cluster level CRD', refLetter, 'Ref')
 					let what2 = '<circle cx="33" cy="23" r="10" stroke="black" stroke-width="1.5" fill="#000" '
-					+ ' onmousemove="showTooltip(evt, \'' 
+					+ ' onmousemove="showVpkTooltip(evt, \'' 
 					+ action2
-					+ '\');" onmouseout="hideTooltip()" />'
+					+ '\');" onmouseout="hideVpkTooltip()" />'
 					+ '<text x="25" y="27" fill="white" font-weight="bold">' + refLetter + '</text>'
 					+ '<line  x1="75" x2="75" y1="20" y2="26"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 					+ '<line  x1="75" x2="47" y1="20" y2="20"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
@@ -1197,7 +1196,8 @@ function svgGenerators(data, fnum) {
 
 function svgConfig(data, fnum) {
 	let rectP1 = '<rect  x="0"   y="0"  width="250" height="' 
-	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="lightyellow"/>';
+	let rectP2 = '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="lightyellow"/>'
+	+ '<text x="95" y="12" class="pickIcon">Configuration</text>';;
 	let rectH = 0;
 	let rtn = '';
 	let bnds = {'height': 0, 'width': 250, 'show': false};
@@ -1208,9 +1208,9 @@ function svgConfig(data, fnum) {
 		bnds.height = 100;
 		bnds.show = true;	
 		rtn = rtn
-		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/cm.svg" onmousemove="showTooltip(evt, \''
+		+ '<image x="50"  y="25" width="50"  height="50" href="images/k8/cm.svg" onmousemove="showVpkTooltip(evt, \''
 		+ buildSvgInfo(data.ConfigMap, fnum, 'ConfigMap')
-		+ '\');" onmouseout="hideTooltip()"  onclick="getDef2(\'ConfigMap@' + fnum +'\')"/>'
+		+ '\');" onmouseout="hideVpkTooltip()"  onclick="getDef2(\'ConfigMap@' + fnum +'\')"/>'
 		+ '<line  x1="75" x2="75" y1="75" y2="150" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="75" x2="70" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 		+ '<line  x1="75" x2="80" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
@@ -1225,9 +1225,9 @@ function svgConfig(data, fnum) {
 		bnds.height = 100;
 		bnds.show = true;	
 		rtn = rtn
-		+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/secret.svg" onmousemove="showTooltip(evt, \'' 
+		+ '<image x="150"  y="25" width="50"  height="50" href="images/k8/secret.svg" onmousemove="showVpkTooltip(evt, \'' 
 		+ buildSvgInfo(data.Secret, fnum, 'Secret') 
-		+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'Secret@' + fnum +'\')"/>' 
+		+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'Secret@' + fnum +'\')"/>' 
 		+ '<line  x1="175" x2="175" y1="75" y2="150" stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 		+ '<line  x1="175" x2="170" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>' 
 		+ '<line  x1="175" x2="180" y1="75" y2="80"  stroke="black" stroke-width="1" stroke-linecap="round"/>';
@@ -1246,7 +1246,8 @@ function svgConfig(data, fnum) {
 function svgPod(data, fnum, podH) {
 	let bkgFill = "#e3e3e3";
 	let rectP1 = '<rect  x="0"   y="0"  width="250" height="' 
-	let rectP2 = '" rx="15" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="' + bkgFill + '"/>';
+	let rectP2 = '" rx="5" stroke-dasharray="1, 2" stroke-width="1"  stroke="black" fill="' + bkgFill + '"/>'
+	+ '<text x="115" y="12" class="pickIcon">Pod</text>';
 	let rectH = 0;
 	let rtn = '';
 	let yS = 0;
@@ -1259,9 +1260,9 @@ function svgPod(data, fnum, podH) {
 	bnds.show = true;
 	rectH = 100;
 	rtn = rtn 
-	+ '<image x="100"  y="25" width="50"  height="50" href="images/k8/pod.svg" onmousemove="showTooltip(evt, \'' 
+	+ '<image x="100"  y="25" width="50"  height="50" href="images/k8/pod.svg" onmousemove="showVpkTooltip(evt, \'' 
 	+ buildSvgInfo(data, fnum, 'Pod') 
-	+ '\');" onmouseout="hideTooltip()" onclick="getDef2(\'workload@' + fnum + '\')"/>';
+	+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'workload@' + fnum + '\')"/>';
 	let cy;
 
 	rtn = rtn 
@@ -1295,21 +1296,21 @@ function svgPod(data, fnum, podH) {
 
 	rtn = rtn 
 	+ '<text x="44" y="118" class="small" '
-	+ ' onmousemove="showTooltip(evt, \'' 
+	+ ' onmousemove="showVpkTooltip(evt, \'' 
 	+ evtV
-	+ '\');" onmouseout="hideTooltip()" >Phase</text>'
+	+ '\');" onmouseout="hideVpkTooltip()" >Phase</text>'
 
 	rtn = rtn
 	+ '<rect x="75" y="105" width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
-	+ ' onmousemove="showTooltip(evt, \'' 
+	+ ' onmousemove="showVpkTooltip(evt, \'' 
 	+ evtV
-	+ '\');" onmouseout="hideTooltip()" />';
+	+ '\');" onmouseout="hideVpkTooltip()" />';
 
 	rtn = rtn 
 	+ '<text x="90" y="118" class="small" '
-	+ ' onmousemove="showTooltip(evt, \'' 
+	+ ' onmousemove="showVpkTooltip(evt, \'' 
 	+ evtV
-	+ '\');" onmouseout="hideTooltip()" >'
+	+ '\');" onmouseout="hideVpkTooltip()" >'
 	+ phaseContent 
 	+ '</text>';
 
@@ -1322,15 +1323,15 @@ function svgPod(data, fnum, podH) {
 
 		rtn = rtn 
 		+ '<text x="25" y="148" class="small" '
-		+ ' onmousemove="showTooltip(evt, \'' 
+		+ ' onmousemove="showVpkTooltip(evt, \'' 
 		+ evtV
-		+ '\');" onmouseout="hideTooltip()">Conditions</text>'
+		+ '\');" onmouseout="hideVpkTooltip()">Conditions</text>'
 
 		rtn = rtn
 		+ '<rect x="75" y="135"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="white" '
-		+ ' onmousemove="showTooltip(evt, \'' 
+		+ ' onmousemove="showVpkTooltip(evt, \'' 
 		+ evtV
-		+ '\');" onmouseout="hideTooltip()" />'
+		+ '\');" onmouseout="hideVpkTooltip()" />'
 
 		let pStatus = [];
 		pStatus[0] = 'none';
@@ -1362,9 +1363,9 @@ function svgPod(data, fnum, podH) {
 					pColor = 'lightgreen';
 				}
 				rtn = rtn + '<circle cx="' + cX + '" cy="145" r="7" stroke="black" stroke-width="0.5" fill="' + pColor + '" '
-				+ ' onmousemove="showTooltip(evt, \'' 
+				+ ' onmousemove="showVpkTooltip(evt, \'' 
 				+ evtV
-				+ '\');" onmouseout="hideTooltip()" />'; 
+				+ '\');" onmouseout="hideVpkTooltip()" />'; 
 				cX = cX + 35;
 			}
 		}
@@ -1403,9 +1404,9 @@ function svgPod(data, fnum, podH) {
 
 					rtn = rtn
 					+ '<rect x="75" y="' + (yS - 15) + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
-					+ ' onmousemove="showTooltip(evt, \'' 
+					+ ' onmousemove="showVpkTooltip(evt, \'' 
 					+ evtV
-					+ '\');" onmouseout="hideTooltip()" />'
+					+ '\');" onmouseout="hideVpkTooltip()" />'
 					yS = yS + 13;
 					rtn = rtn
 					+ '<text x="90" y="' + (yS - 15) + '" class="small" >'
@@ -1436,9 +1437,9 @@ function svgPod(data, fnum, podH) {
 
 					rtn = rtn
 					+ '<rect x="75" y="' + (yS - 15) + '"  width="150" height="20" rx="5" stroke-width="0.5" stroke="black" fill="' + statusFill + '" '
-					+ ' onmousemove="showTooltip(evt, \'' 
+					+ ' onmousemove="showVpkTooltip(evt, \'' 
 					+ evtV
-					+ '\');" onmouseout="hideTooltip()" />'
+					+ '\');" onmouseout="hideVpkTooltip()" />'
 					yS = yS + 13;
 					rtn = rtn
 					+ '<text x="90" y="' + (yS - 15) + '" class="small" >'

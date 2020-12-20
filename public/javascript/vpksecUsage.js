@@ -79,7 +79,7 @@ function buildRoleRefTable () {
     let rtn = '';
     let item = '';
     let line = '';
-	let divSection = '<div class="events" ><hr><table style="width:100%">';
+	let divSection = '<div class="events" ><table style="width:100%">';
     let header = '<tr class="partsList">' 
     + '<th class="align-middle text-center">Role<br>Name</th>' 
     + '<th class="text-left pl-3">Binding Level</th>' 

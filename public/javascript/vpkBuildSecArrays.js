@@ -268,6 +268,7 @@ function buildRoleBindings(ns) {
 	let subject;
 	let roleName;
 	let roleType;
+	let roleGet;
 	let uKey;
 	let bKind;
 	let rColor;
@@ -333,19 +334,24 @@ function buildRoleBindings(ns) {
 		let crHl = k8cData['0000-@clusterRoles@'].Role.length
 		rColor = 'bg-role';
 		roleType = 'n';
-
+		roleGet = 'getSecRole';
 		for (let f = 0; f < crHl; f++ ) {
 			if (k8cData['0000-@clusterRoles@'].Role[f].name === roleName) {
 				rColor = 'bg-clusterRole';
 				roleType = 'c'
+				roleGet = 'getSecRole';
 				break;
-			}
+			} 
+		}
+		if (roleType !== 'c') {
+			console.log(roleName)
 		}
 
 		item = '<tr>' 
 		+ '<td width="34%" class="align-top"><span class="' + bColor + '" onclick="getDef7(\'' + fnum + '\')">' + name + '</td>' 
-//		+ '<td width="33%" class="align-top"><span class="' + rColor + '" onclick="getSecRole(\'' + roleName + '\')">' + roleName + '<span></td>' 
-		+ '<td width="33%" class="align-top"><span class="' + rColor + '" onclick="getSecRole(\'' + roleName + '\',\'' + rColor + '\',\'' + ns + '\')">' + roleName + '<span></td>' 
+		+ '<td width="33%" class="align-top"><span class="' + rColor 
+		+ '" onclick="' + roleGet + '(\'' + roleName + '\',\'' + rColor + '\',\'' + ns + '\')">' 
+		+ roleName + '<span></td>' 
 		+ '<td width="33%" class="align-top" >' + subject + '</td>' 
 		+ '</tr>';
 		nsHtml = nsHtml + item

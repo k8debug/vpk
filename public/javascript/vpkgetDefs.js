@@ -114,7 +114,6 @@ function getDef8(def) {
     editObj();
 }
 
-
 function partArray(type, data) {
     try {
         if (type === 'Secret') {

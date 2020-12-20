@@ -42,7 +42,7 @@ function buildSecDefHtml() {
 	let secKey;
 	let breakKey;
     let secBreakId = 100;
-    let header = '<div class="vpkfont-md vpkcolor ml-2 mt-2 mb-2">Press grey buttons to view security definitions for cluster or namespace</div>';
+    let header = '<div class="vpkfont-md vpkcolor ml-2 mt-2 mb-2">Press buttons to view security definitions for cluster or namespace</div>';
     let nsHtml = '';
 	let keys = Object.keys(k8cData);
 	for (let p = 0; p < keys.length; p++) {
@@ -77,9 +77,9 @@ function buildSecDefHtml() {
         secBreakId++;
         breakKey = secKey.substring(5);   // strip the '0000-'
         rdata = '<div class="breakBar"><button type="button" ' 
-        + ' class="btn btn-sm bg-secondary text-light vpkButtons" data-toggle="collapse" data-target="#securityID-' 
-        + secBreakId + '">&nbsp;&nbsp;' + breakKey + '&nbsp;&nbsp;</button>'
-        + '&nbsp;&nbsp;<hr></div>'
+        + ' class="btn btn-sm bg-secondary text-light vpkButtons pr-5 pl-5" data-toggle="collapse" data-target="#securityID-' 
+        + secBreakId + '">' + breakKey + '</button>'
+        + '<hr></div>'
         + '<div id="securityID-' + secBreakId + '" class="collapse">'
         + '<div class="row mb-3 mt-3 ml-4">';
 
@@ -87,21 +87,21 @@ function buildSecDefHtml() {
             rdata = rdata + '<div class="col-2">'
 	        + '<img style="float:left" src="images/k8/role.svg" width="40" height="40" onclick="getSecRoleByNs(\'' + secKey +'\')" />'
 	        + '<div class="vpkfont-md vpkcolor ml-2 mt-2">'
-	        + '  <span onclick="getSecRoleByNs(\'' + secKey +'\')">&nbsp;&nbsp;Roles</span>'
+	        + '  <span class="pl-2" onclick="getSecRoleByNs(\'' + secKey +'\')">Roles</span>'
 	        + '</div></div>';
         }
         if (typeof securityRoleBindingInfo[secKey] !== 'undefined') {
             rdata = rdata + '<div class="col-2">'
 	        + '<img style="float:left" src="images/k8/rb.svg" width="40" height="40" onclick="getRoleBindingByNs(\'' + secKey +'\')" />'
 	        + '<div class="vpkfont-md vpkcolor ml-2 mt-2">'
-	        + '  <span onclick="getRoleBindingByNs(\'' + secKey +'\')">&nbsp;&nbsp;RoleBinding</span>'
+	        + '  <span class="pl-2" onclick="getRoleBindingByNs(\'' + secKey +'\')">RoleBinding</span>'
 	        + '</div></div>';
         }
         if (typeof securitySubjectInfo[secKey] !== 'undefined') {
             rdata = rdata + '<div class="col-2">'
 	        + '<img style="float:left" src="images/k8/subjects.svg" width="40" height="40" onclick="getSecSubjectsByNs(\'' + secKey +'\')" />'
 	        + '<div class="vpkfont-md vpkcolor ml-2 mt-2">'
-	        + '  <span onclick="getSecSubjectsByNs(\'' + secKey +'\')">&nbsp;&nbsp;Subjects</span>'
+	        + '  <span class="pl-2" onclick="getSecSubjectsByNs(\'' + secKey +'\')">Subjects</span>'
 	        + '</div></div>';
         }
 

@@ -75,6 +75,58 @@ function populateSelectLists(data) {
         }
     
         populateXrefLists(data);
+
+        populateExplains(data);
+    }
+}
+
+function populateExplains(data) {
+    if (typeof data.explains !== 'undefined') {
+        let item;
+        let html = '';
+        let tmp;
+        let desc;
+        let version;
+        let kind;
+        let str;
+        let keys = Object.keys(data.explains);
+        for (let i = 0; i < keys.length; i++) {
+            item = data.explains[keys[i]];
+            tmp = item.split('DESCRIPTION:')
+            if (typeof tmp[1] !== 'undefined') {
+                desc = tmp[1];
+            } else {
+                desc = 'Description not located'
+            }
+            desc = desc.trim();
+
+            tmp = tmp[0];
+            tmp = tmp.trim();
+            tmp = tmp.split('VERSION:')
+
+            if (typeof tmp[1] !== 'undefined') {
+                version = tmp[1];
+            } else {
+                version = 'Version not located'
+            }
+            version = version.trim();
+
+            tmp = tmp[0];
+            tmp = tmp.trim();
+            tmp = tmp.split('KIND:')
+            if (typeof tmp[1] !== 'undefined') {
+                kind = tmp[1];
+            } else {
+                kind = 'Version not located';
+            }
+            kind = kind.trim();
+
+            explainInfo[kind] = {
+                'kind': kind,
+                'version': version,
+                'desc': desc
+            }
+        }
     }
 }
 

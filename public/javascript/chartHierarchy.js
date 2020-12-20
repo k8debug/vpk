@@ -8,7 +8,7 @@ const chartHierarchy = (input, chType) => {
     if (chType === 'x') {
 
         $("#xrefInfo").empty();
-        $("#xrefInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy</span>'
+        $("#xrefInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy (click red dot to view resource)</span>'
         + '<div class="header-right">'
         +    '<a href="javascript:printDiv(\'prtXref\')">'
         +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
@@ -21,7 +21,7 @@ const chartHierarchy = (input, chType) => {
         .attr("text-anchor", "middle");
     } else {
         $("#chartInfo").empty();
-        $("#chartInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy</span>'
+        $("#chartInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy (click red dot to view resource)</span>'
         + '<div class="header-right">'
         +    '<a href="javascript:printDiv(\'prtGraphic\')">'
         +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
@@ -38,13 +38,13 @@ const chartHierarchy = (input, chType) => {
         const root = d3.hierarchy(data);
         root.dx = 16;
         root.dy = width / (root.height + 1);
-        if (chType === 'g') {
-            $("#grpahicChartInfo").empty();
-            $("#graphicChartInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
-        } else if (chType === 'x') {
-            $("#xrefInfo").empty();
-            $("#xrefInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
-        }
+        // if (chType === 'g') {
+        //     $("#grpahicChartInfo").empty();
+        //     $("#graphicChartInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
+        // } else if (chType === 'x') {
+        //     $("#xrefInfo").empty();
+        //     $("#xrefInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
+        // }
         return d3.tree().nodeSize([root.dx, root.dy])(root);
     }
 

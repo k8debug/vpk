@@ -50,17 +50,14 @@ function editDef(data) {
     } 
     newData = null;
     rtn = outData.join('');
-    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '.svg" width="50" height="50"></img>'
+    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '.svg" width="50" height="50" ' 
+    + ' onclick="getExplain(\'' + kind + '\',\'' + api + '\')"></img>'
     + '<div style="vertical-align:middle; display:inline;" class="vpkcolor vpkfont pl-2">'
     + defkey
     + '</div>';
     $("#editTitle").html(editImage);
 
     initAceEditor(rtn);
-    // $("#editorModal").modal({
-    //     backdrop: 'static',
-    //     keyboard: false        
-    // });
 
     $('#editorModal').modal('show');
 

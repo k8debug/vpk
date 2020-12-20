@@ -118,7 +118,7 @@ let	unknownKindCnt = 0;
 let bindingStatCounts = [];
 
 let crdRefCnt = 0;
-
+let getDataRequest;
 let hrLow = '<hr class="mb-0 mt-0>"';
 
 // browser details
@@ -135,6 +135,8 @@ let xrefData = '';				// JSON struc of xref rules and names
 let xrefSelectedRule = '';
 let xrefSelectedRuleKey = '';
 let xrefRuleCountFound = 0;
+
+let explainInfo = [];
 
 // color legend for security 
 let RBAClegend = '<div class="vpkfont-md mb-2 mt-2">'
@@ -154,6 +156,24 @@ let RBAClegend = '<div class="vpkfont-md mb-2 mt-2">'
 + '<span class="bg-subjectSystemGroup pl-1 pr-1">System Group</span>'
 
 + '<span class="pl-1 vpkfont-md">(click colors in table for additional info)</span>';
+
+let processingRequest = '<div class="row">'
++ '<div class="col mt-4 ml-4">'
++ '  <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
++ '  <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>' 
++ '  </div>'
++ '</div>';
+
+function getExplain(kind, api) {
+	if (typeof kind !== 'undefined') {
+		if (typeof explainInfo[kind] !== 'undefined') {
+			$("#explainKind").html(explainInfo[kind].kind)
+			$("#explainVersion").html(explainInfo[kind].version)
+			$("#explainDesc").html(explainInfo[kind].desc)
+			$('#explainModal').modal('show');
+		}
+	}
+}
 
 
 function openAll(type) {
@@ -586,9 +606,9 @@ function buildTipContent(data, type, fnum) {
 	} else if (type === 'EndPoint') {
 		if (typeof data[0] !== 'undefined' ) {
 			cnt = 0;			
-			for (let k = 0; k < data.length; k++) {
-				content = content + 'Name: ' + data[k].name ;  
-			}
+//			for (let k = 0; k < data.length; k++) {
+				content = content + 'Name: ' + data[0].name + '<br>';  
+//			}
 		}
 
 	} else if (type === 'EndPointSlice') {
@@ -697,9 +717,9 @@ function buildTipContent(data, type, fnum) {
 			for (let k = 0; k < data.length; k++) {
 				cnt++;
                 content = 'Name: ' + data[k].name+ '<br>';
-                if (typeof data[k].type !== 'undefined') {
-                    content = content + 'Type: ' + data[k].type;
-                }
+                // if (typeof data[k].type !== 'undefined') {
+                //     content = content + 'Type: ' + data[k].type;
+                // }
 			}
 		}	
 	} else 	if (type === 'ServiceAccount') {
@@ -893,9 +913,10 @@ function buildSecModalRole(data, key, rColor) {
 	let roleId = 
 	  '<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
 //	+ '  <div>Role Name:&nbsp;<span class="text-light bg-success vpkfont-md">' + key + '</span></div>'
-	+ '  <div>Role Name:&nbsp;<span class="vpkfont-md ' + rColor + '">' + key + '</span></div>'
-	+ '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef7(\'' + fnum + '\')">' + fnum + '</span>'
-	+ '  <span class="vpkfont-sm vpkcolor pl-1">(click # to view)</span></div>'
+	+ '  <div>Role Name:&nbsp;<span onclick="getDef7(\'' + fnum + '\')"' 
+	+ '  class="vpkfont-md ' + rColor + '">' + key + '</span></div>'
+	// + '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef7(\'' + fnum + '\')">' + fnum + '</span>'
+	// + '  <span class="vpkfont-sm vpkcolor pl-1">(click # to view)</span></div>'
 	+ '</div><hr>';
 
 	let divSection = '<div class="events" ><table style="width:100%">';
@@ -1128,20 +1149,36 @@ function formatBytes (bytes, decimals = 2) {
 
 
 
-function showTooltip(evt, text) {
+function showVpkTooltip(evt, text) {
     let tooltip = document.getElementById("tooltip");
     let info = 'No information available';
     if (typeof svgInfo[text] !== 'undefined') {
         info = svgInfo[text]
     }
+	
+	let pageY   = evt.pageY;
+	let offTop  = $("#schematicDetail").offset().top;
+	let tipX = evt.pageX + 45;
+	// adjust for fixed portion of page
+	if (offTop < 0) {
+		offTop = offTop * -1;
+		offTop = offTop + 150;
+	} else {
+		offTop = 149 - offTop;
+	}
 
+	let tipY = offTop + pageY;
+	tipY = tipY - 149;
+
+	//-----------------------
     tooltip.innerHTML = info;
     tooltip.style.display = "block";
-    tooltip.style.left = evt.pageX + 10 + 'px';
-    tooltip.style.top = evt.pageY + 10 + 'px';
+    tooltip.style.left = tipX + 'px';
+    tooltip.style.top  = tipY + 'px';
+
 }
 
-function hideTooltip() {
+function hideVpkTooltip() {
     var tooltip = document.getElementById("tooltip");
     tooltip.style.display = "none";
 }
@@ -1175,7 +1212,9 @@ function hideMessage() {
 // used by vpkBuildSecArray and vpkSecUsage
 function getSecRole(key, rColor, ns) {
     let html = key;
-    let info = k8cData['0000-@clusterRoles@'].Role;
+	let info = k8cData['0000-@clusterRoles@'].Role;
+	
+	// check cluster level first
     if (typeof info !== 'undefined') {
         for (let i = 0; i < info.length; i++) {
             if (info[i].name === key) {
@@ -1188,7 +1227,7 @@ function getSecRole(key, rColor, ns) {
 	
 	// if equal not found at cluster level, now check namespace level
 	if (html === key) {
-		let info = k8cData[ns].Role;
+		info = k8cData[ns].Role;
 		if (typeof info !== 'undefined') {
 			for (let i = 0; i < info.length; i++) {
 				if (info[i].name === key) {

@@ -65,7 +65,7 @@ const chartCirclePack = (input, chType) => {
             .attr("stroke-width", 0.3)
             .attr("fill", d => {
                 let rtn;
-                rtn = d.children ? "none" : "#007bff";
+                rtn = d.children ? "#f7f7f7" : "#007bff";
                 return rtn;                
             })
             .attr("cid", d => {
@@ -159,30 +159,65 @@ function handleCPMouseOver(d, i) {
 
 
         if (show === true) {            
-            // placement of the tool tip requires using both page and
-            // client offsets
-            let yOff = window.pageYOffset  
-            let yPos = d.clientY + yOff ;
-            yPos = yPos - (i * 10);
-            yPos = yPos - 40;
+            // // placement of the tool tip requires using both page and
+            // // client offsets
+            // let yOff = window.pageYOffset  
+            // let yPos = d.clientY + yOff ;
+            // yPos = yPos - (i * 10);
+            // yPos = yPos - 40;
+
+
+            // // populate the tool tip and placement
+            // tip = tip + '</div>';
+            // tooltip.innerHTML = tip;
+            // tooltip.style.display = "block";
+            // tooltip.style.left = d.clientX - 100 + 'px';
+            // tooltip.style.top = yPos + 'px';
+
+
+	
+            let pageY = d.clientY;
+            //let offTop  = $("#schematicDetail").offset().top;
+            let offTop;
+            if (chartT === 'g') {
+                offTop  = $("#prtGraphic").offset().top;
+            } else {
+                offTop  = $("#prtXref").offset().top;
+            }
+
+
+
+            //let offTop  = window.pageYOffset;
+            console.log(offTop)
+            let tipX = d.clientX - 100;
+            // adjust for fixed portion of page
+            if (offTop < 0) {
+                offTop = offTop * -1;
+                offTop = offTop + 210;
+            } else {
+                offTop = 214 - offTop;
+            }
+        
+            let tipY = offTop + pageY;
+            tipY = tipY - 90;
 
             // populate the tool tip and placement
             tip = tip + '</div>';
             tooltip.innerHTML = tip;
             tooltip.style.display = "block";
-            tooltip.style.left = d.clientX - 100 + 'px';
-            tooltip.style.top = yPos + 'px';
+            tooltip.style.left = tipX + 'px';
+            tooltip.style.top = tipY + 'px';
         }
     }
     lastMove = Date.now();
 }
 
 function handleCPMouseOut(d, i) {
-    hideTooltip();
+    hideVpkTooltip();
 }
 
 function handleCPClick(d, i, ct) {
-    // ct is the chType
+    // ct is the chart type
     let cid = '';
     let chartT = '';
     if (typeof this.attributes['cid'] !== 'undefined') {

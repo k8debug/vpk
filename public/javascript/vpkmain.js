@@ -33,31 +33,20 @@ $(document).ready(function() {
         }
     });
 
-    // $(document).bind("keyup keydown", function(e) {
-    //     if (e.ctrlKey && e.keyCode === 80) {
-    //         console.log('kp false');
-    //     }
-    //     console.log('kp true');
-        
-    // }); 
-
-
     $('.carousel-item', '.multi-item-carousel').each(function(){
         var next = $(this).next();
         if (! next.length) {
           next = $(this).siblings(':first');
         }
         next.children(':first-child').clone().appendTo($(this));
-      }).each(function(){
+    }).each(function(){
         var prev = $(this).prev();
         if (! prev.length) {
           prev = $(this).siblings(':last');
         }
         prev.children(':nth-last-child(2)').clone().prependTo($(this));
-      });
+    });
 
-
- 
     $('.modal').on("hidden.bs.modal", function (e) {
         --bootstrapModalCounter;
         if (bootstrapModalCounter > 0) {
@@ -80,6 +69,10 @@ $(document).ready(function() {
     $("#schematic").removeClass("show");
     $("#security").removeClass("active");
     $("#security").removeClass("show");
+    $("#storage").removeClass("active");
+    $("#storage").removeClass("show");
+    $("#cluster").removeClass("active");
+    $("#cluster").removeClass("show");
     $("#xreference").removeClass("active");
     $("#xreference").removeClass("show");
 
@@ -90,58 +83,58 @@ $(document).ready(function() {
         if(currentTab === "#instructions") {
             checkIfDataLoaded();
             documentationTabTopic = 'toc';
-            $('#svgResults').hide();
-            $('#graphicCharts').hide();
-            $('#schematic').hide();
-            $('#security').hide();
-            $('#xreference').hide();
-        } else if (currentTab === "#searchR") {
+            $('#instructions').show();
+        } else {
+            $('#instructions').hide();
+        }
+        if (currentTab === "#searchR") {
             checkIfDataLoaded();
             documentationTabTopic = 'tableview';
-            $('#svgResults').show();
-            $('#graphicCharts').hide();
-            $('#schematic').hide();
-            $('#security').hide();
-            $('#xreference').hide();
-        } else if (currentTab === "#schematic") {
+            $('#searchR').show();
+        } else {            
+            $('#searchR').hide();
+        } 
+        if (currentTab === "#schematic") {
             checkIfDataLoaded();
             documentationTabTopic = 'schematics';
-            $('#svgResults').hide();
-            $('#graphicCharts').hide();
             $('#schematic').show();
-            $('#security').hide();
-            $('#xreference').hide();
-        } else if (currentTab === "#graphic") {
+        } else {
+            $('#schematic').hide();
+        }
+        if (currentTab === "#graphic") {
             checkIfDataLoaded();
             documentationTabTopic = 'graphicview';
-            $('#svgResults').hide();
-            $('#graphicCharts').show();
-            $('#schematic').hide();
-            $('#security').hide();
-            // ensure the loading icon is not shown
-            $("#graphicChartInfo").empty();
-            $("#graphicChartInfo").html('');
-            $('#xreference').hide();
-        } else if (currentTab === "#security") {
+            $('#graphic').show();
+        } else {
+            $('#graphic').hide();
+        }
+        if (currentTab === "#security") {
             checkIfDataLoaded();
             documentationTabTopic = 'security';
-            $('#svgResults').hide();
-            $('#graphicCharts').hide();
-            $('#schematic').hide();
             $('#security').show();
-            $("#usage-filter").prop("disabled", true);
-            $('#xreference').hide();
-        } else if (currentTab === "#xreference") {
+        } else {
+            $('#security').hide();
+        }    
+        if (currentTab === "#storage") {
+            checkIfDataLoaded();
+            documentationTabTopic = 'storage';
+            $('#storage').show();            
+        } else {
+            $('#storage').hide(); 
+        }
+        if (currentTab === "#cluster") {
+            checkIfDataLoaded();
+            documentationTabTopic = 'cluster';
+            $('#cluster').show();            
+        } else {
+            $('#cluster').hide();
+        }
+        if (currentTab === "#xreference") {
             checkIfDataLoaded();
             documentationTabTopic = 'xreference';
-            $('#svgResults').hide();
-            $('#graphicCharts').hide();
-            $('#schematic').hide();
-            $('#security').hide();
             $('#xreference').show();
-            $("#xref-filter").prop("disabled", true);
         } else {
-            documentationTabTopic = 'toc';
+            $('#xreference').hide();
         }
     });
 
@@ -520,17 +513,17 @@ socket.on('objectDef', function(data) {
 // send request to server to get hierarchy data
 function getChart(type) {
     var processingChart = '<div class="row">'
-        + '<div class="col mt-1 ml-1">'
-        + '<img style="float:left" src="images/loading.gif" width="50" height="50"/>'
-        + '<div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing chart request</span></div>'
-        + '</div>'
-        + '</div>'
+        + '<div class="col mt-1 ml-4">'
+        + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
+        + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>' 
+        + '    </div>'
+        + '</div>';
 
     hideMessage();
     chartType = type;
-    $("#graphicCharts").empty();
-    $("#graphicChartInfo").empty();
-    $("#graphicChartInfo").html(processingChart);
+    $("#graphicCharts2").empty();
+    $("#chartInfo").empty();
+    $("#chartInfo").html(processingChart);
 
     var namespaces = '';
     var tmp;
@@ -781,8 +774,18 @@ socket.on('resetResults', function(data) {
         $("#loadStatus").hide();
         $("#chgDirFooter").show();
         $("#chgDirModal").modal('hide');
-        showMessage('Datasource connected', 'pass');
+        showMessage('Data snapshot connected', 'pass');
+        // clear display areas of old data
+        $("#chartInfo").html('')
+        $("#graphicCharts2").html('')
+        $("#schematicDetail").html('')
+        $("#securityDetail").html('')
+        $("#xrefInfo").html('')
+        $("#xrefCharts2").html('')
+        $("#storageDetail").html('')
+        $("#clusterDetail").html('')
         getSelectLists('y');
+
     }
 });
 //==========================================================
@@ -791,15 +794,31 @@ socket.on('resetResults', function(data) {
 //----------------------------------------------------------
 function bldSchematic() {
     hideMessage();
+
+    $("#schematicDetail").html(processingRequest)
+
+    getDataRequest = 'schematic';
+    socket.emit('schematic');
+}
+function getClusterTabInfo() {
+    hideMessage();
+    getDataRequest = 'cluster';
     socket.emit('schematic');
 }
 //...
 socket.on('schematicResult', function(data) {
     k8cData = data.data;
     hideMessage();
-    schematic();       
+    if (getDataRequest === 'schematic') {
+        schematic();       
+    }
+    if (getDataRequest === 'cluster') {
+        buildClusterTab();       
+    }
+
 });
 //==========================================================
+
 
 
 //----------------------------------------------------------
@@ -968,7 +987,7 @@ function bldXrefChart(type) {
     let processingChart = '<div class="row">'
         + '<div class="col mt-1 ml-1">'
         + '<img style="float:left" src="images/loading.gif" width="50" height="50"/>'
-        + '<div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing xref request</span></div>'
+        + '<div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span></div>'
         + '</div>'
         + '</div>';
     let xref = $('#xref-type').select2('data');

@@ -143,7 +143,7 @@ body {
   overflow: hidden;
   /* background-color: #f1f1f1; */
   padding: 10px 10px;
-  max-width: 1280px;
+  max-width: 100%;
 }
 
 .header a {
@@ -194,6 +194,7 @@ body {
     padding-right: 20px;
     padding-top: 10px;
     padding-bottom: 20px;
+    z-index: 50;
 }
 
 .workloadText {
@@ -369,6 +370,11 @@ table.docsTable td {
     margin-right: 40px;
 }
 
+.bg-copyright {
+    background-color:#ededed;
+    color: black;
+}
+
 /* .wp-content a[href*="//"]:not([href*="developer.ibm.com"]):not([href*="localhost"]):not([href*="ibm.com"]):after {
     width: 12px;
     height: 12px;
@@ -492,3 +498,42 @@ table.docsTable td {
     position: relative;
     width: 33.33333333%;
   }
+
+  body,
+  div {
+      margin: 0;
+      padding: 0;
+  }
+
+  body {
+      /* Disable scrollbars and ensure that the body fills the window */
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+  }
+
+  #banner {
+      /* Provide scrollbars if needed and fix the header dimensions */
+      overflow: auto;
+      position: absolute;
+      width: 100%;
+      height: 110px;
+      background-color: #f2f2f2;
+  }
+
+  #viewarea {
+      /* Provide scrollbars if needed, position below header, and derive height from top/bottom */
+      overflow: auto;
+      position: absolute;
+      width: 100%;
+      top: 111px;
+      bottom: 0;
+  }
+
+.docBackground {
+    background-color: #eee;
+}
+
+#explainModal {
+    z-index: 3000;
+}

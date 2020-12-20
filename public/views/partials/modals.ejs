@@ -28,15 +28,19 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <div id="configHeader">
-                    <h6 class="modal-title vpkcolor">VpK Configuration</h6>
+                <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont pl-2'>
+                    <span class="font-weight-bold vpkfont-lg">V</span><span class="vpkfont">isual </span>
+                    <span class="font-weight-bold vpkfont-lg">p</span></span><span class="vpkfont">arsed</span> 
+                    <span class="font-weight-bold vpkfont-lg">K</span></span><span class="vpkfont">ubernetes</span>
                 </div>
+                <span class="modal-title ml-3 pt-1">Configuration</span>
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
-                </button>
+                </button>                
             </div>
-            <div class="modal-body">
 
+            <div class="modal-body docBackground">
                 <div id="size-sm" class="container  p-1 mb-1">
                     <div class="row mb-1">
                         <div class="col-10 px-3 py-1 vpkfont vpkcolor">
@@ -63,7 +67,7 @@
 
                     <div class="row mb-1">
                         <div class="col-10 px-3 py-1 vpkfont vpkcolor ">
-                            <p>X-Reference defintions (create, edit, or delete)</p>
+                            <p>Create, edit, or delete X-Reference defintions</p>
                             </div>
                         <div class="col-2 py-2 vpkfont-lg">
                             <button class="btn btn-sm" onclick="xrefGetData()"><i class="fas fa-wrench vpkcolor vpkfont-lg"></i></button>&nbsp;
@@ -72,14 +76,13 @@
                 </div>
 
                 <div class="mt-2 float-left"> 
-                <button id="configBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="saveConfig()" style="margin: 5px;">
-                    Save settings
-                </button>   
+                    <button id="configBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="saveConfig()" style="margin: 5px;">
+                        Save configuration
+                    </button>   
                 </div>
             </div>
-            <!-- <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-            </div> -->
+            <div class="modal-footer">
+            </div>
         </div>
     </div>
 </div>
@@ -96,8 +99,7 @@
                     <h6 class="modal-title vpkcolor">Cluster Information</h6>
                 </div>
             </div>
-            <div class="modal-body">
-
+            <div class="modal-body docBackground">
                 <!-- Drop down for cluster type is dynamically built -->
                 <div class="form-group col-4 vpkcolor" style="margin: -15px; padding-bottom: 15px;">
                     <label for="clusterType">Cluster type</label>
@@ -138,8 +140,11 @@
                     <span class="vpkfont">Decoded content for secret:&nbsp;&nbsp;</span>
                     <span class="vpkfont vkpcolor" id="decodeName"></span>
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body docBackground">
                 
                 <textarea id="decode" rows="33" cols="162" class="vpkfont-decode">
                     <!-- content here -->
@@ -147,7 +152,6 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -163,13 +167,15 @@
             <div class="modal-header">
                 <div id="schemHeader" class="vpkfont vpkcolor">
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body docBackground">
                 <div id="schemBody">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -182,20 +188,25 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <img style="float: left;" class="mr-2" src="docs/docimages/vpk.png" width="30" height="30">
-                <span class="modal-title vpkcolor">Documentation</span>
+
+                <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont pl-2'>
+                    <span class="font-weight-bold vpkfont-lg">V</span><span class="vpkfont">isual </span>
+                    <span class="font-weight-bold vpkfont-lg">p</span></span><span class="vpkfont">arsed</span> 
+                    <span class="font-weight-bold vpkfont-lg">K</span></span><span class="vpkfont">ubernetes</span>
+                </div>
+                <span class="modal-title ml-3 pt-1">Documentation</span>
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>                
             </div>
 
-            <div class="modal-body">
-                <div id="docsBody" class="docsTable ml-5 mr-5 mt-2 mb-5">
+            <div class="modal-body docBackground">
+                <div id="docsBody" class="docsTable ml-5 mr-5 mt-1 mb-5">
                 </div>
             </div>
-            <!-- <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
-            </div> -->
+            <div class="modal-footer">
+            </div>
         </div>
     </div>
 </div>
@@ -214,9 +225,8 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-
             </div>
-            <div class="modal-body">
+            <div class="modal-body docBackground">
 
                 <!-- Drop down for existing saved cluster info instances -->
                 <div class="form-group col-4 mt-3" style="margin: -15px; padding-bottom: 15px;">
@@ -254,62 +264,80 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <img style='vertical-align:middle;' src='images/vpk.png' width='40' height='40'  >
+                <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont pl-2'>
+                    <span class="font-weight-bold vpkfont-lg">V</span><span class="vpkfont">isual </span>
+                    <span class="font-weight-bold vpkfont-lg">p</span></span><span class="vpkfont">arsed</span> 
+                    <span class="font-weight-bold vpkfont-lg">K</span></span><span class="vpkfont">ubernetes</span>
+                </div>
+                <span class="modal-title ml-3 pt-1">Information</span>
 
-                <h4 class="ml-4 modal-title vpkcolor">Visual parsed Kubernetes<br>
-                </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
+                    <span aria-hidden="true">&times;</span>
+                </button>                
             </div>
-            <div style="background-color: #eee;">
-
+            <div class="modal-body docBackground">
                 <div class="align-middle">
-                    <div class="ml-1 mr-1 mt-4 mb-4 vpkfont vpkcolor text-center" >
-                        <P><span id="version" class="ml-1 vpkfont vpkcolor"></span>
-                            <br>
-                            <span class="vpkfont font-weight-bold">
-                                Free and Open Source Software
-                            </span>
-                            <br>
-                            <span class="vpkfont ">
-                                An application working to bring understanding and insight to the Kubernetes universe.
-                            </span>
-                            </P>
-                        
+                    <div class="ml-1 mr-1 mt-2 mb-2 vpkfont vpkcolor text-center" >
+                        <p><span id="version" class="ml-1 vpkfont vpkcolor"></span>
+                        </p>
                     </div>
 
-                    <div id="usageRunning"class="row ml-4 mt-2">
+                    <div id="usageRunning"class="row ml-4">
                         <img style="float:left" src="images/loading.gif" width="50" height="50"/>
                         <div class="vpkfont vpkcolor ml-2 mt-2">
                             <span >&nbsp;&nbsp;Retrieving usage information</span>
                         </div>
                     </div>                            
-
                     <div id="usageResult" class="ml-2 mr-2 mt-4 mb-4 vpkfont-md vpkcolor" >
-                    </div>
-
-                    <div class="ml-2 mr-2 mt-4 mb-4 vpkfont-sm vpkcolor" >
-                        <hr>
-                        Copyright 2018-2020 David A. Weilert
-                        <br><br>
-                        Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-                        and associated documentation files (the "Software"), to deal in the Software without restriction, 
-                        including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-                        and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
-                        subject to the following conditions:
-                        <br><br>
-                        The above copyright notice and this permission notice shall be included in all copies or substantial 
-                        portions of the Software.
-                        <br><br>
-                        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-                        LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-                        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-                        WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
-                        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ==================================== -->
+<!-- Explain Modal section                -->
+<!-- ==================================== -->
+<div class="modal fade" id="explainModal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="explainHeader">
+                    <h6 class="modal-title vpkcolor">Resource Kind Description</h6>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body docBackground">
+                <div class="row mb-2 ml-1 vpkfont vpkcolor ">
+                    <div class="col-md-2 font-weight-bold">
+                        Kind:
+                    </div>
+                    <div id="explainKind" class="col-md-10 mt-1 ml-5">
+                    </div>
+                </div>
+                <div class="row mb-2 ml-1 vpkfont vpkcolor ">
+                    <div class="col-md-2 font-weight-bold">
+                        Version:
+                    </div>
+                    <div id="explainVersion" class="col-md-10 mt-1 ml-5">
+                    </div>
+                </div>
+                <div class="row mb-2 ml-1 vpkfont vpkcolor ">
+                    <div class="col-md-2 font-weight-bold">
+                        Description:
+                    </div>
+                    <div id="explainDesc" class="col-md-10 mt-1 ml-5">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>            
         </div>
     </div>
 </div>
@@ -325,13 +353,15 @@
                 <div id="secInfoHeader">
                     <h6 class="modal-title vpkcolor">Security Information</h6>
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body docBackground">
                 <div id="secInfoContent" style="text-align: left;">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -347,10 +377,13 @@
             <div class="modal-header">
                 <div id="multiHeader">
                     <!-- <h6 class="modal-title vpkcolor">Select resource</h6> -->
-                    <span class="vkpfont vpkcolor">Multiple resources</span>
+                    <span class="vkpfont vpkcolor">Resources</span>
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body docBackground">
                 <div class="vpkfont-md vpkcolor">
                     <p>Select item from resource list:
                     </p>
@@ -359,7 +392,6 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -375,15 +407,17 @@
                 <div id="yamlHeader">
                     <h6 class="modal-title vpkcolor">No Resource Found</h6>
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body docBackground">
                 <div class="vpkfont vpkcolor">
                     <p>Unable to display resource definition. Yaml for the selected resource was not located.  
                     </p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -405,14 +439,16 @@
                     </div>
 
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body docBackground">
                 <div id="statContents" class="vpkfont-md">
                     <p>Log file data</P>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -427,8 +463,11 @@
             <div class="modal-header">
                 <div id="editTitle" class="ml-2">
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body mb-0 pb-0">
+            <div class="modal-body mb-0 pb-0 docBackground">
                 <div class="panel panel-default border">
                     <div class="panel-body">
                         <div id="file-content" style="display: none;"></div>
@@ -436,7 +475,7 @@
                     </div>
                 </div>
 
-                <div class="form-row mt-1 mb-0">
+                <div class="form-row mt-1 mb-2">
                     <div class="form-group col-md-1 text-right pr-1 pt-1 pb-0 vpkcolor mb-0">
                         <span style="font-size: 65%">Theme:</span>&nbsp;
                     </div>
@@ -460,7 +499,6 @@
                 </div>        
             </div>
             <div class="modal-footer mt-0 pt-1">
-                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
