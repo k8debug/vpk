@@ -84,6 +84,7 @@
             <li class="nav-item"><a id="storageTab"    href="#storage"      data-target="#storage"      data-toggle="tab" class="nav-link small text-uppercase">Storage</a></li>
             <li class="nav-item"><a id="clusterTab"    href="#cluster"      data-target="#cluster"      data-toggle="tab" class="nav-link small text-uppercase">Cluster</a></li>
             <li class="nav-item"><a id="xreferenceTab" href="#xreference"   data-target="#xreference"   data-toggle="tab" class="nav-link small text-uppercase">X-Reference</a></li>
+            <li class="nav-item"><a id="ownerliksTab" href="#ownerlinks"    data-target="#ownerlinks"   data-toggle="tab" class="nav-link small text-uppercase">OwnerRef Links</a></li>
         </ul>
     </div>
 
@@ -111,7 +112,7 @@
                     </p>
 
                     <div class="border rounded mt-5 ml-5 mr-5 bg-copyright">
-                        <p class="text-middle vpkfont-sm  ml-5 mr-5 mt-2 mb-2">
+                        <p class="text-middle vpkfont-xs  ml-5 mr-5 mt-2 mb-2">
                             
                             <span class="mt-5 ml-5 mr-5">
                                 Copyright 2018-2020 David A. Weilert
@@ -428,14 +429,13 @@
                 </div>
             </div>                
 
-            
+
             <div id="cluster" class="tab-pane">
                 <div class="grid mt-1 ml-2 mr-2 mb-2 border rounded">
                     <div class="row vpkButtons mb-1 ml-1 mt-1">
                         <div class="vpkcolor vpkfont-md ml-2" style="width: 240px;">
                             Select view
                         </div>
-
                         <div class="col-md-2">
                             <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart01" onclick="getClusterTabInfo()">
                             &nbsp;Cluster&nbsp;
@@ -443,10 +443,54 @@
                         </div>
                     </div>
                 </div>
+                
                 <div id="clusterDetail" class="mr-2">                        
                 </div>
             </div>                
         </div>
+
+
+        <div id="ownerlinks" class="tab-pane">
+            <div class="grid mt-1 ml-2 mr-2 mb-2 border rounded">
+                <div class="row vpkButtons mb-1 ml-1 mt-1">
+                    <div class="vpkcolor vpkfont-md ml-2 mt-2" style="width: 75px;">
+                        Sort first by
+                    </div>
+                    <div class="ml-2 mt-1">
+                        <select id="ownerSort1" 
+                            class="vpkfont-md pl-3"
+                            style="width: 100px; vertical-align:middle;">
+                            <option></option>
+                            <option>Kind</option>
+                            <option>Namespace</option>
+                            <option>Levels</option>
+                        </select>
+                    </div>
+                    <div class="vpkcolor vpkfont-md ml-4 mt-2" style="width: 90px;">
+                        Sort second by
+                    </div>
+                    <div class="ml-2 mt-1">
+                        <select id="ownerSort2" 
+                            class="vpkfont-md pl-3"
+                            style="width: 100px; vertical-align:middle;">
+                            <option></option>
+                            <option>Kind</option>
+                            <option>Namespace</option>
+                            <option>Levels</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 mt-1 ml-4">
+                        <button type="button" class="btn btn-outline-primary vpkButtons pl-2 pt-1 pb-1 pr-2" id="viewChart01" onclick="getOwnerRefLinks()">
+                        <span>Retrieve data</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ownerRefLinksDetail" class="mr-2">                        
+            </div>
+        </div>   
 
         <!-- ==================================== -->
         <!-- Tool tips are shown here             -->		        

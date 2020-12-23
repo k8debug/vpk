@@ -112,7 +112,7 @@
                 </div>
 
                 <div id="clusterRunning"class="row ml-4 mt-2">
-                    <img style="float:left" src="images/loading.gif" width="50" height="50"/>
+                    <img style="float:left" src="images/loading.gif" width="40" height="40"/>
                     <div class="vpkfont vpkcolor ml-2 mt-2">
                         <span >&nbsp;&nbsp;Processing</span>
                     </div>
@@ -242,7 +242,7 @@
                     </button>
                     <div id="loadStatus"class="row ml-4 mt-2">
                         <!-- <div class="col mt-1 ml-1"> -->
-                            <img style="float:left" src="images/loading.gif" width="50" height="50"/>
+                            <img style="float:left" src="images/loading.gif" width="40" height="40"/>
                             <div class="vpkfont-md vpkcolor ml-2 mt-2">
                                 <span>&nbsp;&nbsp;Processing datasource connect request </span>
                             <!-- </div> -->
@@ -283,7 +283,7 @@
                     </div>
 
                     <div id="usageRunning"class="row ml-4">
-                        <img style="float:left" src="images/loading.gif" width="50" height="50"/>
+                        <img style="float:left" src="images/loading.gif" width="40" height="40"/>
                         <div class="vpkfont vpkcolor ml-2 mt-2">
                             <span >&nbsp;&nbsp;Retrieving usage information</span>
                         </div>
@@ -303,7 +303,7 @@
 <!-- Explain Modal section                -->
 <!-- ==================================== -->
 <div class="modal fade" id="explainModal" tabindex="-1" role="dialog" >
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog explainWidth" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <div id="explainHeader">
@@ -315,24 +315,24 @@
             </div>
             <div class="modal-body docBackground">
                 <div class="row mb-2 ml-1 vpkfont vpkcolor ">
-                    <div class="col-md-2 font-weight-bold">
+                    <div class="col-md-2 font-weight-bold mb-0">
                         Kind:
                     </div>
-                    <div id="explainKind" class="col-md-10 mt-1 ml-5">
+                    <div id="explainKind" class="col-md-10 ml-3">
                     </div>
                 </div>
                 <div class="row mb-2 ml-1 vpkfont vpkcolor ">
-                    <div class="col-md-2 font-weight-bold">
+                    <div class="col-md-2 font-weight-bold mb-0">
                         Version:
                     </div>
-                    <div id="explainVersion" class="col-md-10 mt-1 ml-5">
+                    <div id="explainVersion" class="col-md-10 ml-3">
                     </div>
                 </div>
                 <div class="row mb-2 ml-1 vpkfont vpkcolor ">
-                    <div class="col-md-2 font-weight-bold">
+                    <div class="col-md-2 font-weight-bold mb-0">
                         Description:
                     </div>
-                    <div id="explainDesc" class="col-md-10 mt-1 ml-5">
+                    <div id="explainDesc" class="col-md-10 ml-3">
                     </div>
                 </div>
             </div>
@@ -385,7 +385,7 @@
             </div>
             <div class="modal-body docBackground">
                 <div class="vpkfont-md vpkcolor">
-                    <p>Select item from resource list:
+                    <p>Press button to view resource information:
                     </p>
                 </div>
                 <div id="multiContents" style="text-align: left;">
@@ -467,15 +467,15 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body mb-0 pb-0 docBackground">
-                <div class="panel panel-default border">
+            <div class="modal-body pb-0 docBackground">
+                <div class="panel panel-default">
                     <div class="panel-body">
                         <div id="file-content" style="display: none;"></div>
                         <div id="editor"></div>
                     </div>
                 </div>
 
-                <div class="form-row mt-1 mb-2">
+                <!-- <div class="form-row mt-1 mb-2">
                     <div class="form-group col-md-1 text-right pr-1 pt-1 pb-0 vpkcolor mb-0">
                         <span style="font-size: 65%">Theme:</span>&nbsp;
                     </div>
@@ -496,7 +496,7 @@
                             '<option value="18">Large</option>'
                         </select>
                     </div>
-                </div>        
+                </div>         -->
             </div>
             <div class="modal-footer mt-0 pt-1">
             </div>

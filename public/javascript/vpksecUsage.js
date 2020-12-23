@@ -87,7 +87,7 @@ function buildRoleRefTable () {
     + '<th class="text-left pl-3">Subject Kind</th>' 
     + '<th class="text-left pl-3">Subject Name</th>' 
     + '</tr>';    
-    rtn = rtn + divSection + header
+    rtn = rtn + divSection + RBAClegend + header
 
     for (let i = 0; i < keys.length; i++) {
         key = keys[i];
@@ -100,7 +100,8 @@ function buildRoleRefTable () {
         + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
         + '</tr>'
 
-        + '<tr><td style="width="30%" colspan="3"><span class="bg-success text-light" onclick="getSecRole(\'' + key + '\')">' + key + '</span></td>' 
+        + '<tr><td style="width="30%" colspan="3"><span class="bg-clusterRole" ' 
+        + ' onclick="getSecRole(\'' + key + '\')">' + key + '</span></td>' 
         + '<td></td>  <td></td>' 
         + '<td></td>   </tr> '
         + '<tr class="mt-0 mb-0">' 

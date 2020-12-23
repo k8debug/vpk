@@ -65,7 +65,9 @@ function clusterTabTable() {
 			api4Hdr = parts[0].api
 
 			hdrImage = checkImage(key, api4Hdr);	
-			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '.svg" width="35" height="35">&nbsp;';
+			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '" width="35" height="35" ' 
+			+ ' onclick="getExplain(\'' + key + '\',\'' + api4Hdr + '\')">&nbsp;'
+
 			nsHtml = nsHtml + header1 + headerImg + header2;
 
 			let nArray = [];

@@ -33,8 +33,10 @@ var search = require('./lib/search');
 var kube = require('./lib/kube');
 var hier = require('./lib/hierarchy');
 var schematic = require('./lib/svgSchematic');
-var xref = require('./lib/xreference')
-var docm = require('./lib/documentation')
+var xref = require('./lib/xreference');
+var docm = require('./lib/documentation');
+var owner = require('./lib/ownerRef');
+
 var fs = require('fs-extra');
 var bodyParser = require('body-parser');
 var YAML = require('js-yaml');
@@ -76,7 +78,7 @@ app.set('view engine', 'ejs');
 //var colors = '';
 var resetReq = false;
 var statMessages;
-var dashline = '----------------------------------------------';
+var dashline = '----------------------------------------------------------------------';
 var validDir = true;
 var port = 4200;
 var options;
@@ -527,6 +529,12 @@ io.on('connection', client => {
         client.emit('getDocumentationResult', result);
     });    
     
+    client.on('getOwnerRefLinks', () => {
+        utl.logMsg('vpkMNL359 - Get owner ref links request');
+        let links = owner.getLinks();
+        client.emit('getOwnerRefLinksResult', {'links': links});
+    }); 
+
     client.on('getFileByCid', data => {
         utl.logMsg('vpkMNL091 - Get getFileByCid request ' );
         let key = cidNameLookup(data)
@@ -786,7 +794,7 @@ io.on('connection', client => {
                 'providers': vpk.providers,
                 'labels': labels,
                 'xRefs': vpk.configFile.xrefNames,
-                'explains': vpk.explains 
+                'explains': explains 
             };
             utl.logMsg('vpkMNL010 - Emit selectListsResult' );
             client.emit('selectListsResult', result);
@@ -1022,7 +1030,7 @@ function reload(dir) {
         vpkReset.resetAll();
         vpk.dirFS.push(dir);
         vpk.startDir = dir;
-        utl.logMsg('vpkMNL311 - Using directory: ' + vpk.startDir );
+        utl.logMsg('vpkMNL311 - Using snapshot: ' + vpk.startDir );
         validDir = true;
         checkLoop();
     } else {
@@ -1097,9 +1105,9 @@ function checkLoop() {
                 for (let i = 0; i < keys.length; i++) {
                     key = 'xRef' + keys[i]
                     if (typeof vpk[key] !== 'undefined') {
-                        utl.logMsg('Located xref items for:                 ' + keys[i]);
+                        saveStatMsg('Located xref items for: ' + keys[i], ' ');
                     } else {
-                        utl.logMsg('Did not locate xref items for:          ' + keys[i]);   
+                        saveStatMsg('Did not locate xref items for: ' + keys[i], ' ');   
                     }
                 }
                 saveStatMsg('dl', ' ');
@@ -1113,145 +1121,34 @@ function checkLoop() {
         } else {
             startServer();
         }
-        chkUidChain();
-        //vpkSize();
-    }
-}
+        owner.chkUidChain();
 
-function chkUidChain() {
-    let cLvl = 0;
-    let pLvl = 0;
-    let gpLvl = 0;
-    let ggpLvl = 0;
-
-    let keys = Object.keys(vpk.ownerUids);
-    let key;
-    let childKey;
-
-    let child;
-    let cUid;
-    let parent;
-    let pUid;
-    let gParent;
-    let gUid;
-    let ggParent;
-    let ggUid;
-    let gggParent;
-    let gggUid;
-
-    try {
-        for (let i = 0; i < keys.length; i++) {
-            key = keys[i];
-            // populate child and check if it's what we want
-            child = vpk.ownerUids[key];
-            for (let k = 0; k < child.length; k++) {
-                if (child[k].ownerId !== 'self') {
-                    // child has what we looking for 
-                    
-                    childKey = child[k].childUid;
-                    cUid = '';
-                    pUid = '';
-                    gUid = '';
-                    ggUid = '';
-                    gggUid = '';
-                    // output the level
-                    if (typeof vpk.ownerChains[childKey] === 'undefined') {
-                        vpk.ownerChains[childKey] = [];
-                    } 
-                    cLvl++
-                    vpk.ownerChains[childKey].push({
-                        'level': 'child',
-                        'uid':  child[k].childUid,
-                        'kind': child[k].childKind,
-                        'name': child[k].childName,
-                        'ns':   child[k].childNS,
-                        'fnum': child[k].childFnum,
-                        'ownerUid': child[k].ownerId,
-                        'ownerKind': child[k].ownerKind
-                    })
-                    cUid = child[k].ownerId;
-
-                    // vpk.childUids contains the child and parent info.  Check this array to see if 
-                    // there is a defined parent, grandParent, greatGrandParent
-
-                    // check for parent level
-                    if (typeof vpk.childUids[cUid] !== 'undefined') {
-                        pLvl++;
-                        parent = vpk.childUids[cUid];
-                        vpk.ownerChains[childKey].push({
-                            'level':'parent',
-                            'uid': child[k].ownerId,
-                            'kind': parent.childKind,
-                            'name': parent.childName,
-                            'ns': parent.childNS,
-                            'fnum': parent.childFnum 
-                        })
-                        pUid = parent.parentUid;
-
-                        // check for grandParent level
-                        if (typeof vpk.childUids[pUid] !== 'undefined') {
-                            gpLvl++;
-                            gParent = vpk.childUids[pUid];
-                            vpk.ownerChains[childKey].push({
-                                'level':'grand',
-                                'uid': parent.parentUid,
-                                'kind': gParent.childKind,
-                                'name': gParent.childName,
-                                'ns': gParent.childNS,
-                                'fnum': gParent.childFnum
-                            })
-                            gUid = gParent.parentUid;
-
-                            // check for greatGrandParent level
-                            if (typeof vpk.childUids[gUid] !== 'undefined') {
-                                ggpLvl++;
-                                ggParent = vpk.childUids[gUid];
-                                vpk.ownerChains[childKey].push({
-                                    'level': 'greatGrand',
-                                    'uid': gParent.parentUid,
-                                    'kind': ggParent.childKind,
-                                    'name': ggParent.childName,
-                                    'ns': ggParent.childNS,
-                                    'fnum': ggParent.childFnum
-                                });
-                                //console.log(JSON.stringify(vpk.ownerChains[childKey] ,null, 2))
-                                ggUid = ggParent.parentUid;
-
-                                // check for greatGreatGrandParent level
-                                if (typeof vpk.childUids[ggUid] !== 'undefined') {
-                                    gggpLvl++;
-                                    gggParent = vpk.childUids[ggUid];
-                                    vpk.ownerChains[childKey].push({
-                                        'level': 'greatGreat',
-                                        'uid': ggParent.parentUid,
-                                        'kind': gggParent.childKind,
-                                        'name': gggParent.childName,
-                                        'ns': gggParent.childNS,
-                                        'fnum': gggParent.childFnum
-                                    });
-                                }
-                            } 
-                        }
-                    }
-                }
-            }
+        if (typeof vpk.childUids !== 'undefined') {
+            saveStatMsg('OwnerRef Single-level', vpk.cLvl)
+            saveStatMsg('OwnerRef Double-level', vpk.pLvl)
+            saveStatMsg('OwnerRef Triple-level', vpk.gpLvl)
+            saveStatMsg('OwnerRef Quad-level', vpk.ggpLvl)
+            saveStatMsg('OwnerRef Penta-level', vpk.gggpLvl)
+            saveStatMsg('dl', ' ');
         }
 
-    } catch (err) {
-        utl.logMsg('vpkMLN129 - Error checking owner chains: ' + err);
-        utl.logMsg(err.stack);
+        if (typeof vpk.spaceReqSC !== 'undefined') {
+            let keys = Object.keys(vpk.spaceReqSC);
+            let size;
+            for (let i = 0; i < keys.length; i++) {
+                size = utl.formatBytes(vpk.spaceReqSC[keys[i]]);
+                saveStatMsg('StorageClass: ' + keys[i], size)
+            }
+            saveStatMsg('dl', ' ');
+        }
+
+    
+        utl.processExplains();
+        // delete the arrays no longer needed
+
     }
-
-    saveStatMsg('OwnerRef Single-level', cLvl)
-    saveStatMsg('OwnerRef Double-level', pLvl)
-    saveStatMsg('OwnerRef Triple-level', gpLvl)
-    saveStatMsg('OwnerRef Quad-level', ggpLvl)
-    saveStatMsg('dl', ' ');
-
-    utl.processExplains();
-    // delete the arrays no longer needed
-
 }
+
 
 
 function saveStatMsg(msg, cnt) {
@@ -1261,9 +1158,9 @@ function saveStatMsg(msg, cnt) {
         if (cnt === 0) {
             return;
         }
-        //           123456789012345678901234567890123456789012345
-        msg = msg + '                                        ';
-        msg = msg.substring(0,40)
+        //           1234567890123456789012345678901234567890123456789012345678901234567890
+        msg = msg + '                                                            ';
+        msg = msg.substring(0,60)
 
         utl.logMsg(msg + cnt );
         statMessages.push(msg + '::' + cnt);
@@ -1278,9 +1175,13 @@ function checkAgain() {
 }
 
 function startServer() {
-    splash();
-    server.listen(port);
-    docm.buildDocumentation();
+    try {
+        splash();
+        server.listen(port);
+        docm.buildDocumentation();
+    } catch (err) {
+        console.log(err.stack)
+    }
 }
 
 function help() {

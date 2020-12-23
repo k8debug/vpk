@@ -75,6 +75,8 @@ $(document).ready(function() {
     $("#cluster").removeClass("show");
     $("#xreference").removeClass("active");
     $("#xreference").removeClass("show");
+    $("#ownerlinks").removeClass("active");
+    $("#ownerlinks").removeClass("show");
 
     // get the name of selected tab and process
     $( 'a[data-toggle="tab"]' ).on( 'shown.bs.tab', function( evt ) {
@@ -136,6 +138,13 @@ $(document).ready(function() {
         } else {
             $('#xreference').hide();
         }
+        if (currentTab === "#ownerlinks") {
+            checkIfDataLoaded();
+            documentationTabTopic = 'ownerlinks';
+            $('#ownerlinks').show();
+        } else {
+            $('#ownerlinks').hide();
+        }
     });
 
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
@@ -172,7 +181,7 @@ $(document).ready(function() {
     $('#dsInstances').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
-        placeholder: "select instance"
+        placeholder: "select snapshot"
     }); 
 
     $('#graphic-ns-filter').select2({
@@ -227,6 +236,19 @@ $(document).ready(function() {
         e.preventDefault();
         searchObj();
     });
+
+    //-- ownerRef dropdowns
+    $('#ownerSort1').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "sort order"
+    }); 
+    $('#ownerSort2').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "sort order"
+    }); 
+
 
 	// 
 	$("#clusterType").change(function(){
@@ -794,14 +816,13 @@ socket.on('resetResults', function(data) {
 //----------------------------------------------------------
 function bldSchematic() {
     hideMessage();
-
     $("#schematicDetail").html(processingRequest)
-
     getDataRequest = 'schematic';
     socket.emit('schematic');
 }
 function getClusterTabInfo() {
     hideMessage();
+    $("#clusterDetail").html(processingRequest)
     getDataRequest = 'cluster';
     socket.emit('schematic');
 }
@@ -824,6 +845,7 @@ socket.on('schematicResult', function(data) {
 //----------------------------------------------------------
 function bldSecurity() {
     hideMessage();
+    $("#securityDetail").html(processingRequest)
     socket.emit('security');
 }
 //...
@@ -837,8 +859,25 @@ socket.on('securityResult', function(data) {
 
 
 //----------------------------------------------------------
+function getOwnerRefLinks() {
+    hideMessage();
+    $("#ownerRefLinksDetail").html(processingRequest)
+    socket.emit('getOwnerRefLinks');
+}
+//...
+socket.on('getOwnerRefLinksResult', function(data) {
+    ownerRefLinks = data.links;
+    //console.log(JSON.stringify(ownerRefLinks, null, 3))
+    buildOwnerRefLinks();
+});
+//==========================================================
+
+
+
+//----------------------------------------------------------
 function bldSecurityUsage() {
     hideMessage();
+    $("#securityDetail").html(processingRequest)
     socket.emit('securityUsage');
 }
 //...
@@ -986,7 +1025,7 @@ function bldXrefChart(type) {
     let data;
     let processingChart = '<div class="row">'
         + '<div class="col mt-1 ml-1">'
-        + '<img style="float:left" src="images/loading.gif" width="50" height="50"/>'
+        + '<img style="float:left" src="images/loading.gif" width="40" height="40"/>'
         + '<div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span></div>'
         + '</div>'
         + '</div>';

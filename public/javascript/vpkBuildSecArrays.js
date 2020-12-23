@@ -18,7 +18,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 //----------------------------------------------------------
-// build security arrays
+// build security related arrays
 //----------------------------------------------------------
 
 function buildSecArrays() {
@@ -342,9 +342,6 @@ function buildRoleBindings(ns) {
 				roleGet = 'getSecRole';
 				break;
 			} 
-		}
-		if (roleType !== 'c') {
-			console.log(roleName)
 		}
 
 		item = '<tr>' 

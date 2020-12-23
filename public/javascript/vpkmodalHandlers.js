@@ -370,10 +370,6 @@ function xrefCloseFirstRule() {
 
 //----------------------------------------------------
 // ----- Security related
-function getSecInfo(key) {
-    $("#secInfoContent").html(key)
-    $("#secInfoModal").modal('show')
-}
 
 function getRoleBindingByNs(ns) {
     buildRBACs();

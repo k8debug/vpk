@@ -136,6 +136,19 @@ let xrefSelectedRule = '';
 let xrefSelectedRuleKey = '';
 let xrefRuleCountFound = 0;
 
+let ownerRefLinks = '';
+let sortBy1;
+let sortBy2;
+let ownerRefCnt = 0;
+let ownCnt = 0;
+let ownBreak = '';
+let oldBreak = '@';
+let ownerCollapseIDs = [];
+let ownBreakID = 0;
+let ownerSvgInfo = {};            			// tool tip pop-ups
+let ownerInfoID = 0;
+
+
 let explainInfo = [];
 
 // color legend for security 
@@ -155,7 +168,7 @@ let RBAClegend = '<div class="vpkfont-md mb-2 mt-2">'
 + '<span class="bg-subjectSystemUser pl-1 pr-1">System User</span>'
 + '<span class="bg-subjectSystemGroup pl-1 pr-1">System Group</span>'
 
-+ '<span class="pl-1 vpkfont-md">(click colors in table for additional info)</span>';
++ '<span class="pl-1 vpkfont-md">(click colored background text for info)</span>';
 
 let processingRequest = '<div class="row">'
 + '<div class="col mt-4 ml-4">'
@@ -164,6 +177,9 @@ let processingRequest = '<div class="row">'
 + '  </div>'
 + '</div>';
 
+
+
+
 function getExplain(kind, api) {
 	if (typeof kind !== 'undefined') {
 		if (typeof explainInfo[kind] !== 'undefined') {
@@ -171,6 +187,11 @@ function getExplain(kind, api) {
 			$("#explainVersion").html(explainInfo[kind].version)
 			$("#explainDesc").html(explainInfo[kind].desc)
 			$('#explainModal').modal('show');
+		} else {
+			$("#explainKind").html(kind)
+			$("#explainVersion").html('No version information found')
+			$("#explainDesc").html('No description information found')
+			$('#explainModal').modal('show');			
 		}
 	}
 }
@@ -317,169 +338,186 @@ function printDiv(id) {
 
 
 function checkImage(kind, api) {
+	if (typeof api === 'undefined') {
+		console.log('research')
+	}
 	let image;
 	if (kind === 'k8') {
-		image = 'k8'
+		image = 'k8.svg'
 	} else if (kind === 'API' || kind === 'Api' || kind === 'APIService') {
-		image = 'k8/api';
+		image = 'k8/api.svg';
 	} else if (kind === 'Alertmanager') {
-		image = 'other/ocp';
+		image = 'other/ocp.svg';
 	} else if (kind === 'CatalogSource') {
-		image = 'other/ocp';
+		image = 'other/ocp.svg';
 	} else if (kind === 'CephCluster') {
-		image = 'other/rook';
+		image = 'other/rook.svg';
 	} else if (kind === 'CertificateSigningRequest') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'ClusterRole') {
-		image = 'k8/c-role';
+		image = 'k8/c-role.svg';
 	} else if (kind === 'ClusterRoleBinding') {
-		image = 'k8/crb';
+		image = 'k8/crb.svg';
 	} else if (kind === 'ComponentStatus') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'ConfigMap') {
-		image = 'k8/cm';
+		image = 'k8/cm.svg';
 	} else if (kind === 'ControllerRevision') {
-		image = 'k8/c-rev';
+		image = 'k8/c-rev.svg';
 	} else if (kind === 'CronJob') {
-		image = 'k8/cronjob';
+		image = 'k8/cronjob.svg';
 	} else if (kind === 'CSIDriver') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'CSINode') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'CustomResourceDefinition' || kind === 'CRD') {
-		image = 'k8/crd';
+		image = 'k8/crd.svg';
 	} else if (kind === 'DaemonSet') {
-		image = 'k8/ds';
+		image = 'k8/ds.svg';
 	} else if (kind === 'Deployment') {
-		image = 'k8/deploy';
+		image = 'k8/deploy.svg';
 	} else if (kind === 'DeploymentConfig') {
-		image = 'other/ocp';
+		image = 'other/ocp.svg';
 	} else if (kind === 'DNS') {
-		image = 'other/ocp';
+		image = 'other/ocp.svg';
 	} else if (kind === 'Endpoints') {
-		image = 'k8/ep';
+		image = 'k8/ep.svg';
 	} else if (kind === 'EndpointSlice') {
-		image = 'k8/eps';
+		image = 'k8/eps.svg';
 	} else if (kind === 'Etcd') {
-		image = 'k8/etcd';
+		image = 'k8/etcd.svg';
 	} else if (kind === 'Event') {
-		image = 'k8/evt';
+		image = 'k8/evt.svg';
 	} else if (kind === 'FlowSchema') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'HorizontalPodAutoscaler') {
-		image = 'k8/hpa';
+		image = 'k8/hpa.svg';
 	} else if (kind === 'Ingress') {
-		image = 'k8/ing';
+		image = 'k8/ing.svg';
 	} else if (kind === 'Job') {
-		image = 'k8/job';
+		image = 'k8/job.svg';
 	} else if (kind === 'Lease') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'LimitRange') {
-		image = 'k8/limits';
+		image = 'k8/limits.svg';
 	} else if (kind === 'MutatingWebhookConfiguration') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'Namespace') {
-		image = 'k8/ns';
+		image = 'k8/ns.svg';
 	} else if (kind === 'Network') {
-		image = 'other/ocp';
+		image = 'other/ocp.svg';
 	} else if (kind === 'NetworkPolicy') {
-		image = 'k8/netpol';
+		image = 'k8/netpol.svg';
 	} else if (kind === 'NooBaa' ) {
-		image = 'other/redhat';
+		image = 'other/redhat.svg';
 	} else if (kind === 'Node') {
-		image = 'k8/node';
+		image = 'k8/node.svg';
 	} else if (kind === 'OCP-CRD') {
-		image = 'other/ocp';
+		image = 'other/ocp.svg';
 	} else if (kind === 'PersistentVolumeClaim') {
-		image = 'k8/pvc';
+		image = 'k8/pvc.svg';
 	} else if (kind === 'PersistentVolume') {
-		image = 'k8/pv';
+		image = 'k8/pv.svg';
 	} else if (kind === 'Pod') {
-		image = 'k8/pod';
+		image = 'k8/pod.svg';
 	} else if (kind === 'PodDisruptionBudget') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'PodSecurityPolicy') {
-		image = 'k8/psp';
+		image = 'k8/psp.svg';
 	} else if (kind === 'PodTemplate') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'Prometheus') {
-		image = 'other/ocp';
+		image = 'other/ocp.svg';
 	} else if (kind === 'PriorityClass') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'ReplicaSet') {
-		image = 'k8/rs';
+		image = 'k8/rs.svg';
 	} else if (kind === 'ReplicationController') {
-		image = 'k8/rc';
+		image = 'k8/rc.svg';
 	} else if (kind === 'ResourceQuota') {
-		image = 'k8/quota';
+		image = 'k8/quota.svg';
 	} else if (kind === 'Role') {
-		image = 'k8/role';		
+		image = 'k8/role.svg';		
 	} else if (kind === 'RoleBinding') {
-		image = 'k8/rb';		
+		image = 'k8/rb.svg';		
 	} else if (kind === 'RuntimeClass') {
-		image = 'k8/k8';		
+		image = 'k8/k8.svg';		
 	} else if (kind === 'Secret') {
-		image = 'k8/secret';		
+		image = 'k8/secret.svg';		
 	} else if (kind === 'Service') {
-		image = 'k8/svc';		
+		image = 'k8/svc.svg';		
 	} else if (kind === 'ServiceAccount') {
-		image = 'k8/sa';			
+		image = 'k8/sa.svg';			
 	} else if (kind === 'StatefulSet') {
-		image = 'k8/sts';
+		image = 'k8/sts.svg';
 	} else if (kind === 'StorageClass') {
-		image = 'k8/sc';
+		image = 'k8/sc.svg';
 	} else if (kind === 'ValidatingWebhookConfiguration') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'VolumeAttachment') {
-		image = 'k8/k8';
+		image = 'k8/k8.svg';
 	} else if (kind === 'Unknown') {
-		image = 'other/unk';
+		image = 'other/unk.svg';
 	} else {
-		image = 'other/unk';
+		image = 'other/unk.svg';
 	}
 
 	// if unknown use the apiGroup to determine image to display
-	if (image === 'other/unk') {
+	if (image === 'other/unk.svg') {
 		if (typeof api !== 'undefined') {
 			if (api.indexOf('openshift') > -1 ) {
-				image = 'other/ocp';
+				image = 'other/ocp.svg';
 			} else if (api.indexOf('.coreos') > -1 ) {
-				image = 'other/ocp';
+				image = 'other/ocp.svg';
 			} else if (api.indexOf('k8s.io') > -1) {
-				image = 'k8/k8';
+				image = 'k8/k8.svg';
 			} else if (api.indexOf('.ibm.') > -1) {
-				image = 'other/ibm';
+				image = 'other/ibm.svg';
 			} else if (api.indexOf('.open-cluster-management.') > -1) {
-				image = 'other/ibm';
+				image = 'other/ibm.svg';
 			} else if (api.indexOf('.ansible.com') > -1) {
-				image = 'other/redhat';
+				image = 'other/redhat.svg';
 			} else if (api.indexOf('core.hybridapp.io') > -1) {
-				image = 'other/ibm';
+				image = 'other/ibm.svg';
 			} else if (api.indexOf('tools.hybridapp.io') > -1) {
-				image = 'other/ibm';
+				image = 'other/ibm.svg';
 			} else if (api.indexOf('deploy.hybridapp.io') > -1) {
-				image = 'other/ibm';
+				image = 'other/ibm.svg';
 			} else if (api.indexOf('noobaa.io') > -1) {
-				image = 'other/redhat';
+				image = 'other/redhat.svg';
 			} else if (api.indexOf('.rook.') > -1) {
-				image = 'other/rook';
+				image = 'other/rook.svg';
 			} else if (api.indexOf('.konghq.com') > -1) {
-				image = 'other/kong';
+				image = 'other/kong.svg';
 			} else if (api.indexOf('.cattle.') > -1) {
-				image = 'other/rancher';
+				image = 'other/rancher.svg';
 			} else if (api.indexOf('.volcano.') > -1) {
-				image = 'other/volcano';
+				image = 'other/volcano.svg';
 			}
 		}  
 	}
 
-	if (image === 'other/unk') {
+	if (image === 'other/unk.svg') {
 		console.log('Kind: ' + kind + ' API: ' + api)
 	}
 
 	return image;
 	
 }
+
+function buildOwnerSvgInfo(data) {
+	ownerInfoID++;
+	if (typeof ownerSvgInfo[ownerInfoID] === 'undefined') {
+		let html = '<span style="font-size: 0.80rem; text-decoration: underline;">' + data.kind + '</span><br>'
+		+ '<span style="font-size: 0.70rem;"><b>Namespace:</b> ' + data.ns + '<br>'
+		+ '<b>Name:</b> ' + data.name + '</span>';
+		ownerSvgInfo[ownerInfoID] = {
+			'html': html
+		};
+	}
+	return ownerInfoID;
+}
+
 
 function buildSvgInfo(data, fnum, type) {
 	let id = fnum+'.'+type;
@@ -906,17 +944,14 @@ function buildSecModalRole(data, key, rColor) {
 	if (typeof role.fnum !== 'undefined') {
 		fnum = role.fnum;
 	} else {
-		fnum = '9999999.0';
+		// will never find this file
+		fnum = 'missing.0';
 	}
-
 
 	let roleId = 
 	  '<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
-//	+ '  <div>Role Name:&nbsp;<span class="text-light bg-success vpkfont-md">' + key + '</span></div>'
 	+ '  <div>Role Name:&nbsp;<span onclick="getDef7(\'' + fnum + '\')"' 
 	+ '  class="vpkfont-md ' + rColor + '">' + key + '</span></div>'
-	// + '  <div><span class"vpkfont-md vpkcolor">ID#:&nbsp;<span onclick="getDef7(\'' + fnum + '\')">' + fnum + '</span>'
-	// + '  <span class="vpkfont-sm vpkcolor pl-1">(click # to view)</span></div>'
 	+ '</div><hr>';
 
 	let divSection = '<div class="events" ><table style="width:100%">';
@@ -1178,6 +1213,39 @@ function showVpkTooltip(evt, text) {
 
 }
 
+function showOwnerRefTooltip(evt, text) {
+    let tooltip = document.getElementById("tooltip");
+    let info = 'No information available';
+    if (typeof ownerSvgInfo[text] !== 'undefined') {
+        info = ownerSvgInfo[text].html
+    }
+	
+	let pageY   = evt.pageY;
+	let offTop  = $("#ownerRefLinksDetail").offset().top;
+	let tipX = evt.pageX + 45;
+	// adjust for fixed portion of page
+	if (offTop < 0) {
+		offTop = offTop * -1;
+		offTop = offTop + 150;
+	} else {
+		offTop = 149 - offTop;
+	}
+
+	let tipY = offTop + pageY;
+	tipY = tipY - 149;
+
+	//-----------------------
+    tooltip.innerHTML = info;
+    tooltip.style.display = "block";
+    tooltip.style.left = tipX + 'px';
+    tooltip.style.top  = tipY + 'px';
+
+}
+
+function hideOwnerRefTooltip() {
+	hideVpkTooltip();
+}
+
 function hideVpkTooltip() {
     var tooltip = document.getElementById("tooltip");
     tooltip.style.display = "none";
@@ -1213,12 +1281,15 @@ function hideMessage() {
 function getSecRole(key, rColor, ns) {
     let html = key;
 	let info = k8cData['0000-@clusterRoles@'].Role;
-	
+	rColor = 'bg-role';
+
 	// check cluster level first
     if (typeof info !== 'undefined') {
         for (let i = 0; i < info.length; i++) {
             if (info[i].name === key) {
-                html = buildSecModalRole(info[i], key, rColor)
+				rColor = 'bg-clusterRole';
+				html = buildSecModalRole(info[i], key, rColor);
+				break;
             }
         }
     } else {

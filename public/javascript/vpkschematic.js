@@ -18,7 +18,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 //----------------------------------------------------------
-// build svg data from returned data
+// build svg for workloads 
 //----------------------------------------------------------
 
 function initSchematicVars() {
@@ -284,7 +284,7 @@ function nsChange(ns) {
 			api4Hdr = parts[0].api
 
 			hdrImage = checkImage(key, api4Hdr);	
-			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '.svg" ' 
+			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '" ' 
 			+ ' onclick="getExplain(\'' + key + '\')" width="35" height="35">&nbsp;'
 			nsHtml = nsHtml + header1 + headerImg + header2;
 
@@ -606,7 +606,7 @@ function process(fnum) {
 		let xPos = 900;
 		if (typeof rtnGen.bnds.crd1 !== 'undefined') {
 			crdRefCnt++;
-			let what1 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img1 + '.svg" '
+			let what1 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img1 + '" '
 			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr1, crdRefCnt, 'Ref')
 			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd1 +'\')"/>';
@@ -620,7 +620,7 @@ function process(fnum) {
 
 		if (typeof rtnGen.bnds.crd2 !== 'undefined') {
 			crdRefCnt++;
-			let what2 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img2 + '.svg" '
+			let what2 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img2 + '" '
 			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr2, crdRefCnt, 'Ref')
 			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd2 +'\')"/>' 
@@ -1007,7 +1007,7 @@ function svgGenerators(data, fnum) {
 				rectFill = 'none';
 				image = checkImage('Unknown');
 				rtn = rtn 
-				+ '<image x="150" y="25"  width="50" height="50" fill="red" href="images/' + image + '.svg" '
+				+ '<image x="150" y="25"  width="50" height="50" fill="red" href="images/' + image + '" '
 				+ 'onmousemove="showVpkTooltip(evt, \'' 
 				+ buildSvgInfo('', fnum, 'Unknown') 
 				+ '\');" onmouseout="hideVpkTooltip()" />' 
@@ -1021,7 +1021,7 @@ function svgGenerators(data, fnum) {
 			kind = data.creationChain.level1Kind;
 			image = checkImage(kind);
 			rtn = rtn 
-			+ '<image x="150" y="25"  width="50" height="50" href="images/' + image + '.svg" '
+			+ '<image x="150" y="25"  width="50" height="50" href="images/' + image + '" '
 			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo(data, fnum, kind) 
 //			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + fnum +'\')"/>' 
@@ -1041,7 +1041,7 @@ function svgGenerators(data, fnum) {
 				x = 0;
 				bnds.width = width;
 				rtn = rtn 
-				+ '<image x="50" y="25"  width="50" height="50" href="images/' + image + '.svg" '
+				+ '<image x="50" y="25"  width="50" height="50" href="images/' + image + '" '
 				+ 'onmousemove="showVpkTooltip(evt, \'' 
 				+ buildSvgInfo(data, fnum, kind) 
 				+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'level2@' + fnum +'\')"/>' 
@@ -1061,7 +1061,7 @@ function svgGenerators(data, fnum) {
 				if (typeof data.ControllerRevision[0].fnum !== 'undefined') {
 					let crFnum = data.ControllerRevision[0].fnum
 					rtn = rtn 
-					+ '<image x="150" y="100"  width="50" height="50" href="images/' + image + '.svg" '
+					+ '<image x="150" y="100"  width="50" height="50" href="images/' + image + '" '
 					+ 'onmousemove="showVpkTooltip(evt, \'' 
 					+ buildSvgInfo(data.ControllerRevision, crFnum, kind) 
 					+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'ControllerRevision@' + crFnum +'\')"/>' 
@@ -1092,7 +1092,7 @@ function svgGenerators(data, fnum) {
 				hpaFnum = data.HPA.fnum
 				if (typeof data.HPA.spec !== 'undefined') {
 					rtn = rtn 
-					+ '<image x="' + hPos + '" y="100"  width="50" height="50" href="images/' + image + '.svg" '
+					+ '<image x="' + hPos + '" y="100"  width="50" height="50" href="images/' + image + '" '
 					+ 'onmousemove="showVpkTooltip(evt, \'' 
 					+ buildSvgInfo(data.HPA, hpaFnum, kind) 
 					+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'HorizontalPodAutoscaler@' + hpaFnum +'\')"/>' 

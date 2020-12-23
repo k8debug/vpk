@@ -18,7 +18,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 //----------------------------------------------------------
-// format server returned object definition file and edit
+// format server returned resource definition file and display
 //----------------------------------------------------------
 function editDef(data) {
     //console.log(JSON.stringify(data, null, 4));
@@ -31,7 +31,7 @@ function editDef(data) {
     var hl = newData.length;
     var outData = [];
     var line = '';
-    var image = 'k8';
+    var image = 'k8.svg';
     var kind = '';
     var api = '';
     for (var d = 0; d < hl; d++) {
@@ -50,18 +50,16 @@ function editDef(data) {
     } 
     newData = null;
     rtn = outData.join('');
-    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '.svg" width="50" height="50" ' 
+    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '" width="50" height="50" ' 
     + ' onclick="getExplain(\'' + kind + '\',\'' + api + '\')"></img>'
     + '<div style="vertical-align:middle; display:inline;" class="vpkcolor vpkfont pl-2">'
     + defkey
     + '</div>';
     $("#editTitle").html(editImage);
-
     initAceEditor(rtn);
-
     $('#editorModal').modal('show');
-
 }
+
 
 function initAceEditor(rtn) {
     editor = ace.edit("editor");
@@ -78,24 +76,10 @@ function initAceEditor(rtn) {
             enableBasicAutocompletion: true,
             enableLiveAutocompletion: true
         }
-    )  
-    // editor.commands.addCommand({
-    //     name: 'saveFile',
-    //     bindKey: {
-    //         win: 'Ctrl-S',
-    //         mac: 'Command-S',
-    //         sender: 'editor|cli'
-    //     },
-    //     exec: function(env, args, request) {
-    //         alert("Use the Save button to save the file");
-    //         // call function to save the file
-    //         // saveFile(currentEditFile);
-    //     }
-    // });
+    );
     editor.focus();
     editor.gotoLine(1,0, true);
     editor.renderer.scrollToRow(1);  
-    //editor.execCommand("find");  
 }
 
 //----------------------------------------------------------
