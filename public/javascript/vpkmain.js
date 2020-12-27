@@ -77,6 +77,7 @@ $(document).ready(function() {
     $("#xreference").removeClass("show");
     $("#ownerlinks").removeClass("active");
     $("#ownerlinks").removeClass("show");
+    $('#ownerlinks').hide();
 
     // get the name of selected tab and process
     $( 'a[data-toggle="tab"]' ).on( 'shown.bs.tab', function( evt ) {
@@ -84,7 +85,7 @@ $(document).ready(function() {
         // take action based on what tab was shown
         if(currentTab === "#instructions") {
             checkIfDataLoaded();
-            documentationTabTopic = 'toc';
+            documentationTabTopic = 'overview';
             $('#instructions').show();
         } else {
             $('#instructions').hide();
@@ -284,33 +285,6 @@ $(document).ready(function() {
 
 
 
-// socket.on('dynamicResults', function(data) {
-//     if (typeof data === 'undefined') {
-//         data = {'status': 'unknown', 'message': 'Status unknown'}
-//     } else {
-//         if (typeof data.status === 'undefined') {
-//             data.status = 'unknown';
-//         }  
-//         if (typeof data.message === 'undefined') {
-//             data.status = 'Status unknown';
-//         } 
-//     }
-//     var resp = '';
-//     if (data.status === 'PASS') {
-//         showMessage('Datasource connection completed', 'pass')
-//         $("#clusterModal").modal('hide');
-//         $("#clusterModalFooter").show();
-//         $("#clusterRunning").hide();
-//     } else {
-//         var message = data.message;
-//         resp = '<br><div>&nbsp;&nbsp;&nbsp;&nbsp;'  + message + '</div>';
-//         $("#clusterRunning").hide();
-//         $("#clusterStatus").html(resp);
-//     }
-// });
-
-
-
 //----------------------------------------------------------
 //----------------------------------------------------------
 // socket io definitions for incoming and out-bound 
@@ -335,9 +309,7 @@ function saveConfig(what) {
 //...
 socket.on('saveConfigResult', function(data) {
     $("#configModal").modal('hide'); 
-    if (data.result.status === 'PASS') {
-        //showMessage(data.result.message, 'pass')
-    } else {
+    if (data.result.status !== 'PASS') {
         showMessage(data.result.message, 'fail')
     }
 });
@@ -429,7 +401,7 @@ socket.on('clusterDirResult', function(data) {
 function dynamic() {
     $("#clusterButton").hide();
     $("#clusterRunning").show();
-    $("#clusterModalFooter").hide();
+    //$("#clusterModalFooter").hide();
 
     var kinfo = {};
     var kStr = '';
@@ -457,11 +429,14 @@ function dynamic() {
 }
 //...
 socket.on('getKStatus', function(data) {
-    $("#clusterModalFooter").hide();
+    //$("#clusterModalFooter").hide();
     $("#clusterStatus").empty();
     $("#clusterStatus").html('');
-    var resp;
-    resp = '<br><div class="vpkfont vpkcolor">' + data + '</div>';
+    let msg = 'Processing request'
+    if (typeof data.msg !== 'undefined') {
+        msg = data.msg
+    }
+    let resp = '<br><div class="vpkfont vpkcolor">' + msg + '</div>';
     $("#clusterStatus").html(resp); 
 
 });
@@ -650,7 +625,7 @@ function buildKindStats() {
         + '<th>-Kind-</th><th class="pl-2">-Count-</th><th class="pl-2">-Namespace-</th>'
         + '</tr></thead><tbody>';
     // add overall total line
-    htm = htm + '<tr style="text-align:center"><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
+    htm = htm + '<tr style="text-align:center"><td width="200">All</td><td width="200" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
 
 
     for (let i = 0; i < keys.length; i++) {
@@ -699,7 +674,7 @@ function buildNamespaceStats(stats) {
         + '<th>-Namespace-</th><th class="pl-2">-Count-</th><th class="pl-2">-Kind-</th>'
         + '</tr></thead><tbody>';
     // add overall total line
-    htm = htm + '<tr style="text-align:center"><td width="150">All</td><td width="75" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
+    htm = htm + '<tr style="text-align:center"><td width="200">All</td><td width="200" class="pd-4">' + total + '</td><td width="300" class="pl-2">All</td></tr>'
 
 
     for (let i = 0; i < keys.length; i++) {
@@ -873,7 +848,6 @@ socket.on('getOwnerRefLinksResult', function(data) {
 //==========================================================
 
 
-
 //----------------------------------------------------------
 function bldSecurityUsage() {
     hideMessage();
@@ -886,6 +860,20 @@ socket.on('securityUsageResult', function(data) {
     hideMessage();
     buildSecArrays();
     securityUsage();       
+});
+//==========================================================
+
+
+//----------------------------------------------------------
+function getStorageInfo() {
+    hideMessage();
+    $("#storageDetail").html(processingRequest)
+    socket.emit('getStorage');
+}
+//...
+socket.on('getStorageResult', function(data) {
+    storageData = data.info;
+    buildStorage();
 });
 //==========================================================
 
@@ -1037,7 +1025,7 @@ function bldXrefChart(type) {
         if (tmp[0] !== '') {
             xref = tmp[0];
         } else {
-            showMessage('No xref type selected');
+            showMessage('No xref type selected','warn');
             return;
         }
     };
@@ -1134,6 +1122,20 @@ function toggleFilterPanel() {
         $("#filterdata").collapse("hide");
     }
 }
+
+
+//----------------------------------------------------------
+// used by search section of main UI
+function toggleStorage(id) {
+    id = '#'+id;
+    if($(id).is('.collapse:not(.show)')) {
+        // not open, open it
+        $(id).collapse("show");
+    } else {
+        $(id).collapse("hide");
+    }
+}
+
 
 //----------------------------------------------------------
 // get Cluster information 

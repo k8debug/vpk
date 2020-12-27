@@ -752,10 +752,10 @@ function svgHeader(data, fnum) {
 	+ '\');" onmouseout="hideVpkTooltip()"  onclick="getNsTable(\'' + data.namespace +'\')"/>'
 	+ '<text x="80" y="50" fill="white" class="workloadText">Namespace level resources</text>'
 
-	+ '<image x="1065" y="22" width="48"  height="48" href="images/k8/node.svg" onmousemove="showVpkTooltip(evt, \''
+	+ '<image x="1065" y="72" width="48"  height="48" href="images/k8/node.svg" onmousemove="showVpkTooltip(evt, \''
 	+ buildSvgInfo(nodeInfo, nodeInfo.fnum, 'Node')
 	+ '\');" onmouseout="hideVpkTooltip()"  onclick="getDef7(\'' + nodeInfo.fnum +'\')"/>'
-	+ '<text x="890" y="50" fill="white" class="workloadText">Cluster level resources</text>';
+	+ '<text x="930" y="50" fill="white" class="workloadText">Cluster level resources</text>';
 
 	let roleNs = '0000-' + data.namespace;
 	if (typeof k8cData[roleNs].RoleBinding !== 'undefined') {

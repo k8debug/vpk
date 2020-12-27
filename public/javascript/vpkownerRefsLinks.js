@@ -28,7 +28,7 @@ function initOwnerRefLinksVars() {
     ownerRefCnt = 0;
     ownCnt = 0;
     ownBreak;
-    ownerCollapseID = [];
+    ownerCollapseIDs = [];
     ownerBreakID = 0;
 }
 

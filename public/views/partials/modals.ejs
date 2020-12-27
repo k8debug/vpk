@@ -111,20 +111,13 @@
                 <div id="clusterInfo">
                 </div>
 
-                <div id="clusterRunning"class="row ml-4 mt-2">
-                    <img style="float:left" src="images/loading.gif" width="40" height="40"/>
-                    <div class="vpkfont vpkcolor ml-2 mt-2">
-                        <span >&nbsp;&nbsp;Processing</span>
-                    </div>
-                </div>
-
                 <div id="clusterStatus">
                 </div>
-
             </div>
             <div id="clusterModalFooter" class="modal-footer">
                 <button type="button" class="btn btn-sm btn-primary" onclick="closeGetCluster()">Close</button>
             </div>
+
         </div>
     </div>
 </div>
@@ -150,6 +143,35 @@
                     <!-- content here -->
                 </textarea> 
 
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================================== -->
+<!-- Message Modal section              -->
+<!-- ==================================== -->
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont pl-2'>
+                    <span class="font-weight-bold vpkfont-lg">V</span><span class="vpkfont">isual </span>
+                    <span class="font-weight-bold vpkfont-lg">p</span></span><span class="vpkfont">arsed</span> 
+                    <span class="font-weight-bold vpkfont-lg">K</span></span><span class="vpkfont">ubernetes</span>
+                </div>
+                <div id="messageHeader" class="vpkfont ml-2 mt-2">
+                    - Message
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body docBackground">
+                <div id="messageBody">
+                </div>
             </div>
             <div class="modal-footer">
             </div>
@@ -427,7 +449,7 @@
 <!-- Directory stats Modal section        -->
 <!-- ==================================== -->
 <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" >
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <div id="statsHeader">
@@ -444,8 +466,8 @@
                 </button>
             </div>
             <div class="modal-body docBackground">
-                <div id="statContents" class="vpkfont-md">
-                    <p>Log file data</P>
+                <div id="statContents" class="vpkfont-md text-center">
+                    <p>Stats data</P>
                 </div>
             </div>
             <div class="modal-footer">

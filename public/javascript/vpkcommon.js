@@ -148,6 +148,10 @@ let ownBreakID = 0;
 let ownerSvgInfo = {};            			// tool tip pop-ups
 let ownerInfoID = 0;
 
+let storageInfo = {};
+let storageData = '';
+let storageInfoID = 0;
+
 
 let explainInfo = [];
 
@@ -207,15 +211,28 @@ function closeAll(type) {
 
 function collapseAction(act, type) {
 	let id;
-	
-	for (let c = 0; c < collapseIDs.length; c++) {
-		id = '#' + type + collapseIDs[c];
-		if (act === 'O') {
-			$(id).collapse("show");
-		} else {
-			$(id).collapse("hide");
+	if (type = 'collid-') {
+		for (let c = 0; c < collapseIDs.length; c++) {
+			id = '#' + type + collapseIDs[c];
+			if (act === 'O') {
+				$(id).collapse("show");
+			} else {
+				$(id).collapse("hide");
+			}
 		}
 	}
+	if (type = 'ownref-') {
+		for (let c = 0; c < ownerCollapseIDs.length; c++) {
+			id = '#' + type + ownerCollapseIDs[c];
+			if (act === 'O') {
+				$(id).collapse("show");
+			} else {
+				$(id).collapse("hide");
+			}
+		}
+	}
+
+
 }
 
 function parseArray(data) {
@@ -516,6 +533,27 @@ function buildOwnerSvgInfo(data) {
 		};
 	}
 	return ownerInfoID;
+}
+
+function buildStorageInfo(data, type) {
+	storageInfoID++;
+	let html = '';
+	if (typeof storageInfo[storageInfoID] === 'undefined') {
+		if (type === 'SC') {
+			html = '<span style="font-size: 0.80rem; text-decoration: underline;">StorageClass</span><br>'
+			+ '<span style="font-size: 0.70rem;"><b>Name:</b> ' + data + '</span>';
+		} else if (type === 'PV') {
+			html = '<span style="font-size: 0.80rem; text-decoration: underline;">PersistentVolume</span><br>'
+			+ '<span style="font-size: 0.70rem;"><b>Name:</b> ' + data + '</span>';
+		} else if (type === 'PVC') {
+			html = '<span style="font-size: 0.80rem; text-decoration: underline;">PersistentVolumeClaim</span><br>'
+			+ '<span style="font-size: 0.70rem;"><b>Name:</b> ' + data + '</span>';
+		}
+		storageInfo[storageInfoID] = {
+			'html': html
+		};
+	}
+	return storageInfoID;
 }
 
 
@@ -1182,7 +1220,35 @@ function formatBytes (bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+function showStorageTooltip(evt, text) {
+    let tooltip = document.getElementById("tooltip");
+    let html = 'No information available';
+    if (typeof storageInfo[text] !== 'undefined') {
+		info = storageInfo[text];
+		html = info.html;
+    }
+	
+	let pageY   = evt.pageY;
+	let offTop  = $("#storageDetail").offset().top;
+	let tipX = evt.pageX + 45;
+	// adjust for fixed portion of page
+	if (offTop < 0) {
+		offTop = offTop * -1;
+		offTop = offTop + 150;
+	} else {
+		offTop = 149 - offTop;
+	}
 
+	let tipY = offTop + pageY;
+	tipY = tipY - 149;
+
+	//-----------------------
+    tooltip.innerHTML = html;
+    tooltip.style.display = "block";
+    tooltip.style.left = tipX + 'px';
+    tooltip.style.top  = tipY + 'px';
+
+}
 
 function showVpkTooltip(evt, text) {
     let tooltip = document.getElementById("tooltip");
@@ -1261,20 +1327,15 @@ function pickData(tmp) {
     } 
 }
 
-function showMessage(msg, type) {
-    if (typeof msg === 'undefined') {
-        msg = 'No message provided'
-    }
-    var msgClass = 'alert-secondary'
-    $("#messageText").html(msg)
-    $("#messageDiv").removeClass("hide");
-    $("#messageDiv").addClass("msgClass");
-    $("#messageDiv").addClass("show");
+function showMessage(msg, level) {
+	level = 'docBackground'
+	let txt = '<div class="text-center mt-3 mb-3 ml-2 mr-2 ' + level + '">' + msg + '</div>';
+    $('#messageBody').html(txt);
+    $("#messageModal").modal('show');
 }
 
 function hideMessage() {
-    $("#messageDiv").removeClass("show");
-    $("#messageDiv").addClass("hide");
+    $("#messageModal").modal('hide');
 }
 
 // used by vpkBuildSecArray and vpkSecUsage
@@ -1314,7 +1375,7 @@ function getSecRole(key, rColor, ns) {
 
 function checkIfDataLoaded() {
     if (rootDir === 'No snapshot connected' || rootDir === '-none-') {
-        showMessage('No snapshot has been connected', 'fail');
+        showMessage('No previous snapshot or running cluster has been connected.', 'fail');
     } else {
         hideMessage();
     }

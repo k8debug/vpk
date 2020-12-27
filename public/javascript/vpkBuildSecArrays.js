@@ -216,12 +216,17 @@ function buildSubjects(ns) {
 			} else {
 				roleRefName = elem.roleName;
 			}
+			if (roleK === 'ClusterRole') {
+				roleColor = 'bg-clusterRole';
+			} else {
+				roleColor = 'bg-role'
+			}
 
 			item = '<tr>' 
 			+ '<td width="10%">' + elem.kind  + '</td>' 
 			+ '<td width="40%">' + subject + '<span class="pt-0 pb-0">Namespace: ' + elem.namespace+ '</span></td>' 
 			+ '<td width="10%">' + roleK + '</td>' 
-			+ '<td width="40%"><span class="bg-success text-light" onclick="getSecRole(\'' + roleRefName + '\')">' + roleRefName + '</span></td>' 
+			+ '<td width="40%"><span class="' + roleColor + '" onclick="getSecRole(\'' + roleRefName + '\')">' + roleRefName + '</span></td>' 
 			+ '</tr>';
 			nsHtml = nsHtml + item
 			item = '<tr>' 

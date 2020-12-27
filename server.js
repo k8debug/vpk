@@ -36,6 +36,7 @@ var schematic = require('./lib/svgSchematic');
 var xref = require('./lib/xreference');
 var docm = require('./lib/documentation');
 var owner = require('./lib/ownerRef');
+var storage = require('./lib/storage');
 
 var fs = require('fs-extra');
 var bodyParser = require('body-parser');
@@ -52,6 +53,7 @@ var io = socketio(server);
 var partials = require('express-partials');
 var compression = require('compression');
 var cors = require('cors');
+const { storageInfo } = require('./lib/vpk');
 
 //------------------------------------------------------------------------------
 // Define express routes / urls
@@ -547,6 +549,12 @@ io.on('connection', client => {
             client.emit('objectDef', result);
         }
     });
+    
+    client.on('getStorage', () => {
+        utl.logMsg('vpkMNL359 - Get storage request');
+        storage.buildStorage();
+        client.emit('getStorageResult', {'info': vpk.storageInfo});
+    }); 
 
     client.on('clusterDir', () => {
         utl.logMsg('vpkMNL676 - Get cluster directory request' );
@@ -569,8 +577,8 @@ io.on('connection', client => {
         var msg;
         var slp;
         // set the new directory name
-        if (typeof data.datasource_prefix !== 'undefined') {
-            dTmp = data.datasource_prefix;
+        if (typeof data.snapshot_prefix !== 'undefined') {
+            dTmp = data.snapshot_prefix;
             dTmp.trim();
             // check for spaces and only use what is before the first space
             fsps = dTmp.indexOf(' ');
@@ -940,6 +948,7 @@ async function getK(data, kga, client, dynDir) {
     var hl;
     hl = kga.length;
     var curK = 0; 
+    var rtn = '';
 
     // initialize global storage to be empty
     vpk.rtn = {'items': []};
@@ -950,10 +959,11 @@ async function getK(data, kga, client, dynDir) {
         kind = tmp.substring(0, tmp.length - 2);
         curK++;
         msg = 'Processed count ' + curK + ' of ' + hl + ' - Resource kind: <span class="vpkcolor">' + kind + '</span>';
-        client.emit('getKStatus', msg);
+        rtn = {'msg': msg, 'current': curK, 'max': hl}
+        client.emit('getKStatus', rtn);
     }
-    // logout of current K8s environment
-    // kube.logout(data);
+    //logout of current K8s environment
+    //kube.logout(data);
     returnData(client, dynDir);
 
 }
@@ -967,7 +977,7 @@ function returnData(client, dynDir) {
         rdata = write2(vpk.rtn, dynDir);
     }
     utl.logMsg('vpkMNL697 - Emit dynamicResults' );
-    client.emit('dynamicResults', rdata);
+    //client.emit('dynamicResults', rdata);
 }
 
 function write2(yf, dynDir) {
@@ -1136,7 +1146,7 @@ function checkLoop() {
             let keys = Object.keys(vpk.spaceReqSC);
             let size;
             for (let i = 0; i < keys.length; i++) {
-                size = utl.formatBytes(vpk.spaceReqSC[keys[i]]);
+                size = utl.formatBytes(vpk.spaceReqSC[keys[i]].space);
                 saveStatMsg('StorageClass: ' + keys[i], size)
             }
             saveStatMsg('dl', ' ');

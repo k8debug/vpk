@@ -14,7 +14,10 @@
 | <a href="javascript:docNextTopic('graphicview')">Graphic View</a> | &nbsp;Multiple graphic views of K8 resources |
 | <a href="javascript:docNextTopic('schematics')">Schematics</a> | &nbsp;Schematic graphs of workloads |
 | <a href="javascript:docNextTopic('security')">Security</a> | &nbsp;Roles, bindings, and subjects |
+| <a href="javascript:docNextTopic('storage')">Storage</a> | &nbsp;StorageClass, PV and PVC |
+| <a href="javascript:docNextTopic('cluster')">Cluster</a> | &nbsp;Cluster level reaources |
 | <a href="javascript:docNextTopic('xreference')">X-Reference</a> | &nbsp;Cross reference Kubernetes resource object elements |
+| <a href="javascript:docNextTopic('ownerref')">OwnerRef</a> | &nbsp;OwnerReference links |
 
 
 ---

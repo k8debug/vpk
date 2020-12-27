@@ -87,6 +87,8 @@ function getDef3(def) {
     }
 }
 
+// getDef4 is in vpkMain.js
+
 
 function getDef5(data) {
     let items = data.split('::');
