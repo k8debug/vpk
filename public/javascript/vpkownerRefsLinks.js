@@ -213,7 +213,7 @@ function processOwnerRefs(data) {
         rtn = rtn
         + '<image x="210"  y="10" width="40"  height="40" href="images/' + image2 + '" onmousemove="showOwnerRefTooltip(evt, \''
         + buildOwnerSvgInfo(item2)
-        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + 'missing.0' +'\')"/>'
+        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + 'missing' +'\')"/>'
         + '<text x="250" y="55" fill="black" font-weight="">' + data.o2Kind + '</text>';
     }
 

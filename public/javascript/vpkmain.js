@@ -63,6 +63,7 @@ $(document).ready(function() {
     $("#instructions").addClass("show");
     $("#searchR").removeClass("active");
     $("#searchR").removeClass("show");
+    //$("#searchResults").hide();
     $("#graphic").removeClass("active");
     $("#graphic").removeClass("show");
     $("#schematic").removeClass("active");
@@ -141,7 +142,7 @@ $(document).ready(function() {
         }
         if (currentTab === "#ownerlinks") {
             checkIfDataLoaded();
-            documentationTabTopic = 'ownerlinks';
+            documentationTabTopic = 'ownerref';
             $('#ownerlinks').show();
         } else {
             $('#ownerlinks').hide();
@@ -475,7 +476,7 @@ socket.on('getDecodeResult', function(data) {
     }
 
     $("#decodeName").empty();
-    $("#decodeName").html('<span class="vpkcolor">&nbsp;' + data.secret + '&nbsp;</span>');
+    $("#decodeName").html('<span>' + data.secret + '</span>');
     $("#decode").empty();
     $("#decode").html(html);
     $('#decodeModal').modal('show');
@@ -634,7 +635,7 @@ function buildKindStats() {
         }
         htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
         
-        htm = htm + '<tr><td  class="statsBreak">' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+        htm = htm + '<tr><td>' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
@@ -687,7 +688,7 @@ function buildNamespaceStats(stats) {
             nsText = '< Cluster Level >'
         }
         
-        htm = htm + '<tr><td class="statsBreak">' + nsText + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+        htm = htm + '<tr><td>' + nsText + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
@@ -746,12 +747,15 @@ function reload() {
     $("#loadStatus").show();
     var newDir = $('#dsInstances').select2('data');
     newDir = newDir[0].text;
+    $("#searchResults").hide();
     $("#graphicCharts").empty();
     $("#graphicCharts").html('<svg width="950" height="5000"></svg>');
     $("#svgResults").empty();
     $("#svgResults").html('');
     $("#schematicDetail").empty();
     $("#schematicDetail").html('');
+    $("#ownerRefLinksDetail").empty();
+    $("#ownerRefLinksDetail").html('');
 
     //TODO consider handling other tabs
 
@@ -964,6 +968,7 @@ function searchObj() {
 //...
 socket.on('searchResult', function(data) {
     //console.log(JSON.stringify(data, null, 4))
+    $("#searchResults").show();
     buildSearchResults(data);
 });
 //...
