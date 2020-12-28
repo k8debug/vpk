@@ -192,24 +192,6 @@ $(document).ready(function() {
         placeholder: "select namespace(s)"
     }); 
 
-    $('#usage-filter').select2({
-        dropdownCssClass: "vpkfont-md",
-        containerCssClass: "vpkfont-md",
-        placeholder: "select filter values"
-    }); 
-
-    $('#usage-type').select2({
-        dropdownCssClass: "vpkfont-md",
-        containerCssClass: "vpkfont-md",
-        placeholder: "select type"
-    }); 
-
-    $('#usage-type').on('select2:select', function (e) { 
-        var selected = $('#usage-type option:selected').val();
-        $("#usage-filter").prop("disabled", false);
-        $('#usage-type').val(null)
-    });
-
     $('#xref-filter').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
@@ -259,20 +241,6 @@ $(document).ready(function() {
 	});
 
     editor = ace.edit("editor");
-
-	// switch edit theme
-	$("#eTheme").change(function(){
-		var selected = $('#eTheme option:selected').val();
-        editor.setTheme("ace/theme/" + selected );
-	});
-
-    //  
-	// switch font size in editor
-	$("#eFont").change(function(){
-		var selected = $('#eFont option:selected').val();
-        var size = parseInt(selected, 10);
-        editor.setFontSize(size)
-	});
 
     $('[data-toggle="popover"]').popover();
 
