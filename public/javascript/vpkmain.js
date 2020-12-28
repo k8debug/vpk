@@ -84,7 +84,7 @@ $(document).ready(function() {
         currentTab = $( evt.target ).attr( 'href' );
         // take action based on what tab was shown
         if(currentTab === "#instructions") {
-            checkIfDataLoaded();
+            //checkIfDataLoaded();
             documentationTabTopic = 'overview';
             $('#instructions').show();
         } else {

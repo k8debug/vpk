@@ -1195,7 +1195,16 @@ function formatUsage(data) {
         rtn = rtn + usageLine('Browser Heap used memory', formatBytes(usageJSHeapUsed) );
         rtn = rtn + usageLine('Browser Heap memory limit', formatBytes(usageJSHeapSizeLimit) );
     }
-    rtn = rtn + '</table></div>';
+	rtn = rtn + '</table></div>';
+	
+	if (typeof data.LICENSE !== 'undefined') {
+		let lic = data.LICENSE.split('\n')
+		let outLic ='<br>';
+		for (let i = 0; i < lic.length; i++) {
+			outLic = outLic + lic[i] + '<br>';
+		}
+		rtn = rtn + '<div class="mt-5 ml-5 mr-5 mb-5 vpkfont-sm"><p>' + outLic + '</p></div>'
+	}
     return rtn;
 }
 
