@@ -233,7 +233,6 @@ $(document).ready(function() {
         placeholder: "sort order"
     }); 
 
-
 	// 
 	$("#clusterType").change(function(){
 		var selected = $('#clusterType option:selected').val();
