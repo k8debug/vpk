@@ -355,9 +355,6 @@ function printDiv(id) {
 
 
 function checkImage(kind, api) {
-	if (typeof api === 'undefined') {
-		console.log('research')
-	}
 	let image;
 	if (kind === 'k8') {
 		image = 'k8.svg'

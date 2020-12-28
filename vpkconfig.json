@@ -11,7 +11,7 @@
                 "parms": [
                     {
                         "key": "dirName",
-                        "value": "{{datasource_prefix}}",
+                        "value": "{{snapshot_prefix}}",
                         "default": "kube",
                         "sal": true
                     }
@@ -35,7 +35,7 @@
                 "parms": [
                     {
                         "key": "dirName",
-                        "value": "{{datasource_prefix}}",
+                        "value": "{{snapshot_prefix}}",
                         "default": "oc",
                         "sal": true
                     }
@@ -59,7 +59,7 @@
                 "parms": [
                     {
                         "key": "dirName",
-                        "value": "{{datasource_prefix}}",
+                        "value": "{{snapshot_prefix}}",
                         "default": "minikube",
                         "sal": true
                     }
@@ -89,7 +89,7 @@
                     },
                     {
                         "key": "dirName",
-                        "value": "{{datasource_prefix}}",
+                        "value": "{{snapshot_prefix}}",
                         "default": "microk8s",
                         "sal": true
                     }
@@ -154,7 +154,7 @@
                     },
                     {
                         "key": "dirName",
-                        "value": "{{datasource_prefix}}",
+                        "value": "{{snapshot_prefix}}",
                         "default": "iks",
                         "sal": true
                     }
@@ -200,7 +200,7 @@
                     },
                     {
                         "key": "dirName",
-                        "value": "{{datasource_prefix}}",
+                        "value": "{{snapshot_prefix}}",
                         "default": "crc",
                         "sal": true
                     }

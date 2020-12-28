@@ -742,6 +742,7 @@ io.on('connection', client => {
                 }
 
                 result = JSON.parse(result)
+                result.LICENSE = vpk.LICENSE;
                 utl.logMsg('vpkMNL478 - Emit usageResults' );
                 client.emit('usageResult', result);
             }, 400); 
@@ -1189,6 +1190,7 @@ function startServer() {
         splash();
         server.listen(port);
         docm.buildDocumentation();
+        utl.readLicenseFile();
     } catch (err) {
         console.log(err.stack)
     }
