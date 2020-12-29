@@ -18,7 +18,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 //------------------------------------------------------------------------------
-// Software version
+// Main server 
 //------------------------------------------------------------------------------
 var softwareVersion = '5.0.0';
 
