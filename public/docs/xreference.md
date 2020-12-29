@@ -24,17 +24,10 @@ One must understand the structure of the K8 resource yaml used to define the "xr
 
 
 ---
+
 ```
-                                    Video requires network connection to YouTube   
+                                    No video available at this time
 ```
-
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
-
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
-    </iframe>
-</div>
-
 ---
 
 Examples of valid path definitons follow. Along with reference yaml that is provided to aid in understanding.  All examples are based on an xref using kind of Pod.

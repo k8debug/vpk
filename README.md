@@ -48,7 +48,7 @@ What is VpK?
 	
 __Node.js__ and __npm__ are required to install and execute this application.
 
-You cannot install and run this application without first installing node.js and npm.  Once the prerequisites are installed proceed to the next step. 
+You cannot install and run this application without first installing node.js and npm.  After the prerequisites are installed proceed to the next step. 
 
 Download the source files and place in a directory.  The source files are available on github and can be downloaded using the following clone command or retrieved 
 

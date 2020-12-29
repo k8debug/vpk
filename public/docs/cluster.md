@@ -9,18 +9,16 @@
 ###### Cluster
 ---
 
-Cluster view
+Cluster view currently provides a tabular view by resource kind.  The resource item in the table can be clicked to view the yaml and the icon can be clicked to view the resource explain information.
 
 
 ---
-```
-                                    Video requires network connection to YouTube   
-```
 
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
+
+This is an overview video of VpK.  Once the topic video is produced it will replace this video.
 
 <div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
+    <iframe width="700" height="390" src="https://youtu.be/xYWIyCwp99Y ">
     </iframe>
 </div>
 

@@ -9,7 +9,7 @@
 | <a href="javascript:docNextTopic('gettingstarted')">Getting started</a> | &nbsp;Vpk installation and initial use |
 | <a href="javascript:docNextTopic('generalusage')">User Interface</a> | &nbsp;General usage of the UI |
 | <a href="javascript:docNextTopic('overview')">Overview</a> | &nbsp;Vpk application overview an architecture |
-| <a href="javascript:docNextTopic('datasource')">Datasource</a> | &nbsp;Connect to K8 or local datasource |
+| <a href="javascript:docNextTopic('snapshot')">Snapshot</a> | &nbsp;K8 data to analyze |
 | <a href="javascript:docNextTopic('tableview')">Table View</a> | &nbsp;Tabular view of K8 resources |
 | <a href="javascript:docNextTopic('graphicview')">Graphic View</a> | &nbsp;Multiple graphic views of K8 resources |
 | <a href="javascript:docNextTopic('schematics')">Schematics</a> | &nbsp;Schematic graphs of workloads |

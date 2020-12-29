@@ -1,5 +1,5 @@
 <topicKey overview/>
-<topicBack id="topicNext" link="datasource"/>
+<topicBack id="topicNext" link="snapshot"/>
 <topicNext id="topicBack" link="generalusage"/>
 
 <a style="float: right;" href="javascript:docNextTopic()">&nbsp;&nbsp;Next&nbsp;<i class="fas fa-lg fa-arrow-right"></i></a>
@@ -22,26 +22,6 @@ What is VpK?
 - Vpk will __not__ modify a K8 cluster.  It is designed as read-only.
 - VpK is __not__ a realtime monitoring tool.  
 
-
----
-```
-                                    Video requires network connection to YouTube   
-```
-
-
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
-
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
-    </iframe>
-</div>
-
-
----
-
-```
-   IMPORTANT: VpK does not create, update, or delete any resources on the running K8 instance.   
-```
 
 <img style="float: center;" src="docs/docimages/architecture.png" width="1024" height="542">
 
@@ -66,6 +46,15 @@ Application features include:
 
 - Create and view custom cross reference information of K8 resource elements.
 
+---
+
+
+Overview video of VpK.  
+
+<div style="margin-left: 150px;">
+    <iframe width="700" height="390" src="https://youtu.be/xYWIyCwp99Y ">
+    </iframe>
+</div>
 
 ---
 

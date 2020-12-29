@@ -20,14 +20,11 @@ All charts can be filtered to view one to all namespaces. Both hierarchy charts 
 Circle pack chart has pop-up information and the abiltiy to click the blue dots to view the resource yaml.
 
 ---
-```
-                                    Video requires network connection to YouTube   
-```
 
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
+This is an overview video of VpK.  Once the topic video is produced it will replace this video.
 
 <div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
+    <iframe width="700" height="390" src="https://youtu.be/xYWIyCwp99Y ">
     </iframe>
 </div>
 

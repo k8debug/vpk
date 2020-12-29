@@ -19,14 +19,10 @@ Vpk user interface (UI )is intended to provide graphical and tabular information
 
 
 ---
-```
-                                    Video requires network connection to YouTube   
-```
-
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
+This is an overview video of VpK.  
 
 <div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
+    <iframe width="700" height="390" src="https://youtu.be/xYWIyCwp99Y ">
     </iframe>
 </div>
 

@@ -12,21 +12,27 @@
 Vpk is an application that runs on your computer using required software. The prerequiste software:
 
 - __browser__ - that supports html 5 for the user interface 
-- __node.js and npm__ - install node packages and run the server software component <a href="https://nodejs.org/en/download/" target="_blank">[download]</a>
-- __kubectl__ - Kubernetes command line tool or other CLI used to communicate with a cluster <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/" target="_blank">[kubectl install instructions]</a>
+- __node.js and npm__ - install node packages and run the server software component 
+- __kubectl__ - Kubernetes command line tool or other CLI used to communicate with a cluster 
+
+
+VpK software is available from https://github.com/k8debug/vpk.git Clone the repo or download the zip.  If using zip file, unzip file into a directory.
+
+Change to the directory where the software is cloned or copied and install the required node packages by running: npm install
+
+Start the software by running command: npm start
 
 ---
-```
-                                    Video requires network connection to YouTube   
-```
 
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
-
+This is an overview video of VpK.  
 
 <div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
+    <iframe width="700" height="390" src="https://youtu.be/xYWIyCwp99Y ">
     </iframe>
 </div>
+
+---
+
 
 ---
 
