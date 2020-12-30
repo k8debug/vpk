@@ -9,6 +9,15 @@
 ###### X-Reference 
 ---
 
+This video explains x-references and the creation of custom cross references for VpK.
+
+<div style="margin-left: 150px;">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/pykzLsiAcP4">
+    </iframe>
+</div>
+
+---
+
 Users can define and create custom cross references refered to as an "xref".  Each "xref" is defined to cross reference one or more Kubernetes resource object elements.  The "xref" definition requires the user to provide the resouce object path to the element to be cross references. More than one path definitions can be defined for each "xref". 
 
 An "xref" is defined with a name, description, K8 resource kind, and path. 
@@ -22,17 +31,6 @@ An "xref" is defined with a name, description, K8 resource kind, and path.
  
 One must understand the structure of the K8 resource yaml used to define the "xref" path definition.   
 
-
----
-
-This is a video explaining x-references and the creation of the custom cross reference.
-
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://www.youtube.com/embed/pykzLsiAcP4">
-    </iframe>
-</div>
-
----
 
 Examples of valid path definitons follow. Along with reference yaml that is provided to aid in understanding.  All examples are based on an xref using kind of Pod.
 
