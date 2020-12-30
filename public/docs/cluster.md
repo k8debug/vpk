@@ -18,7 +18,7 @@ Cluster view currently provides a tabular view by resource kind.  The resource i
 This is an overview video of VpK.  Once the topic video is produced it will replace this video.
 
 <div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://youtu.be/xYWIyCwp99Y ">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
     </iframe>
 </div>
 

@@ -52,7 +52,7 @@ Application features include:
 Overview video of VpK.  
 
 <div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://youtu.be/xYWIyCwp99Y ">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
     </iframe>
 </div>
 

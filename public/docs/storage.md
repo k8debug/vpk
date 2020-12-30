@@ -9,20 +9,14 @@
 ###### Storage
 ---
 
-Storage provides a view of the StorageClasses and the defined Persistent Volume requests and Persistent Volume Claims.
+Storage provides a view of the StorageClasses and the defined Persistent Volume requests and Persistent Volume Claims.  The requrested space for each resource is shown.
 
 
 ---
-```
-                                    Video requires network connection to YouTube   
-```
 
-DEMONSTRATES VIDEO :: THIS IS A VERSION 2 VIDEO THAT WILL BE REPLACED WITH VERSION 5 VIDEO ONCE AVAILABLE
-
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="http://www.youtube.com/embed/Ne0y2WcTr5A">
-    </iframe>
-</div>
+```
+                                    No video available at this time
+```
 
 ---
 

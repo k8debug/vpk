@@ -25,9 +25,13 @@ One must understand the structure of the K8 resource yaml used to define the "xr
 
 ---
 
-```
-                                    No video available at this time
-```
+This is a video explaining x-references and the creation of the custom cross reference.
+
+<div style="margin-left: 150px;">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/pykzLsiAcP4">
+    </iframe>
+</div>
+
 ---
 
 Examples of valid path definitons follow. Along with reference yaml that is provided to aid in understanding.  All examples are based on an xref using kind of Pod.
