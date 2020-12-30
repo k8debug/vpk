@@ -34,6 +34,8 @@ function editDef(data) {
     var image = 'k8.svg';
     var kind = '';
     var api = '';
+    var fp;
+    var fnum;
     for (var d = 0; d < hl; d++) {
         line = newData[d]
         outData.push(line + '\n');
@@ -50,10 +52,14 @@ function editDef(data) {
     } 
     newData = null;
     rtn = outData.join('');
+    fp = defkey.indexOf('config');
+    fnum = defkey.substring(fp + 6, defkey.length - 5) + '.0';
+
+
     var editImage = '<img style="vertical-align:middle;" src="images/' + image + '" width="50" height="50" ' 
     + ' onclick="getExplain(\'' + kind + '\',\'' + api + '\')"></img>'
     + '<div style="vertical-align:middle; display:inline;" class="vpkcolor vpkfont pl-2">'
-    + defkey
+    + kind 
     + '</div>';
     $("#editTitle").html(editImage);
     initAceEditor(rtn);

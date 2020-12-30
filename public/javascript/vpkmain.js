@@ -61,9 +61,9 @@ $(document).ready(function() {
 
     $("#instructions").addClass("active");
     $("#instructions").addClass("show");
-    $("#searchR").removeClass("active");
-    $("#searchR").removeClass("show");
-    //$("#searchResults").hide();
+    $("#tableview").removeClass("active");
+    $("#tableview").removeClass("show");
+    $("#searchResults").hide();
     $("#graphic").removeClass("active");
     $("#graphic").removeClass("show");
     $("#schematic").removeClass("active");
@@ -85,18 +85,17 @@ $(document).ready(function() {
         currentTab = $( evt.target ).attr( 'href' );
         // take action based on what tab was shown
         if(currentTab === "#instructions") {
-            //checkIfDataLoaded();
             documentationTabTopic = 'overview';
             $('#instructions').show();
         } else {
             $('#instructions').hide();
         }
-        if (currentTab === "#searchR") {
+        if (currentTab === "#tableview") {
             checkIfDataLoaded();
             documentationTabTopic = 'tableview';
-            $('#searchR').show();
+            $('#tableview').show();
         } else {            
-            $('#searchR').hide();
+            $('#tableview').hide();
         } 
         if (currentTab === "#schematic") {
             checkIfDataLoaded();
@@ -150,11 +149,12 @@ $(document).ready(function() {
     });
 
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
-        selectedDef = $el.src + '::' + $el.part + '::' + $el.value;
+        // selectedDef = $el.src + '::' + $el.part + '::' + $el.value;
+        selectedDef = $el.src;
         if ( $el.kind === 'Secret') {
             getDef5(selectedDef);   // secret modal with decode option
         } else {
-            getDef(selectedDef);
+            getDef7(selectedDef);
         }
      });
 
@@ -443,7 +443,7 @@ socket.on('getDecodeResult', function(data) {
     }
 
     $("#decodeName").empty();
-    $("#decodeName").html('<span>' + data.secret + '</span>');
+//    $("#decodeName").html('<span>' + data.secret + '</span>');
     $("#decode").empty();
     $("#decode").html(html);
     $('#decodeModal').modal('show');
@@ -463,15 +463,34 @@ function browseObj() {
     selectedAction = 'browse';
     socket.emit('getDef', selectedDef);
 }
-function getFileByCid(data) {
-    socket.emit('getFileByCid', data);
-} 
 //...
 socket.on('objectDef', function(data) {
     // always edit, no longer provide browse 
     editDef(data);
 });
 //==========================================================
+
+
+//----------------------------------------------------------
+function getFileByCid(data, secret) {
+    getFileIsSecret = secret;
+    socket.emit('getFileByCid', data);
+} 
+//...
+socket.on('getFileByCidResults', function(data) {
+    // always edit, no longer provide browse 
+    if (getFileIsSecret === true) {
+        getDef5(data);
+    } else {
+        getDef7(data)
+    }
+});
+//==========================================================
+
+
+
+
+
 
 
 //----------------------------------------------------------
@@ -940,10 +959,10 @@ socket.on('searchResult', function(data) {
 });
 //...
 function buildSearchResults(data) {
-    var part2 = '';
-    var newPart;
     var tmp; 
     var a, b, c, d;
+    var fp;
+    var fnum;
     newData = [];
     dix = -1;
     id = 0;
@@ -955,22 +974,22 @@ function buildSearchResults(data) {
         a = tmp.namespace;
         b = tmp.kind;
         c = tmp.name;
-        d = tmp.src;
-        e = tmp.part;
+        fp = tmp.src.indexOf('config');
+        fnum = tmp.src.substring(fp + 6, tmp.src.length - 5) + '.0';
+    
+        d = fnum;
         dix++;
-        dixArray.push(a + '::' + b + '::' + c + '::' + d + '::' + e);
+        dixArray.push(a + '::' + b + '::' + c + '::' + d );
         newData.push({
             namespace: a,
             kind: b,
             value: c,
-            src: d,
-            part: e
+            src: d
         })
     }
     // build the table
     $("#tableL").bootstrapTable('load', newData)
     $("#tableL").bootstrapTable('hideColumn', 'src');
-    $("#tableL").bootstrapTable('hideColumn', 'part');
 }
 
 //==========================================================
@@ -1085,8 +1104,15 @@ function pickXref(tmp) {
 //----------------------------------------------------------
 // used by search section of main UI
 function toggleFilterPanel() {
+
+    // <button id="filterButton" type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1 mr-2"
+    //     data-toggle="collapse" data-target="#filterdata"
+    //     onclick="toggleFilterPanel()">
+    //     Open filter panel
+    // </button>
+
     if($('#filterdata').is('.collapse:not(.show)')) {
-        // not open, open it
+        // open filter panel
         $("#filterButton").html('Close filter panel');
         $("#filterdata").collapse("show");
     } else {

@@ -93,11 +93,25 @@ function getDef3(def) {
 function getDef5(data) {
     let items = data.split('::');
     let nData = []
+    let src;
     if (items.length === 3) {
+        if (items[2] === 'file') {
+            items[2] = 'Secret';
+        }
         nData.push({
             'source': items[0], 
             'part': items[1], 
             'name': items[2]
+        }); 
+        multiList('Secret', nData);
+    } else {
+        items = data.split('.');
+        src = rootDir + '/config' + items[0] + '.yaml';
+
+        nData.push({
+            'source': src, 
+            'part': '0', 
+            'name': 'secret'
         }); 
         multiList('Secret', nData);
     }

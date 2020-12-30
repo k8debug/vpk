@@ -208,7 +208,7 @@ function processOwnerRefs(data) {
         + '<line  x1="50" x2="210" y1="30" y2="30" stroke="red" stroke-width="1" stroke-linecap="round" stroke-dasharray="3, 3"/>'
         + '<line  x1="50" x2="55"  y1="30" y2="35" stroke="red" stroke-width="1" stroke-linecap="round" stroke-dasharray="3, 3"/>'
         + '<line  x1="50" x2="55"  y1="30" y2="25" stroke="red" stroke-width="1" stroke-linecap="round" stroke-dasharray="3, 3"/>';
-        image2 = checkImage(data.o2Kind, '<Not provided>');
+        image2 = checkImage(data.o2Kind, data.o2API);
         item2 = {'kind': data.o2Kind, 'name': 'Information not available', 'ns': 'Information not available' };
         rtn = rtn
         + '<image x="210"  y="10" width="40"  height="40" href="images/' + image2 + '" onmousemove="showOwnerRefTooltip(evt, \''

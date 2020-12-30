@@ -66,6 +66,8 @@ let securityRoleBindingInfo = {};		// role bindings
 let securitySubjectInfo = {};			// subjects
 let securityArraysLoaded = false;       // indicate if data loaded in security arrays
 
+let getFileIsSecret;
+
 let iCnt = 1;
 let oldNS = '@';
 let first = true;

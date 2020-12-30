@@ -77,14 +77,14 @@
         </div>
         <ul id="tabs" class="nav nav-tabs ml-3 mr-3">
             <li class="nav-item"><a id="instTab"       href="#instructions" data-target="#instructions" data-toggle="tab" class="nav-link small text-uppercase active">Overview</a></li>
-            <li class="nav-item"><a id="tableTab"      href="#searchR"      data-target="#searchR"      data-toggle="tab" class="nav-link small text-uppercase">Table View</a></li>
+            <li class="nav-item"><a id="tableTab"      href="#tableview"    data-target="#tableview"    data-toggle="tab" class="nav-link small text-uppercase">Table View</a></li>
             <li class="nav-item"><a id="graphicTab"    href="#graphic"      data-target="#graphic"      data-toggle="tab" class="nav-link small text-uppercase">Graphic View</a></li>
             <li class="nav-item"><a id="schematicTab"  href="#schematic"    data-target="#schematic"    data-toggle="tab" class="nav-link small text-uppercase">Schematics</a></li>
             <li class="nav-item"><a id="securityTab"   href="#security"     data-target="#security"     data-toggle="tab" class="nav-link small text-uppercase">Security</a></li>
             <li class="nav-item"><a id="storageTab"    href="#storage"      data-target="#storage"      data-toggle="tab" class="nav-link small text-uppercase">Storage</a></li>
             <li class="nav-item"><a id="clusterTab"    href="#cluster"      data-target="#cluster"      data-toggle="tab" class="nav-link small text-uppercase">Cluster</a></li>
             <li class="nav-item"><a id="xreferenceTab" href="#xreference"   data-target="#xreference"   data-toggle="tab" class="nav-link small text-uppercase">X-Reference</a></li>
-            <li class="nav-item"><a id="ownerliksTab" href="#ownerlinks"    data-target="#ownerlinks"   data-toggle="tab" class="nav-link small text-uppercase">OwnerRef Links</a></li>
+            <li class="nav-item"><a id="ownerliksTab"  href="#ownerlinks"   data-target="#ownerlinks"   data-toggle="tab" class="nav-link small text-uppercase">OwnerRef Links</a></li>
         </ul>
     </div>
 
@@ -115,7 +115,7 @@
             </div>
 
 
-            <div id="searchR" class="tab-pane">
+            <div id="tableview" class="tab-pane">
                 <!-- ==================================== -->
                 <!-- Filtered data results section        -->
                 <!-- ==================================== -->
@@ -193,10 +193,10 @@
                     </div>  
                 </div>
 
-                <div class="float-left mt-1 mb-1 ml-1">
+                <div id="tableviewActions" class="float-left mt-1 mb-1 ml-1">
                     <button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"
-                        onclick="searchObj()">
-                        Populate table
+                        onclick="searchObj()"><span onclick="searchObj()">
+                        Populate table</span>
                     </button>
                     <button id="filterButton" type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1 mr-2"
                         data-toggle="collapse" data-target="#filterdata"
@@ -234,8 +234,7 @@
                             <th data-field="namespace"  data-sortable="true">Namespace</th>
                             <th data-field="kind"  data-sortable="true">Kind</th>
                             <th data-field="value" data-sortable="true">Kind Name</th>
-                            <th data-field="src">File</th>
-                            <th data-field="part">Part</th>
+                            <th data-field="src">Fnum</th>
                         </tr>
                         </thead>
                     </table>

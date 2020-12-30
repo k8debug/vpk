@@ -544,9 +544,9 @@ io.on('connection', client => {
         let fKey = '';
         // key format = fileName::part
         if (key !== 'nf') {
-            fKey = key + '::0';
-            result = getFileContents(fKey);
-            client.emit('objectDef', result);
+            fKey = key + '::0::file';
+            //result = getFileContents(fKey);
+            client.emit('getFileByCidResults', fKey);
         }
     });
     

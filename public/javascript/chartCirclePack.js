@@ -159,22 +159,6 @@ function handleCPMouseOver(d, i) {
 
 
         if (show === true) {            
-            // // placement of the tool tip requires using both page and
-            // // client offsets
-            // let yOff = window.pageYOffset  
-            // let yPos = d.clientY + yOff ;
-            // yPos = yPos - (i * 10);
-            // yPos = yPos - 40;
-
-
-            // // populate the tool tip and placement
-            // tip = tip + '</div>';
-            // tooltip.innerHTML = tip;
-            // tooltip.style.display = "block";
-            // tooltip.style.left = d.clientX - 100 + 'px';
-            // tooltip.style.top = yPos + 'px';
-
-
 	
             let pageY = d.clientY;
             //let offTop  = $("#schematicDetail").offset().top;
@@ -184,9 +168,6 @@ function handleCPMouseOver(d, i) {
             } else {
                 offTop  = $("#prtXref").offset().top;
             }
-
-
-
             //let offTop  = window.pageYOffset;
             console.log(offTop)
             let tipX = d.clientX - 100;
@@ -220,20 +201,28 @@ function handleCPClick(d, i, ct) {
     // ct is the chart type
     let cid = '';
     let chartT = '';
+    let secret = false;
     if (typeof this.attributes['cid'] !== 'undefined') {
         cid = this.attributes['cid'].nodeValue;
+        if (cid.indexOf('::Secret::') > -1) {
+            secret = true;
+        }
         cid = cid.split('$');
         chartT = cid[2];
     }
 
     if (chartT === 'g') {
-        getFileByCid(cid)
+        getFileByCid(cid, secret)
     } else if (chartT === 'x') {
         let tmp = cid[1].split('::');
         let fp = tmp.indexOf(':');
         if (fp > -1 ) {
             tmp = tmp.substring(0, fp);
         }
-        getDef7(tmp[2])
+        if (secret === true) {
+            getDef5(tmp[2]);
+        } else {
+            getDef7(tmp[2])
+        }
     }
 }
