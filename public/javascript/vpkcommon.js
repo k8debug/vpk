@@ -694,6 +694,11 @@ function buildTipContent(data, type, fnum) {
 			}
 		}
 
+	} else if (type === 'Events') {
+		if (typeof data[0] !== 'undefined' ) {
+			content = content + 'Count: ' + data ;  
+		}
+
 	} else if (type === 'HorizontalPodAutoscaler') {
 		content = formatJSON(data);  
 
@@ -784,6 +789,11 @@ function buildTipContent(data, type, fnum) {
 				content = content + '(' + cnt + ') Name:' + data[k].name + ' (Used by:'+ data[k].use +')<br>';
 			}
 		}	
+	} else if (type === 'Roles') {
+		content = '' ; 
+
+	} else if (type === 'RoleBinding') {
+		content = '' ;  
 
 	}  else if (type === 'Service') {
 		content = fnum + '<br>' 
@@ -813,6 +823,9 @@ function buildTipContent(data, type, fnum) {
 				content = content + 'Name: ' + data[k].storageClassName ;  
 			}
 		}	
+
+	} else if (type === 'Subject') {
+		content = '' ;  
 
 	} else {
 		content = 'Name: ' + data.name  + '<br>' + 'Type: ' + type;

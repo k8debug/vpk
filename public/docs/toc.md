@@ -19,16 +19,6 @@
 | <a href="javascript:docNextTopic('xreference')">X-Reference</a> | &nbsp;Cross reference Kubernetes resource object elements |
 | <a href="javascript:docNextTopic('ownerref')">OwnerRef</a> | &nbsp;OwnerReference links |
 
-
----
-```
-                                    Video requires network connection to YouTube   
-```
-
-<div style="margin-left: 150px;">
-    <img src="docs/docimages/videoComingSoon.png" width="700" height="390">
-</div>
-
 ---
 
 <a style="float: right;" href="javascript:docNextTopic()">&nbsp;&nbsp;Next&nbsp;<i class="fas fa-lg fa-arrow-right"></i></a>

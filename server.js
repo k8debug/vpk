@@ -652,29 +652,34 @@ io.on('connection', client => {
             
         // decode base64 data in secret
         try {
-            tmp = vpk.fileContent[fn];
-            tmp = tmp[0].content;
-            data = tmp.data;
-            if (typeof data === 'object') {
-                let keys = Object.keys(data);
-                let key;
-        
-                for (let d = 0; d < keys.length; d++) {
-                    key = keys[d];
-                    buff = new Buffer.from(data[key], 'base64');
-                    text = buff.toString('ascii');
-                    if (text.startsWith('{')) {
-                        text = JSON.parse(text)
-                        vArray[key] = {
-                            'value': text,
-                            'type': 'JSON'
-                        }
-                    } else {
-                        vArray[key] = {
-                            'value': text,
-                            'type': 'TEXT'
+            tmp = utl.readResourceFile(fn);
+            if (typeof tmp.data !== 'undefined') {
+                data = tmp.data;
+                if (typeof data === 'object') {
+                    let keys = Object.keys(data);
+                    let key;
+                    for (let d = 0; d < keys.length; d++) {
+                        key = keys[d];
+                        buff = new Buffer.from(data[key], 'base64');
+                        text = buff.toString('ascii');
+                        if (text.startsWith('{')) {
+                            text = JSON.parse(text)
+                            vArray[key] = {
+                                'value': text,
+                                'type': 'JSON'
+                            }
+                        } else {
+                            vArray[key] = {
+                                'value': text,
+                                'type': 'TEXT'
+                            }
                         }
                     }
+                }
+            } else {
+                vArray[key] = {
+                    'value': 'Unable to process request to decode value',
+                    'type': 'TEXT'
                 }
             }
             var result = {
@@ -878,39 +883,17 @@ io.on('connection', client => {
 
 function getFileContents(data) {
     var result;
+    var part
+    var fn;
+    var fileData;
     try {
-        var part = data.split('::');
-        if (typeof part[1] === 'undefined') {
-            part[1] = '0';
+        if (data.indexOf('::')) {
+            part = data.split('::');
+            fn = part[0];
+        } else {
+            fn = data
         }
-        if (part[1].length === 0 || part[1] === 'undefined') {
-            part[1] = '0';
-        }
-
-        if (typeof vpk.fileContent[ data ] === 'undefined' ) {
-            let tmp = part[1];
-            let fp = tmp.indexOf(':');
-            if (fp > -1 ) {
-                part[1] = tmp.substring(0, fp);
-            }
-            let nData = part[0] + '::' + part[1];
-            if (typeof vpk.fileContent[ nData ] === 'undefined' ) {
-                utl.logMsg('vpkMNL387 - Invalid key locating file: ' + data);
-
-                result = {
-                    'filePart': part[1],
-                    'lines': 'File not found',
-                    'defkey': part[0]
-                };
-                return result;
-            } else {
-                data = nData;
-            }
-        }
-
-        var rtn = vpk.fileContent[ data ][0].content;
-        var newRtn = JSON.stringify(rtn);
-        var fileData = JSON.parse(newRtn);
+        fileData = utl.readResourceFile(fn);
         // check if managed fields should be removed;
         if (typeof vpk.defaultSettings.managedFields !== 'undefined') {
             if (vpk.defaultSettings.managedFields === false) {

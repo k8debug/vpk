@@ -118,16 +118,19 @@ function getDef5(data) {
 }
 
 function getDef7(data) {
-
     if (data === 'missing') {
         $("#yamlModal").modal('show');
         return;
     }
-
-    let items = data.split('.');
-    let src = rootDir + '/config' + items[0] + '.yaml';
-    selectedDef = src + '::' + items[1] + '::edit';
-    editObj();
+    if (data.indexOf('::') > -1) {
+        selectedDef = data;
+        editObj();
+    } else {
+        let items = data.split('.');
+        let src = rootDir + '/config' + items[0] + '.yaml';
+        selectedDef = src + '::' + items[1] + '::edit';
+        editObj();
+    }
 }
 
 // send request to server to get object definition

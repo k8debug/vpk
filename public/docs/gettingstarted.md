@@ -9,6 +9,16 @@
 ###### Getting started
 ---
 
+How to get started with VpK, installaing and starting.  
+
+<div style="margin-left: 150px;">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/oLnhPCZa_fo">
+    </iframe>
+</div>
+
+
+---
+
 Vpk is an application that runs on your computer using required software. The prerequiste software:
 
 - __browser__ - that supports html 5 for the user interface 
@@ -22,17 +32,11 @@ Change to the directory where the software is cloned or copied and install the r
 
 Start the software by running command: npm start
 
----
+Optionally VpK can be started with a different port.  This requires the use of a different start command using node instead of npm.  A start parameter "-p" is used to define the port.  Example:
 
-This is an overview video of VpK.  
+node server.js -p 5400
 
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
-    </iframe>
-</div>
-
----
-
+The above command starts the VpK server and hosts the application on port 5400.
 
 ---
 
