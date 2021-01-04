@@ -7,6 +7,16 @@
 <a style="float: right;" href="javascript:docPrevTopic()"><i class="fas fa-lg fa-arrow-left"></i>&nbsp;Prev&nbsp;&nbsp;</a>
 
 ###### Overview and architecture
+
+---
+
+Overview video of VpK.  
+
+<div style="margin-left: 150px;">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
+    </iframe>
+</div>
+
 ---
 
 VpK was created as the result of wanting a tool to aid in understanding what is defined in Kubernetes.   
@@ -45,16 +55,6 @@ Application features include:
 - Usage of RBAC definitions.
 
 - Create and view custom cross reference information of K8 resource elements.
-
----
-
-
-Overview video of VpK.  
-
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
-    </iframe>
-</div>
 
 ---
 

@@ -396,9 +396,5 @@
                 "xrw": "spec.host"
             }
         ]
-    },
-    "defaults": {
-        "managedFields": false,
-        "statusSection": false
     }
 }

@@ -10,11 +10,9 @@
 
 ---
 
-This is a video explaining the creation of snapshots that are used by VpK.
+Explaining the creation of snapshots that are used by VpK.
 
 <div style="margin-left: 150px;">
-    <!-- <iframe width="700" height="390" src="https://www.youtube.com/embed/pykzLsiAcP4">
-    </iframe> -->
     <iframe width="700" height="390" src="https://www.youtube.com/embed/7sjFh8N6FrY"></iframe>
 </div>
 

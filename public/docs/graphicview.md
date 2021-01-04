@@ -7,6 +7,16 @@
 <a style="float: right;" href="javascript:docPrevTopic()"><i class="fas fa-lg fa-arrow-left"></i>&nbsp;Prev&nbsp;&nbsp;</a>
 
 ###### Graphic View
+
+---
+
+Graphical views of defined resources.
+
+<div style="margin-left: 150px;">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/1_KdZJfKJVw">
+    </iframe>
+</div>
+
 ---
 
 Three graphical views are available:
@@ -15,18 +25,9 @@ Three graphical views are available:
 - Collapsible hierarchy
 - Circle pack
 
-All charts can be filtered to view one to all namespaces. Both hierarchy charts will have blue and red dots.  These blue dots can be clicked on to expand or collapse the hierarchy view. Red dots can be clicked to view the associated resource yaml.
+All charts can be filtered to view one or more namespaces. Both hierarchy charts will have blue and red dots.  These blue dots can be clicked on to expand or collapse the hierarchy view. Red dots can be clicked to view the associated resource yaml.
 
 Circle pack chart has pop-up information and the abiltiy to click the blue dots to view the resource yaml.
-
----
-
-This is an overview video of VpK.  Once the topic video is produced it will replace this video.
-
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
-    </iframe>
-</div>
 
 ---
 

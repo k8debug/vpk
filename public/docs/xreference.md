@@ -9,7 +9,7 @@
 ###### X-Reference 
 ---
 
-This video explains x-references and the creation of custom cross references for VpK.
+X-references and the creation of custom cross references for VpK.
 
 <div style="margin-left: 150px;">
     <iframe width="700" height="390" src="https://www.youtube.com/embed/pykzLsiAcP4">

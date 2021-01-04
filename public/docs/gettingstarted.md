@@ -16,7 +16,6 @@ How to get started with VpK, installaing and starting.
     </iframe>
 </div>
 
-
 ---
 
 Vpk is an application that runs on your computer using required software. The prerequiste software:

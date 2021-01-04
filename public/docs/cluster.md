@@ -7,20 +7,20 @@
 <a style="float: right;" href="javascript:docPrevTopic()"><i class="fas fa-lg fa-arrow-left"></i>&nbsp;Prev&nbsp;&nbsp;</a>
 
 ###### Cluster
----
 
-Cluster view currently provides a tabular view by resource kind.  The resource item in the table can be clicked to view the yaml and the icon can be clicked to view the resource explain information.
-
+View resources defined in the cluster.  
 
 ---
-
-
-This is an overview video of VpK.  Once the topic video is produced it will replace this video.
 
 <div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/8LtXugxdASY">
     </iframe>
 </div>
+
+---
+
+
+Cluster view currently provides a tabular view by resource kind.  The resource item in the table can be clicked to view the yaml and the icon can be clicked to view the resource explain information.
 
 ---
 

@@ -8,6 +8,14 @@
 
 ###### User Interface and general usage 
 ---
+User interface of VpK.  
+
+<div style="margin-left: 150px;">
+    <iframe width="700" height="390" src="https://www.youtube.com/embed/nwm5IFHbR34">
+    </iframe>
+</div>
+
+---
 
 Vpk user interface (UI )is intended to provide graphical and tabular information with drill down capabilities.  
 
@@ -16,15 +24,6 @@ Vpk user interface (UI )is intended to provide graphical and tabular information
 - If you see a blue or red circle in a hierarchy diagram, click on it.
 - If you see a blue circle in a circle pack diagram, click on it.
 - If you see a line of information in a tabular view, click on it.
-
-
----
-This is an overview video of VpK.  
-
-<div style="margin-left: 150px;">
-    <iframe width="700" height="390" src="https://www.youtube.com/embed/xYWIyCwp99Y">
-    </iframe>
-</div>
 
 ---
 
