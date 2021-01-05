@@ -51,12 +51,8 @@ function getDef2(def) {
     }
 
     if (type === 'workload') {
-        //selectedDef = data.src + '::' + data.part + '::' + data.name;
         editObj();
     } else if (type === 'ControllerRevision' || type === 'PersistentVolume' || type === 'StorageClass' || type === 'CRD') {
-        // fParts = parts[1].split('.');
-        // src = rootDir + '/config' + fParts[0] + '.yaml';
-        // selectedDef = src + '::' + fParts[1] + '::ControllerRevision';
         editObj();
     } else if (type === 'level1' || type === 'level2') {
         partChain(type, data.creationChain)
@@ -140,6 +136,7 @@ function getDef8(def) {
 }
 
 function partArray(type, data) {
+    let fn;
     try {
         if (type === 'Secret') {
             multiList(type, data)
@@ -148,12 +145,20 @@ function partArray(type, data) {
             multiList(type, data)
         } else {
             if (typeof data[0].source !== 'undefined') {
+                console.log('Using file source: ' +  selectedDef + '::' + data[0].part + '::' + data[0].name)
                 selectedDef = data[0].source
                 if (typeof data[0].part !== 'undefined') {
                     selectedDef = selectedDef + '::' + data[0].part + '::' + data[0].name;
                 } else {
                     selectedDef = selectedDef + '::0::name';
                 }     
+            } else {
+                if (typeof data[0].fnum !== 'undefined') {
+                    let tmp = data[0].fnum;
+                    tmp = tmp.split('.')
+                    fn = rootDir + '/config' + tmp[0] + '.yaml::0';
+                    selectedDef = fn;
+                }
             }
             editObj();
         }
@@ -265,8 +270,19 @@ function multiList(type, data) {
     let html = '';
     let ref;
     let use;
+    let getDef = 'getDef3';
     for (let i = 0; i < data.length; i++) {
-        ref = data[i].source + '::' + data[i].part + '::' + data[i].name;
+
+        if (typeof data[i].source !== 'undefined') {
+            console.log('Using file source: ' + data[i].source + '::' + data[i].part + '::' + data[i].name);
+            ref = data[i].source + '::' + data[i].part + '::' + data[i].name;
+        } 
+
+        if (typeof data[i].fnum !== 'undefined') {
+            getDef = 'getDef7';
+            ref = data[i].fnum;
+        }
+
         if (typeof data[i].use !== 'undefined') {
             use = ' (' + data[i].use + ')';
         } else {
@@ -275,7 +291,7 @@ function multiList(type, data) {
         html = html 
         + '<div class="multiList">'
         + '<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
-        + 'onclick="getDef3(\'' + ref + '\')">' + type + '</button>';
+        + 'onclick="' + getDef + '(\'' + ref + '\')">' + type + '</button>';
 
         if (type === 'Secret') {
             html = html 

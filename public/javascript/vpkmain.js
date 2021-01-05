@@ -149,7 +149,6 @@ $(document).ready(function() {
     });
 
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
-        // selectedDef = $el.src + '::' + $el.part + '::' + $el.value;
         selectedDef = $el.src;
         if ( $el.kind === 'Secret') {
             getDef5(selectedDef);   // secret modal with decode option
@@ -473,6 +472,15 @@ socket.on('objectDef', function(data) {
 
 //----------------------------------------------------------
 function getFileByCid(data, secret) {
+    if (typeof secret === 'undefined') {
+        if (typeof data[1] !== 'undefined') {
+            if (data[1].indexOf('::Secret::') > -1) {
+                secret = true;
+            } else {
+                secret = false;
+            }
+        } 
+    }
     getFileIsSecret = secret;
     socket.emit('getFileByCid', data);
 } 
@@ -961,8 +969,6 @@ socket.on('searchResult', function(data) {
 function buildSearchResults(data) {
     var tmp; 
     var a, b, c, d;
-    var fp;
-    var fnum;
     newData = [];
     dix = -1;
     id = 0;
@@ -974,10 +980,10 @@ function buildSearchResults(data) {
         a = tmp.namespace;
         b = tmp.kind;
         c = tmp.name;
-        fp = tmp.src.indexOf('config');
-        fnum = tmp.src.substring(fp + 6, tmp.src.length - 5) + '.0';
-    
-        d = fnum;
+        if (typeof tmp.fnum === 'undefined') {
+            console.log('Missing fnum for namespace:' + a + ' kind: ' + ' name:' + c)
+        }
+        d = tmp.fnum;
         dix++;
         dixArray.push(a + '::' + b + '::' + c + '::' + d );
         newData.push({

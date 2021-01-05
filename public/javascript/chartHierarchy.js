@@ -38,13 +38,6 @@ const chartHierarchy = (input, chType) => {
         const root = d3.hierarchy(data);
         root.dx = 16;
         root.dy = width / (root.height + 1);
-        // if (chType === 'g') {
-        //     $("#grpahicChartInfo").empty();
-        //     $("#graphicChartInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
-        // } else if (chType === 'x') {
-        //     $("#xrefInfo").empty();
-        //     $("#xrefInfo").html('<span class="vpkfont-md pl-3">Expanded hierarchy</span>');
-        // }
         return d3.tree().nodeSize([root.dx, root.dy])(root);
     }
 
@@ -108,9 +101,6 @@ const chartHierarchy = (input, chType) => {
             return 'cid' + cid + '$' + text + '$' + chType;
         })
         .on("click", handleHierarchyClick);
-
-
-
         return svg.node();
     };
 

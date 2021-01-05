@@ -495,8 +495,8 @@ function cidNameLookup(data) {
         key = ns+'.'+kind+'.'+name;
         if (typeof vpk[kind][key] !== 'undefined') {
             if (typeof vpk[kind][key][0] !== 'undefined') {
-                if (typeof vpk[kind][key][0].sourceFile !== 'undefined') {
-                    return vpk[kind][key][0].sourceFile;
+                if (typeof vpk[kind][key][0].fnum !== 'undefined') {
+                    return vpk[kind][key][0].fnum;
                 }
             }
         }
@@ -540,13 +540,10 @@ io.on('connection', client => {
     client.on('getFileByCid', data => {
         utl.logMsg('vpkMNL091 - Get getFileByCid request ' );
         let key = cidNameLookup(data)
-        let result = '';
-        let fKey = '';
-        // key format = fileName::part
         if (key !== 'nf') {
-            fKey = key + '::0::file';
-            //result = getFileContents(fKey);
-            client.emit('getFileByCidResults', fKey);
+            client.emit('getFileByCidResults', key);
+        } else {
+            client.emit('getFileByCidResults', 'missing');
         }
     });
     
@@ -640,15 +637,27 @@ io.on('connection', client => {
         // save the key for use when results are returned
         var def = parm.file;
         var secret = parm.secret;
-        var parts = def.split('::');
-        var fn = parts[0] + '::' + parts[1];
+        var parts;
+        var fn ;
+        var dynDir = process.cwd();
+        // var parts = def.split('::');
+        // var fn = parts[0] + '::' + parts[1];
         var data;
+
+        if (def.indexOf('::') > -1 ) {
+            parts = def.split('::');
+            fn = parts[0] + '::' + parts[1];
+        } else {
+            parts = def.split('.');
+            fn = vpk.dirname + '/config' + parts[0] + '.yaml::0';
+        }
+
         var tmp;
         var vArray = {};
         var text = '';
         var buff;
 
-        utl.logMsg('vpkMNL173 - Decode secret from file: ' + fn );
+        //utl.logMsg('vpkMNL173 - Decode secret from file: ' + fn );
             
         // decode base64 data in secret
         try {
@@ -694,8 +703,15 @@ io.on('connection', client => {
     });
 
     client.on('getDef', data => {
-        var parts = data.split('::');
-        data = parts[0] + '::' + parts[1];
+        var parts;
+        if (data.indexOf('::') > -1 ) {
+            parts = data.split('::');
+            data = parts[0] + '::' + parts[1];
+        } else {
+            parts = data.split('.');
+            fn = vpk.dirname + '/config' + parts[0] + '.yaml';
+        }
+        
         utl.logMsg('vpkMNL003 - Get file: ' + parts[0] );
         var result = getFileContents(data);
         client.emit('objectDef', result);
@@ -964,6 +980,10 @@ function returnData(client, dynDir) {
     //client.emit('dynamicResults', rdata);
 }
 
+
+// save extracted resource JSON to file for snapshot
+// Note: The file contents are JSON formatted but the file
+// is named with .yaml
 function write2(yf, dynDir) {
     utl.logMsg('vpkMNL606 - Write files invoked' );
     var rdata  = {};
@@ -974,7 +994,6 @@ function write2(yf, dynDir) {
         remdir(dynDir);
         var mkresult = makedir(dynDir);
         if (mkresult === 'PASS') {
-            var fbase = 'config';
             var fnum = 1000;
             var fn;
             var oldKind = '@startUp';
@@ -990,7 +1009,7 @@ function write2(yf, dynDir) {
                 }
                 input = JSON.stringify(input, null, 4);
                 fnum++;
-                fn = dynDir + '/' + fbase + fnum + '.yaml';
+                fn = dynDir + '/' + 'config' + fnum + '.yaml';
                 fs.writeFileSync(fn, input);
                 cnt++
                 utl.saveFileName(fn, fnum)

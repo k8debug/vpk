@@ -227,6 +227,7 @@ function bldOptions(options, type, style) {
             }
 
         } else {
+            console.log('Dropped kind: ' + cki)
             // drop all user defined kinds
         }
     }

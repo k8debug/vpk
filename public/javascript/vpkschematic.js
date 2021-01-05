@@ -701,7 +701,7 @@ function bldEvents(fnum) {
 			} else {
 				workloadEventsInfo[fnum] = evtHtml;
 			}
-		}
+		} 
 
 		// show the events icon if there are events
 		if (hl > 0) {
@@ -1005,7 +1005,7 @@ function svgGenerators(data, fnum) {
 				bnds.height = bnds.height + 100;
 				rectH = rectH + 100;
 				rectFill = 'none';
-				image = checkImage('Unknown');
+				image = checkImage('Unknown', 'Unknown');
 				rtn = rtn 
 				+ '<image x="150" y="25"  width="50" height="50" fill="red" href="images/' + image + '" '
 				+ 'onmousemove="showVpkTooltip(evt, \'' 
@@ -1019,7 +1019,7 @@ function svgGenerators(data, fnum) {
 			bnds.height = bnds.height + 100;
 			rectH = rectH + 100;
 			kind = data.creationChain.level1Kind;
-			image = checkImage(kind);
+			image = checkImage(kind, data.creationChain.level1API);
 			rtn = rtn 
 			+ '<image x="150" y="25"  width="50" height="50" href="images/' + image + '" '
 			+ 'onmousemove="showVpkTooltip(evt, \'' 
@@ -1032,8 +1032,8 @@ function svgGenerators(data, fnum) {
 
 			if (typeof data.creationChain.level2Kind !== 'undefined') {
 				kind = data.creationChain.level2Kind;
-				image = checkImage(kind);
-				if (image === 'unk') {
+				image = checkImage(kind, data.creationChain.level2API);
+				if (image === 'other/unk.svg') {
 					countUnkImage++
 					console.log('No icon for resouce kind: ' + kind + ' fnum: ' + fnum)
 				}
