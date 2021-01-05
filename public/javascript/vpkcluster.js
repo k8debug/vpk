@@ -46,8 +46,8 @@ function clusterTabTable() {
 	let parts;
 
 	let api;
-	let getDef7 = 'getDef7';
-	let getDefSec = 'getDef5';
+	let getDefFnum = 'getDefFnum';
+	let getDefSec = 'getDefSec';
 	let getD;
 	let api4Hdr;
 	let hdrImage;
@@ -90,7 +90,7 @@ function clusterTabTable() {
 				if (key === 'Secret') {
 					getD = getDefSec;
 				} else {
-					getD = getDef7;
+					getD = getDefFnum;
 				}
 				item = '<tr>' 
 				+ '<td width="25%"><span onclick="' + getD + '(\'' + fnum + '\')">' + api + '</td>' 

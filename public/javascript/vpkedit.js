@@ -52,9 +52,12 @@ function editDef(data) {
     } 
     newData = null;
     rtn = outData.join('');
-    fp = defkey.indexOf('config');
-    fnum = defkey.substring(fp + 6, defkey.length - 5) + '.0';
-
+    if (defkey.indexOf('config') > -1) {
+        fp = defkey.indexOf('config');
+        fnum = defkey.substring(fp + 6, defkey.length - 5) + '.0';
+    } else {
+        fnum = defkey;
+    }
 
     var editImage = '<img style="vertical-align:middle;" src="images/' + image + '" width="50" height="50" ' 
     + ' onclick="getExplain(\'' + kind + '\',\'' + api + '\')"></img>'

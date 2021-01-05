@@ -1000,7 +1000,7 @@ function buildSecModalRole(data, key, rColor) {
 
 	let roleId = 
 	  '<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
-	+ '  <div>Role Name:&nbsp;<span onclick="getDef7(\'' + fnum + '\')"' 
+	+ '  <div>Role Name:&nbsp;<span onclick="getDefFnum(\'' + fnum + '\')"' 
 	+ '  class="vpkfont-md ' + rColor + '">' + key + '</span></div>'
 	+ '</div><hr>';
 

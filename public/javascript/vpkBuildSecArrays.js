@@ -135,7 +135,7 @@ function parseRBSubject(data, printAllLines, fnum) {
 		}
 
 		// build html output
-		nData = nData + 'Name: <span class="' + line1Color + '" onclick="getDef7(\'' + fnum + '\')">' + data[i].name + '</span><br>';
+		nData = nData + 'Name: <span class="' + line1Color + '" onclick="getDefFnum(\'' + fnum + '\')">' + data[i].name + '</span><br>';
 		if (line2 !== '') {
 			nData = nData + line2;
 		}
@@ -350,7 +350,7 @@ function buildRoleBindings(ns) {
 		}
 
 		item = '<tr>' 
-		+ '<td width="34%" class="align-top"><span class="' + bColor + '" onclick="getDef7(\'' + fnum + '\')">' + name + '</td>' 
+		+ '<td width="34%" class="align-top"><span class="' + bColor + '" onclick="getDefFnum(\'' + fnum + '\')">' + name + '</td>' 
 		+ '<td width="33%" class="align-top"><span class="' + rColor 
 		+ '" onclick="' + roleGet + '(\'' + roleName + '\',\'' + rColor + '\',\'' + ns + '\')">' 
 		+ roleName + '<span></td>' 
@@ -423,7 +423,7 @@ function buildRoles(ns, level) {
 		name = role.name;
 		fnum = role.fnum;
 		item = '<tr class="roleRBAC">' 
-		+ '<td width="50%" colspan="3" class="top"><span class="' + rColor + '" onclick="getDef7(\'' + fnum + '\')">' + name + '</span></td>' 
+		+ '<td width="50%" colspan="3" class="top"><span class="' + rColor + '" onclick="getDefFnum(\'' + fnum + '\')">' + name + '</span></td>' 
         + '<td></td>  <td></td>' 
         + '<td></td>  </tr>';
 

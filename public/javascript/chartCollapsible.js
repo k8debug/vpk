@@ -220,7 +220,7 @@ const handleCollapseClick = (d, i, ct) => {
                                     fnum = text[ text.length - 1];
                                     fnum = fnum.split(':')
                                     if (typeof fnum[0] !== 'undefined') {
-                                        getDef7(fnum[0]);
+                                        getDefFnum(fnum[0]);
                                     }
                                 } 
                             }

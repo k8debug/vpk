@@ -118,7 +118,7 @@ function buildRoleRefTable () {
             let bNs = ''
             if (item[d].subjectKind === 'ServiceAccount') {
                 sFnum = lookupSubjectName(item[d].subjectName, item[d].subjectNamespace, item[d].subjectKind);
-                subject = '<span class="bg-info text-light" onclick="getDef7(\'' + sFnum + '\')">' + item[d].subjectName + '</span>';
+                subject = '<span class="bg-info text-light" onclick="getDefFnum(\'' + sFnum + '\')">' + item[d].subjectName + '</span>';
             } else {
                 subject = item[d].subjectName;
             }
@@ -130,7 +130,7 @@ function buildRoleRefTable () {
 
             line = '<tr class=""><td>&nbsp;</td>' 
             + '<td class="pr-4  align-text-top">' + item[d].kind + '</td>'
-            + '<td class="pr-4"><span class="bg-rbn text-light" onclick="getDef7(\'' + item[d].fnum + '\')">' 
+            + '<td class="pr-4"><span class="bg-rbn text-light" onclick="getDefFnum(\'' + item[d].fnum + '\')">' 
             + item[d].bindingName + '</span><br>Namespace: ' + bNs + '</td>'
             + '<td class="pr-1 text-right align-text-top ' + subjectTextColor(item[d].subjectKind) + '"><b>' + item[d].subjectKind + '</b></td>'
             + '<td class="pr-4">' + subject + '<br>Namespace: ' + item[d].subjectNamespace + '</td>'

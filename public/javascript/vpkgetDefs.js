@@ -24,28 +24,23 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // send request to server to get object definition
 function getDef(def) {
+
     selectedDef = def;
-    editObj();
+    if (selectedDef.indexOf('undefined') > -1) {
+        showMessage('Unable to locate source yaml.','fail');
+    } else {
+        editObj();
+    }
 }
 
 function getDef2(def) {
-    let parts = def.split('@');
+    let parts = def.split('@'); 
     let data;
     let type;
-    let fParts;
-    let src;
     if (parts.length === 2) {
         data = k8cData[parts[1]];
-        if (typeof data !== 'undefined') {
-            if (typeof data.src === 'undefined') {
-                showMessage('Unable to locate source yaml...','fail');
-                return;
-            }
-        } 
         type = parts[0];
-        fParts = parts[1].split('.');
-        src = rootDir + '/config' + fParts[0] + '.yaml';
-        selectedDef = src + '::' + fParts[1] + '::editfile';
+        selectedDef = parts[1];  // fnum
     } else {
         return;
     }
@@ -72,25 +67,13 @@ function getDef2(def) {
     } 
 }
 
-// send request to server to get object definition
-function getDef3(def) {
-    //$("#multiModal").modal('hide');
-    selectedDef = def;
-    if (selectedDef.indexOf('undefined') > -1) {
-        showMessage('Unable to locate source yaml.','fail');
-    } else {
-        editObj();
-    }
-}
 
-// getDef4 is in vpkMain.js
-
-
-function getDef5(data) {
+function getDefSec(data) {
     let items = data.split('::');
     let nData = []
     let src;
     if (items.length === 3) {
+        console.log('Using source file ' + items[0] )
         if (items[2] === 'file') {
             items[2] = 'Secret';
         }
@@ -113,27 +96,16 @@ function getDef5(data) {
     }
 }
 
-function getDef7(data) {
+function getDefFnum(data) {
     if (data === 'missing') {
         $("#yamlModal").modal('show');
         return;
     }
-    if (data.indexOf('::') > -1) {
-        selectedDef = data;
-        editObj();
-    } else {
-        let items = data.split('.');
-        let src = rootDir + '/config' + items[0] + '.yaml';
-        selectedDef = src + '::' + items[1] + '::edit';
-        editObj();
-    }
-}
-
-// send request to server to get object definition
-function getDef8(def) {
-    selectedDef = def;
+    selectedDef = data;
     editObj();
 }
+
+
 
 function partArray(type, data) {
     let fn;
@@ -270,7 +242,7 @@ function multiList(type, data) {
     let html = '';
     let ref;
     let use;
-    let getDef = 'getDef3';
+    let getDef = 'getDef';
     for (let i = 0; i < data.length; i++) {
 
         if (typeof data[i].source !== 'undefined') {
@@ -279,7 +251,7 @@ function multiList(type, data) {
         } 
 
         if (typeof data[i].fnum !== 'undefined') {
-            getDef = 'getDef7';
+            getDef = 'getDefFnum';
             ref = data[i].fnum;
         }
 
@@ -296,7 +268,7 @@ function multiList(type, data) {
         if (type === 'Secret') {
             html = html 
             + '&nbsp;&nbsp<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
-            + 'onclick="getDef4(\'' + ref + '\', \'' +  data[i].name + use + '\')">Decode</button>';
+            + 'onclick="getDefDecode(\'' + ref + '\', \'' +  data[i].name + use + '\')">Decode</button>';
         }
         html = html 
         + '&nbsp;&nbsp;' + data[i].name + use + '</div>'

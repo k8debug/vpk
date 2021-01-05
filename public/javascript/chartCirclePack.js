@@ -220,9 +220,9 @@ function handleCPClick(d, i, ct) {
             tmp = tmp.substring(0, fp);
         }
         if (secret === true) {
-            getDef5(tmp[2]);
+            getDefSec(tmp[2]);
         } else {
-            getDef7(tmp[2])
+            getDefFnum(tmp[2])
         }
     }
 }

@@ -265,8 +265,8 @@ function nsChange(ns) {
 	let parm;
 	let fname;
 	let api;
-	let getDef8 = 'getDef8';
-	let getDefSec = 'getDef5';
+	let getDef = 'getDef';
+	let getDefSec = 'getDefSec';
 	let getD;
 	let api4Hdr;
 	let hdrImage;
@@ -311,7 +311,7 @@ function nsChange(ns) {
 				if (key === 'Secret') {
 					getD = getDefSec;
 				} else {
-					getD = getDef8;
+					getD = getDef;
 				}
 				item = '<tr>' 
 				+ '<td width="25%"><span onclick="' + getD + '(\'' + parm + '\')">' + api + '</td>' 
@@ -609,7 +609,7 @@ function process(fnum) {
 			let what1 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img1 + '" '
 			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr1, crdRefCnt, 'Ref')
-			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd1 +'\')"/>';
+			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + rtnGen.bnds.crd1 +'\')"/>';
 			html = html + what1;
 
 			let note1 = '<circle cx="'+ (xPos - 6) + '" cy="97" r="10" stroke="black" stroke-width="1.5" fill="#000" />'
@@ -623,7 +623,7 @@ function process(fnum) {
 			let what2 = '<image x="' + xPos + '" y="50"  width="50" height="50" href="images/' + rtnGen.bnds.img2 + '" '
 			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo('CRD for note: ' + rtnGen.bnds.ltr2, crdRefCnt, 'Ref')
-			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + rtnGen.bnds.crd2 +'\')"/>' 
+			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + rtnGen.bnds.crd2 +'\')"/>' 
 			html = html + what2;
 
 			let note2 = '<circle cx="'+ (xPos - 6) + '" cy="97" r="10" stroke="black" stroke-width="1.5" fill="#000" />'
@@ -681,11 +681,11 @@ function bldEvents(fnum) {
 				+ '<td width="45%"><hr class="mb-0 mt-0"></td>'
 				+ '<td width="20%"><hr class="mb-0 mt-0"></td></tr>'
 				+ '<tr>' 
-				+ '<td width="5%"  class="vpkfont-sm"  onclick="getDef7(\'' + evts[e].fnum +'\')">'  + evts[e].type + '</td>' 
-				+ '<td width="10%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' + evts[e].reason + '</td>' 
-				+ '<td width="20%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' + evts[e].kind+'/'+evts[e].name + '</td>' 
-				+ '<td width="45%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' + evts[e].message + '</td>'
-				+ '<td width="20%" class="vpkfont-sm pl-1" onclick="getDef7(\'' + evts[e].fnum +'\')">' 
+				+ '<td width="5%"  class="vpkfont-sm"  onclick="getDefFnum(\'' + evts[e].fnum +'\')">'  + evts[e].type + '</td>' 
+				+ '<td width="10%" class="vpkfont-sm pl-1" onclick="getDefFnum(\'' + evts[e].fnum +'\')">' + evts[e].reason + '</td>' 
+				+ '<td width="20%" class="vpkfont-sm pl-1" onclick="getDefFnum(\'' + evts[e].fnum +'\')">' + evts[e].kind+'/'+evts[e].name + '</td>' 
+				+ '<td width="45%" class="vpkfont-sm pl-1" onclick="getDefFnum(\'' + evts[e].fnum +'\')">' + evts[e].message + '</td>'
+				+ '<td width="20%" class="vpkfont-sm pl-1" onclick="getDefFnum(\'' + evts[e].fnum +'\')">' 
 				+ '<b>Occurence count:</b> ' + evts[e].count + '<br>' 
 				+ '<b>First:</b> ' + formatDate(evts[e].firstTime) + '<br>'
 				+ '<b>Last:</b>&nbsp;' + formatDate(evts[e].lastTime) 
@@ -754,7 +754,7 @@ function svgHeader(data, fnum) {
 
 	+ '<image x="1065" y="72" width="48"  height="48" href="images/k8/node.svg" onmousemove="showVpkTooltip(evt, \''
 	+ buildSvgInfo(nodeInfo, nodeInfo.fnum, 'Node')
-	+ '\');" onmouseout="hideVpkTooltip()"  onclick="getDef7(\'' + nodeInfo.fnum +'\')"/>'
+	+ '\');" onmouseout="hideVpkTooltip()"  onclick="getDefFnum(\'' + nodeInfo.fnum +'\')"/>'
 	+ '<text x="930" y="50" fill="white" class="workloadText">Cluster level resources</text>';
 
 	let roleNs = '0000-' + data.namespace;
@@ -885,7 +885,7 @@ function svgIAM(data, fnum) {
 							rtn = rtn
 							+ '<image x="250"  y="25" width="50"  height="50" href="images/k8/crb.svg" onmousemove="showVpkTooltip(evt, \'' 
 							+ buildSvgInfo(crb[c],cFnum , 'ClusterRoleBinding') 
-							+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>'
+							+ '\');" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + cFnum +'\')"/>'
 							+ '<line  x1="100" x2="250" y1="50" y2="50"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
 							+ '<line  x1="100" x2="105" y1="50" y2="55" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 							+ '<line  x1="100" x2="105" y1="50" y2="45"  stroke="black" stroke-width="1" stroke-linecap="round"/>'
@@ -899,7 +899,7 @@ function svgIAM(data, fnum) {
 							rtn = rtn
 							+ '<image x="350"  y="25" width="50"  height="50" href="images/k8/c-role.svg" onmousemove="showVpkTooltip(evt, \'' 
 							+ buildSvgInfo(crb[c], cFnum , 'ClusterRole') 
-							+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + cFnum +'\')"/>';
+							+ '\');" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + cFnum +'\')"/>';
 							rectW = rectW + 275;
 							bnds.clusterBar = true;
 
@@ -1024,7 +1024,7 @@ function svgGenerators(data, fnum) {
 			+ '<image x="150" y="25"  width="50" height="50" href="images/' + image + '" '
 			+ 'onmousemove="showVpkTooltip(evt, \'' 
 			+ buildSvgInfo(data, fnum, kind) 
-//			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef7(\'' + fnum +'\')"/>' 
+//			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + fnum +'\')"/>' 
 			+ '\');" onmouseout="hideVpkTooltip()" onclick="getDef2(\'level1@' + fnum +'\')"/>' 
 			+ '<line  x1="200" x2="300" y1="50" y2="50" stroke="red" stroke-width="2" stroke-linecap="round" stroke-dasharray="3, 3"/>'
 			+ '<line  x1="300" x2="295" y1="50" y2="45" stroke="red" stroke-width="2" stroke-linecap="round"/>'

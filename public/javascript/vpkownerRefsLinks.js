@@ -184,7 +184,7 @@ function processOwnerRefs(data) {
         rtn = rtn
         + '<image x="10"  y="10" width="40"  height="40" href="images/' + image1 + '" onmousemove="showOwnerRefTooltip(evt, \''
         + buildOwnerSvgInfo(item1)
-        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + data.o1Fnum +'\')"/>'
+        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDefFnum(\'' + data.o1Fnum +'\')"/>'
         + '<text x="50" y="55" fill="black" font-weight="">' + data.o1Kind + '</text>';
     }
 
@@ -200,7 +200,7 @@ function processOwnerRefs(data) {
         rtn = rtn
         + '<image x="210"  y="10" width="40"  height="40" href="images/' + image2 + '" onmousemove="showOwnerRefTooltip(evt, \''
         + buildOwnerSvgInfo(item2)
-        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + data.o2Fnum +'\')"/>'
+        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDefFnum(\'' + data.o2Fnum +'\')"/>'
         + '<text x="250" y="55" fill="black" font-weight="">' + data.o2Kind + '</text>';
         
     } else {
@@ -213,7 +213,7 @@ function processOwnerRefs(data) {
         rtn = rtn
         + '<image x="210"  y="10" width="40"  height="40" href="images/' + image2 + '" onmousemove="showOwnerRefTooltip(evt, \''
         + buildOwnerSvgInfo(item2)
-        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + 'missing' +'\')"/>'
+        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDefFnum(\'' + 'missing' +'\')"/>'
         + '<text x="250" y="55" fill="black" font-weight="">' + data.o2Kind + '</text>';
     }
 
@@ -230,7 +230,7 @@ function processOwnerRefs(data) {
         rtn = rtn
         + '<image x="410"  y="10" width="40"  height="40" href="images/' + image3 + '" onmousemove="showOwnerRefTooltip(evt, \''
         + buildOwnerSvgInfo(item3)
-        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + data.o3Fnum +'\')"/>'
+        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDefFnum(\'' + data.o3Fnum +'\')"/>'
         + '<text x="450" y="55" fill="black" font-weight="">' + data.o3Kind + '</text>';
     }   
 
@@ -247,7 +247,7 @@ function processOwnerRefs(data) {
         rtn = rtn
         + '<image x="610"  y="10" width="40"  height="40" href="images/' + image4 + '" onmousemove="showOwnerRefTooltip(evt, \''
         + buildOwnerSvgInfo(item4)
-        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + data.o4Fnum +'\')"/>'
+        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDefFnum(\'' + data.o4Fnum +'\')"/>'
         + '<text x="650" y="55" fill="black" font-weight="">' + data.o4Kind + '</text>';
     }
 
@@ -264,7 +264,7 @@ function processOwnerRefs(data) {
         rtn = rtn
         + '<image x="810"  y="10" width="40"  height="40" href="images/' + image5 + '" onmousemove="showOwnerRefTooltip(evt, \''
         + buildOwnerSvgInfo(item5)
-        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDef7(\'' + data.o5Fnum +'\')"/>'
+        + '\');" onmouseout="hideOwnerRefTooltip()"  onclick="getDefFnum(\'' + data.o5Fnum +'\')"/>'
         + '<text x="850" y="45" fill="black" font-weight="">' + data.o5Kind + '</text>';
     }
 

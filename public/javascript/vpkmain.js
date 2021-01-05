@@ -151,9 +151,9 @@ $(document).ready(function() {
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
         selectedDef = $el.src;
         if ( $el.kind === 'Secret') {
-            getDef5(selectedDef);   // secret modal with decode option
+            getDefSec(selectedDef);   // secret modal with decode option
         } else {
-            getDef7(selectedDef);
+            getDefFnum(selectedDef);
         }
      });
 
@@ -412,7 +412,7 @@ socket.on('getKStatus', function(data) {
 
 //----------------------------------------------------------
 // send request to decode object
-function getDef4(def, secret) {
+function getDefDecode(def, secret) {
     //$("#multiModal").modal('hide');
     selectedDef = def;
     if (selectedDef.indexOf('undefined') > -1) {
@@ -488,9 +488,9 @@ function getFileByCid(data, secret) {
 socket.on('getFileByCidResults', function(data) {
     // always edit, no longer provide browse 
     if (getFileIsSecret === true) {
-        getDef5(data);
+        getDefSec(data);
     } else {
-        getDef7(data)
+        getDefFnum(data)
     }
 });
 //==========================================================
