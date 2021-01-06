@@ -126,10 +126,7 @@ function partArray(type, data) {
                 }     
             } else {
                 if (typeof data[0].fnum !== 'undefined') {
-                    let tmp = data[0].fnum;
-                    tmp = tmp.split('.')
-                    fn = rootDir + '/config' + tmp[0] + '.yaml::0';
-                    selectedDef = fn;
+                    selectedDef = data[0].fnum;
                 }
             }
             editObj();
@@ -141,17 +138,14 @@ function partArray(type, data) {
 
 function partPVC(type, data) {
     let fnum;
-    let fn;
+    // let fn;
     if (data.length > 1) {
         multiList(type, data)
     }
     try {
         fnum = data[0].claimFnum;
-        fn = fnum.split('.');
-        if (fn.length === 2) {
-            selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data[0].name;
-            editObj();
-        }
+        selectedDef = fnum;
+        editObj();
     } catch (err) {
         console.log('Error processing request, message: ' + err)
     }
@@ -167,11 +161,8 @@ function partChain(type, data) {
                 $("#yamlModal").modal('show');
                 return;
             }
-            fn = fnum.split('.');
-            if (fn.length === 2) {
-                selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data.level1Kind;
-                editObj();
-            }
+            selectedDef = fnum;
+            editObj();
         }
         if (type === 'level2') {
             fnum = data.level2Fnum
@@ -179,11 +170,8 @@ function partChain(type, data) {
                 $("#yamlModal").modal('show');
                 return;
             }
-            fn = fnum.split('.');
-            if (fn.length === 2) {
-                selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data.level2Kind;
-                editObj();
-            }
+            selectedDef = fnum;
+            editObj();
         }
     } catch (err) {
         console.log('Error processing request, message: ' + err)
@@ -195,11 +183,8 @@ function partServices(type, data) {
     try {
         if (type === 'Service') {
             let fnum = data.fnum;
-            let fn = fnum.split('.');
-            if (fn.length === 2) {
-                selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data.name;
-                editObj();
-            }
+            selectedDef = fnum;
+            editObj();
         }
         if (type === 'EndPoint') {
             let fnum;
@@ -209,11 +194,8 @@ function partServices(type, data) {
             if (data.eps !== '') {
                 fnum = data.eps;
             }
-            let fn = fnum.split('.');
-            if (fn.length === 2) {
-                selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data.name;
-                editObj();
-            }
+            selectedDef = fnum;
+            editObj();
         }
         if (type === 'EndPointSlice') {
             let fnum;
@@ -223,14 +205,9 @@ function partServices(type, data) {
             if (data.eps !== '') {
                 fnum = data.eps;
             }
-            let fn = fnum.split('.');
-            if (fn.length === 2) {
-                selectedDef = rootDir + '/config' + fn[0] + '.yaml::' + fn[1] + '::' + data.name;
-                editObj();
-            }
+            selectedDef = fnum;
+            editObj();
         }
-
-
     } catch (err) {
         console.log('Error processing request, message: ' + err)
     }

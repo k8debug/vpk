@@ -45,7 +45,7 @@ function editDef(data) {
             kind = kind.trim();
         }
         if (line.startsWith('apiVersion: ') ) {
-            api = line.substring(5);
+            api = line;
             api = api.trim();
         }
         image = checkImage(kind, api);       

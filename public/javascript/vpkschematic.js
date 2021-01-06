@@ -305,9 +305,7 @@ function nsChange(ns) {
 				name = parts[d].name;
 				api = parts[d].api;
 				fnum = parts[d].fnum;
-				let fParts = fnum.split('.');
-				fname = baseDir + '/config' + fParts[0] + '.yaml';
-				parm = fname + '::' + fParts[1] + '::' + name;
+				parm = fnum;
 				if (key === 'Secret') {
 					getD = getDefSec;
 				} else {

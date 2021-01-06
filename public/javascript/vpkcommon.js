@@ -513,9 +513,9 @@ function checkImage(kind, api) {
 		}  
 	}
 
-	if (image === 'other/unk.svg') {
-		console.log('Kind: ' + kind + ' API: ' + api)
-	}
+	// if (image === 'other/unk.svg') {
+	// 	console.log('Kind: ' + kind + ' API: ' + api)
+	// }
 
 	return image;
 	
