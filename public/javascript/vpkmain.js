@@ -25,7 +25,6 @@ $(document).ready(function() {
     // get version from server
     getVersion();
 
-
     document.addEventListener("keypress", function onPress(event) {
         if (event.key === "p" && event.ctrlKey) {
             // Do something awesome
@@ -51,7 +50,6 @@ $(document).ready(function() {
         --bootstrapModalCounter;
         if (bootstrapModalCounter > 0) {
         //don't need to recalculate backdrop z-index; already handled by css
-        //$('.modal-backdrop').first().css('z-index', parseInt($('.modal:visible').last().css('z-index')) - 10);
         $('body').addClass('modal-open');
         }
     }).on("show.bs.modal", function (e) {
@@ -970,9 +968,7 @@ function buildSearchResults(data) {
     var tmp; 
     var a, b, c, d;
     newData = [];
-    dix = -1;
     id = 0;
-    dixArray = [];
 
     //Parse data and build JSON object for display table
     for (item in data) {
@@ -984,8 +980,6 @@ function buildSearchResults(data) {
             console.log('Missing fnum for namespace:' + a + ' kind: ' + ' name:' + c)
         }
         d = tmp.fnum;
-        dix++;
-        dixArray.push(a + '::' + b + '::' + c + '::' + d );
         newData.push({
             namespace: a,
             kind: b,

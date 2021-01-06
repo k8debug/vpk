@@ -24,8 +24,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // Global vars 
 var version = 'Get from server';
 var socket = io.connect();
-var dix;
-var dixArray = [];
 var svgE = 0; 
 var baseDir;
 var validDir;
