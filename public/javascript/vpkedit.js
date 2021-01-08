@@ -55,7 +55,11 @@ function editDef(data) {
     if (defkey.indexOf('config') > -1) {
         fp = defkey.indexOf('config');
         fnum = defkey.substring(fp + 6, defkey.length - 5) + '.0';
-    } else {
+        if (fnum.indexOf('.yaml') > -1) {
+            fp = fnum.indexOf('.yaml');
+            fnum = fnum.substring(0, fp)
+        }
+    }  else {
         fnum = defkey;
     }
 
