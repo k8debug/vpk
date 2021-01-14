@@ -72,6 +72,7 @@ function getDefSec(data) {
     let items = data.split('::');
     let nData = []
     let src;
+    // Old lookup handler will check for source file 
     if (items.length === 3) {
         console.log('Using source file ' + items[0] )
         if (items[2] === 'file') {
@@ -83,13 +84,12 @@ function getDefSec(data) {
             'name': items[2]
         }); 
         multiList('Secret', nData);
+
     } else {
-        items = data.split('.');
-        src = rootDir + '/config' + items[0] + '.yaml';
+                
 
         nData.push({
-            'source': src, 
-            'part': '0', 
+            'fnum': data,
             'name': 'secret'
         }); 
         multiList('Secret', nData);
