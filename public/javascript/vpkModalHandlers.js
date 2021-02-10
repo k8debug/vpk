@@ -435,4 +435,4 @@ function formatShowNs(ns) {
 }
 
 //----------------------------------------------------------
-console.log('loaded vpkmodalHandlers.js');
+console.log('loaded vpkModalHandlers.js');

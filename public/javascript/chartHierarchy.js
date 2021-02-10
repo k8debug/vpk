@@ -148,3 +148,6 @@ const handleHierarchyClick = (d, i, ct) => {
         }
     }
 }
+
+//----------------------------------------------------------
+console.log('loaded chartHierarchy.js');

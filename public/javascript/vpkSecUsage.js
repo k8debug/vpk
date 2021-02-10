@@ -232,4 +232,4 @@ function buildSecStatsTable () {
 
 
 //----------------------------------------------------------
-console.log('loaded vpksecUsage.js');
+console.log('loaded vpkSecUsage.js');

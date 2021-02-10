@@ -109,4 +109,4 @@ function clusterTabTable() {
 
 
 //----------------------------------------------------------
-console.log('loaded vpkcluster.js');
+console.log('loaded vpkCluster.js');

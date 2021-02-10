@@ -1238,4 +1238,4 @@ function getProvider(selected) {
 
 
 //----------------------------------------------------------
-console.log('loaded vpkmain.js');
+console.log('loaded vpkMain.js');

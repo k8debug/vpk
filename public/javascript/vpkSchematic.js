@@ -1516,4 +1516,4 @@ function buildContainerStatus(data) {
 
 
 //----------------------------------------------------------
-console.log('loaded vpkschematic.js');
+console.log('loaded vpkSchematic.js');

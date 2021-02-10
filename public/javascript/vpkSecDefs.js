@@ -159,4 +159,4 @@ function checkClusterLevel() {
 }
 
 //----------------------------------------------------------
-console.log('loaded vpksecDefs.js');
+console.log('loaded vpkSecDefs.js');

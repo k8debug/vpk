@@ -210,4 +210,4 @@ function buildPVLine(storCnt, sc, lastSC) {
 
 
 //----------------------------------------------------------
-console.log('loaded vpkstorage.js');
+console.log('loaded vpkStorage.js');

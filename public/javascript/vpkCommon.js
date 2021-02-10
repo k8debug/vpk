@@ -1470,4 +1470,4 @@ function bldXrefRulesTable() {
 
 
 //----------------------------------------------------------
-console.log('loaded vpkcommon.js');
+console.log('loaded vpkCommon.js');

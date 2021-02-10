@@ -96,4 +96,4 @@ function initAceEditor(rtn) {
 }
 
 //----------------------------------------------------------
-console.log('loaded vpkedit.js');
+console.log('loaded vpkEdit.js');
