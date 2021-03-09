@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2020 David A. Weilert
+Copyright (c) 2018-2021 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -437,24 +437,32 @@ socket.on('clusterDirResult', function(data) {
 //----------------------------------------------------------
 // snapshoit compare 
 function compareSnapshots() {
-    let html = '<div class="row">'
-    + '<div class="col mt-1 ml-4">'
-    + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
-    + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>' 
-    + '    </div>'
-    + '</div>';
+    // check if snapshots are selected before running the compare
+    if (compareSnap1Selected === '' && compareSnap1Selected === '') {
+        showMessage('Both Snapshots must be selected before compare processing can be started. ' 
+        + '<br><br>Use the Snapshot 1 and Snapshot 2 buttons to select the snapshots to be compared.'
+        + '<br><br>Optionally set the Sorting and View Results if desired.')
+    } else {
+        // show processing gif and saned request for compare
+        console.log('Snap 1: ' + compareSnap1Selected + '  Snap 2: ' + compareSnap2Selected);
 
-    $("#compareDetail").empty();
-    $("#compareDetail").html(html);
+        let html = '<div class="row">'
+        + '<div class="col mt-1 ml-4">'
+        + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
+        + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>' 
+        + '    </div>'
+        + '</div>';
+        $("#compareDetail").empty();
+        $("#compareDetail").html(html);
 
-    console.log('Snap 1: ' + compareSnap1Selected + '  Snap 2: ' + compareSnap2Selected);
-    let data = {'snap1': compareSnap1Selected, 'snap2': compareSnap2Selected};
-    socket.emit('compareSnapshots', data);
+        let data = {'snap1': compareSnap1Selected, 'snap2': compareSnap2Selected};
+        socket.emit('compareSnapshots', data);
+    }
 }
 
 //...
 socket.on('compareSnapshotsResults', function(data) {
-    // hand results to compare logic to build UI
+    // pass results data to the compare build UI
     buildCompareResults(data, compareSnap1Selected, compareSnap2Selected);
 });
 

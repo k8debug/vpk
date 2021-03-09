@@ -36,11 +36,14 @@ What is VpK?
 - Usage of RBAC definitions.
 
 - Create and view custom cross reference information of K8 resource elements.	
+
+- Compare previously captured snapshots.  
+
 <br><br>
 
 ## Vpk Architecture
 
-![Architecture](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs//docimages/architecture.png)
+![Architecture](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs/docimages/architecture.png)
 
 <br><br>
 
@@ -87,7 +90,7 @@ node server.js  -p 3000
 Once the server is started open a browser using the appropriate port.
 
 ```
-http://localhost:4200 
+http://localhost:4200     (url shown using the default port of 4200)
 ``` 
 
 <br><br>
@@ -112,16 +115,18 @@ https://youtu.be/nwm5IFHbR34 - User interface basics
 
 <br><br>
 
-## Maintainer
+## Contributors
 
 Dave Weilert
+VJ Landon
+Dave Krier
 
 https://github.com/k8debug/vpk 
 
 
 ## License
 
-Copyright 2018-2020 David A. Weilert
+Copyright (c) 2018-2021 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
