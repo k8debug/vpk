@@ -1367,6 +1367,5 @@ function getProvider(selected) {
     }
 }
 
-
 //----------------------------------------------------------
 console.log('loaded vpkMain.js');

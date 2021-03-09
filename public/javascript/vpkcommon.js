@@ -1484,6 +1484,5 @@ function bldXrefRulesTable() {
 	}
 }
 
-
 //----------------------------------------------------------
 console.log('loaded vpkCommon.js');

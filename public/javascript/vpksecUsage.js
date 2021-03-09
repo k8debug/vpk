@@ -44,7 +44,6 @@ function updateSecurityBindingCounts(ns) {
     roleRefRoleCnt = 0;
     roleRefClusterRoleCnt = 0; 
     unknownKindCnt = 0; 
-
 }
 
 
@@ -228,8 +227,6 @@ function buildSecStatsTable () {
     rtn = rtn + '</table></div>'
     return rtn;
 }
-
-
 
 //----------------------------------------------------------
 console.log('loaded vpkSecUsage.js');

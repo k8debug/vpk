@@ -31,7 +31,6 @@ function securityDefinitions() {
     $("#securityDetail").empty();
 	$("#securityDetail").html(html);
 	$("#securityDetail").show();
-	
 }
 
 //

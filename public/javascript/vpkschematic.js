@@ -1513,7 +1513,5 @@ function buildContainerStatus(data) {
 	return {'msg': statusMsg, 'fill': statusFill }
 }
 
-
-
 //----------------------------------------------------------
 console.log('loaded vpkSchematic.js');
