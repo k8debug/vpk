@@ -8,6 +8,8 @@
 
 ###### Cluster
 
+---
+
 View resources defined in the cluster.  
 
 ---

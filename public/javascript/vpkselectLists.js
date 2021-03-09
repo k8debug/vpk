@@ -274,4 +274,4 @@ function bldClusterDir(dirs) {
 }
 
 //----------------------------------------------------------
-console.log('loaded vpkselectLists.js');
+console.log('loaded vpkSelectLists.js');

@@ -522,5 +522,6 @@ function buildRoles(ns, level) {
 	return;
 }
 
+
 //----------------------------------------------------------
 console.log('loaded vpkBuildSecArrays.js');

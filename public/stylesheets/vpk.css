@@ -544,3 +544,28 @@ body {
     max-width: 700px;
     margin-top: 50px;
 }
+
+.paleGreen {
+    background-color: #98fb98;
+    text-align: center; 
+    vertical-align: middle;
+}
+
+.paleRed { 
+    background-color: #ffcccb;
+    text-align: center; 
+    vertical-align: middle;
+}
+
+.centerText {
+    text-align: center; 
+    vertical-align: middle;
+}
+
+tr.border_bottom td {
+    border-bottom: 0.5px solid gray;
+  }
+
+.dualUp {
+    display: flex;
+}

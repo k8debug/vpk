@@ -257,4 +257,4 @@ function multiList(type, data) {
 }
 
 //----------------------------------------------------------
-console.log('loaded vpkgetDefs.js');
+console.log('loaded vpkGetDefs.js');

@@ -85,6 +85,7 @@
             <li class="nav-item"><a id="clusterTab"    href="#cluster"      data-target="#cluster"      data-toggle="tab" class="nav-link small text-uppercase">Cluster</a></li>
             <li class="nav-item"><a id="xreferenceTab" href="#xreference"   data-target="#xreference"   data-toggle="tab" class="nav-link small text-uppercase">X-Reference</a></li>
             <li class="nav-item"><a id="ownerliksTab"  href="#ownerlinks"   data-target="#ownerlinks"   data-toggle="tab" class="nav-link small text-uppercase">OwnerRef Links</a></li>
+            <li class="nav-item"><a id="compareTab"    href="#comparesnap"  data-target="#comparesnap"  data-toggle="tab" class="nav-link small text-uppercase">Compare Snapshots</a></li>
         </ul>
     </div>
 
@@ -406,51 +407,139 @@
                 </div>
                 <div id="clusterDetail" class="mr-2">                        
                 </div>
-            </div>                
-        </div>
+            </div>  
+            
+            
+            <div id="comparesnap" class="tab-pane">
+                <div class="grid mt-1 ml-2 mr-2 mb-2 border rounded">
+                    <!-- <div id="comparesources" class="header vpkfont-md pt-0 pb-2 ml-5"> -->
+                        <div class="ml-3 mt-2 vpkcolor vpkfont-md">
+                            <p>Select snapshots, sorting, and viewing results.
+                                Once selected press the Compare button.
+                            </p>
+                        </div>
 
+                        <div class="ml-0 mt-2 vpkfont-md">
+                            <span class="vpkfont-md vpkcolor ml-3">Snapshots:</span>
+                            <div class="pl-3" style='vertical-align:middle; display:inline;'>
+                                <button class="btn btn-sm btn-outline-primary vpkfont-md "
+                                    onclick="getCompareSnap('1')">
+                                    <span id="firstSnapDir" class="float-left">Snapshot 1</span>
+                                </button>
+                            </div> 
+                            
+                            <div class="pl-3" style='vertical-align:middle; display:inline;'>
+                                <button class="btn btn-sm btn-outline-primary vpkfont-md "
+                                    onclick="getCompareSnap('2')">
+                                    <span id="secondSnapDir" class="float-left">Snapshot 2</span>
+                                </button>
+                            </div>   
 
-        <div id="ownerlinks" class="tab-pane">
-            <div class="grid mt-1 ml-2 mr-2 mb-2 border rounded">
-                <div class="row vpkButtons mb-1 ml-1 mt-1">
-                    <div class="vpkcolor vpkfont-md ml-2 mt-2" style="width: 75px;">
-                        Sort first by
-                    </div>
-                    <div class="ml-2 mt-1">
-                        <select id="ownerSort1" 
-                            class="vpkfont-md pl-3"
-                            style="width: 100px; vertical-align:middle;">
-                            <option></option>
-                            <option>Kind</option>
-                            <option>Namespace</option>
-                            <option>Levels</option>
-                        </select>
-                    </div>
-                    <div class="vpkcolor vpkfont-md ml-4 mt-2" style="width: 90px;">
-                        Sort second by
-                    </div>
-                    <div class="ml-2 mt-1">
-                        <select id="ownerSort2" 
-                            class="vpkfont-md pl-3"
-                            style="width: 100px; vertical-align:middle;">
-                            <option></option>
-                            <option>Kind</option>
-                            <option>Namespace</option>
-                            <option>Levels</option>
-                        </select>
-                    </div>
+                            <div class="pl-3" style='vertical-align:middle; display:inline;'>
+                                <span class="vpkfont-md vpkcolor ml-5">Sorting: &nbsp;&nbsp;&nbsp;First by</span>
+                                <div class="ml-1 mt-1" style="display: inline;">
+                                    <select id="compareSort1" 
+                                        class="vpkfont-md pl-3"
+                                        style="width: 100px; vertical-align:middle;">
+                                        <option></option>
+                                        <option>Namespace</option>
+                                        <option>Name</option>
+                                        <option>Kind</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                    <div class="col-md-2 mt-1 ml-4">
-                        <button type="button" class="btn btn-outline-primary vpkButtons pl-2 pt-1 pb-1 pr-2" id="viewChart01" onclick="getOwnerRefLinks()">
-                        <span>Retrieve data</span>
-                        </button>
+                            <div class="pl-1" style='vertical-align:middle; display:inline;'>
+                                <span class="vpkfont-md vpkcolor ml-1">Second by</span>
+                                <div class="ml-1 mt-1" style="display: inline;">
+                                    <select id="compareSort2" 
+                                        class="vpkfont-md pl-3"
+                                        style="width: 100px; vertical-align:middle;">
+                                        <option></option>
+                                        <option>Namespace</option>
+                                        <option>Name</option>
+                                        <option>Kind</option>
+                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="pl-1" style='vertical-align:middle; display:inline;'>
+                                <span class="vpkfont-md vpkcolor ml-5">View Results</span>
+                                <div class="ml-1 mt-1" style="display: inline;">
+                                    <select id="compareView" 
+                                        class="vpkfont-md pl-3"
+                                        style="width: 100px; vertical-align:middle;">
+                                        <option></option>
+                                        <option>All</option>
+                                        <option>Matching</option>
+                                        <option>Non-matching</option>
+                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="pl-5" style='vertical-align:middle; display:inline;'>
+                                <button class="btn btn-sm btn-outline-primary vpkfont-md ml-5"
+                                    onclick="compareSnapshots()">
+                                    <span id="snapCompare" class="float-left">Compare snapshots</span>
+                                </button>
+                            </div>
+                        </div>                
+                        <div class="ml-2 mt-2">
+                            <div class="vpkfont-md vpkcolor ml-2"><b>Snapshot 1:&nbsp;</b> <span id="firstSnap"  class="vpkfont-md vpkcolor"></span>
+                            </div>    
+                            <div class="vpkfont-md vpkcolor ml-2"><b>Snapshot 2:&nbsp;</b> <span id="secondSnap" class="vpkfont-md vpkcolor"></span>
+                            </div>    
+                        </div>
+                    <!-- <div> -->
+                </div>
+
+                <div id="compareDetail" class="mr-2 ml-2 mt-2">                        
+                </div>
+
+            </div>
+
+            <div id="ownerlinks" class="tab-pane">
+                <div class="grid mt-1 ml-2 mr-2 mb-2 border rounded">
+                    <div class="row vpkButtons mb-1 ml-1 mt-1">
+                        <div class="vpkcolor vpkfont-md ml-2 mt-2" style="width: 75px;">
+                            Sort first by
+                        </div>
+                        <div class="ml-2 mt-1">
+                            <select id="ownerSort1" 
+                                class="vpkfont-md pl-3"
+                                style="width: 100px; vertical-align:middle;">
+                                <option></option>
+                                <option>Kind</option>
+                                <option>Namespace</option>
+                                <option>Levels</option>
+                            </select>
+                        </div>
+                        <div class="vpkcolor vpkfont-md ml-4 mt-2" style="width: 90px;">
+                            Sort second by
+                        </div>
+                        <div class="ml-2 mt-1">
+                            <select id="ownerSort2" 
+                                class="vpkfont-md pl-3"
+                                style="width: 100px; vertical-align:middle;">
+                                <option></option>
+                                <option>Kind</option>
+                                <option>Namespace</option>
+                                <option>Levels</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 mt-1 ml-4">
+                            <button type="button" class="btn btn-outline-primary vpkButtons pl-2 pt-1 pb-1 pr-2" id="viewChart01" onclick="getOwnerRefLinks()">
+                                <span>Retrieve data</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="ownerRefLinksDetail" class="mr-2">                        
-            </div>
-        </div>   
+                
+                <div id="ownerRefLinksDetail" class="mr-2">                        
+                </div>
+            </div> 
+        </div>  
 
         <!-- ==================================== -->
         <!-- Tool tips are shown here             -->		        
@@ -464,7 +553,6 @@
     <%- include('partials/xrefModal') %>
 
 
-    </div>  <!-- End of Wrapper -->
 </body>
   
   <!-- Append the needed scripts -->

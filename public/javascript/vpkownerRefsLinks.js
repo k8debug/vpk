@@ -276,3 +276,6 @@ function processOwnerRefs(data) {
     return rtn;
 
 }
+
+//----------------------------------------------------------
+console.log('loaded vpkOwnerRefsLinks.js');

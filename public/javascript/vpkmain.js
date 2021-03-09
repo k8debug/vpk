@@ -77,6 +77,11 @@ $(document).ready(function() {
     $("#ownerlinks").removeClass("active");
     $("#ownerlinks").removeClass("show");
     $('#ownerlinks').hide();
+    $("#comparesnap").removeClass("active");
+    $("#comparesnap").removeClass("show");
+
+    $("#firstSnap").html('&lt;not selected&gt;');
+    $("#secondSnap").html('&lt;not selected&gt;');
 
     // get the name of selected tab and process
     $( 'a[data-toggle="tab"]' ).on( 'shown.bs.tab', function( evt ) {
@@ -144,6 +149,12 @@ $(document).ready(function() {
         } else {
             $('#ownerlinks').hide();
         }
+        if (currentTab === "#comparesnap") {
+            documentationTabTopic = 'comparesnap';
+            $('#comparesnap').show();
+        } else {
+            $('#comparesnap').hide();
+        }
     });
 
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
@@ -182,6 +193,20 @@ $(document).ready(function() {
         containerCssClass: "vpkfont-md",
         placeholder: "select snapshot"
     }); 
+
+    $('#compareInstances').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "select snapshot"
+    });    
+
+    $('#compareInstances').on('select2:select', function (e) { 
+        var snapDir = $('#compareInstances').select2('data');
+        compareSnapSelected = snapDir[0].text;
+        console.log('Snap selected: ' + compareSnapSelected);
+        $('#compareInstance').val(null)
+    });
+
 
     $('#graphic-ns-filter').select2({
         dropdownCssClass: "vpkfont-md",
@@ -230,6 +255,24 @@ $(document).ready(function() {
         placeholder: "sort order"
     }); 
 
+    //-- compare dropdowns
+    $('#compareSort1').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "Namespace"
+    }); 
+    $('#compareSort2').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "Name"
+    });
+    $('#compareView').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "All"
+    });
+
+
 	// 
 	$("#clusterType").change(function(){
 		var selected = $('#clusterType option:selected').val();
@@ -237,6 +280,8 @@ $(document).ready(function() {
 	});
 
     editor = ace.edit("editor");
+    editorC1 = ace.edit("editorC1");
+    editorC2 = ace.edit("editorC2");
 
     $('[data-toggle="popover"]').popover();
 
@@ -344,20 +389,75 @@ function docPrevTopic() {
 //----------------------------------------------------------
 // show change directory modal 
 function changeDir() {
-    socket.emit('clusterDir');
+    let data = {'which': 0};
+    socket.emit('clusterDir', data);
     $("#validateBtn").show();
     $("#loadStatus").hide();
     $("#chgDirFooter").show();
 }
+function getCompareSnap(which) {
+    compareSnapButton = which;
+    let data = {'which': which};
+    socket.emit('clusterDir', data);
+}
+
+function setCompareSnap() {
+    if (compareSnapButton === "1" || compareSnapButton === 1) {
+        compareSnap1Selected = compareSnapSelected;
+        $("#firstSnap").html(compareSnap1Selected);
+    } else if (compareSnapButton === "2" || compareSnapButton === 2) {
+        compareSnap2Selected = compareSnapSelected;
+        $("#secondSnap").html(compareSnap2Selected);
+    }
+    $("#compareModal").modal('hide');
+}
+
+
 //...
 socket.on('clusterDirResult', function(data) {
     //build the drop down of existing directories, hide messages, open modal
     var items = bldClusterDir(data.dirs);
     hideMessage();
-    $('#dsInstances').html(items);
-    $("#chgDirModal").modal('show');
+
+    if (data.which === "0" || data.which === 0) {
+        $('#dsInstances').html(items);
+        $("#chgDirModal").modal('show');
+    } else if (data.which === "1" || data.which === 1) {
+        $('#compareInstances').html(items);
+        $("#compareModal").modal('show');
+    } else if (data.which === "2" || data.which === 2) {
+        $('#compareInstances').html(items);
+        $("#compareModal").modal('show');
+    }
 
 });
+//==========================================================
+
+
+//----------------------------------------------------------
+// snapshoit compare 
+function compareSnapshots() {
+    let html = '<div class="row">'
+    + '<div class="col mt-1 ml-4">'
+    + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
+    + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>' 
+    + '    </div>'
+    + '</div>';
+
+    $("#compareDetail").empty();
+    $("#compareDetail").html(html);
+
+    console.log('Snap 1: ' + compareSnap1Selected + '  Snap 2: ' + compareSnap2Selected);
+    let data = {'snap1': compareSnap1Selected, 'snap2': compareSnap2Selected};
+    socket.emit('compareSnapshots', data);
+}
+
+//...
+socket.on('compareSnapshotsResults', function(data) {
+    // hand results to compare logic to build UI
+    buildCompareResults(data, compareSnap1Selected, compareSnap2Selected);
+});
+
 //==========================================================
 
 
@@ -466,6 +566,26 @@ socket.on('objectDef', function(data) {
     editDef(data);
 });
 //==========================================================
+
+
+//----------------------------------------------------------
+function getCompareFile(fn, which) {
+    socket.emit('getCompareFile', {'fn': fn, 'which': which} );
+}
+//...
+socket.on('getCompareFileResults', function(data) {
+    // if results of first file, get second file, else show files
+    if (data.which === '1') {
+        compFile1 = data.content;
+        getCompareFile2();
+    }
+    if (data.which === '2') {
+        compFile2 = data.content;
+        compareShowFiles();
+    }
+});
+//==========================================================
+
 
 
 //----------------------------------------------------------
@@ -1086,6 +1206,10 @@ function getConfig() {
 //----------------------------------------------------------
 //...
 //==========================================================
+//==========================================================
+//==========================================================
+//==========================================================
+//==========================================================
 
 
 //----------------------------------------------------------
@@ -1149,7 +1273,6 @@ function getCluster() {
         keyboard: false        
     }); 
     $("#clusterRunning").hide();
-    console.log('4-5')
     $("#clusterModalFooter").show();
     $("#clusterModal").modal('show');
     $("#clusterStatus").empty();
@@ -1238,4 +1361,4 @@ function getProvider(selected) {
 
 
 //----------------------------------------------------------
-console.log('loaded vpkmain.js');
+console.log('loaded vpkMain.js');

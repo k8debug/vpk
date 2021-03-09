@@ -233,3 +233,6 @@ const handleCollapseClick = (d, i, ct) => {
         }
     }
 }
+
+//----------------------------------------------------------
+console.log('loaded chartCollapsible.js');

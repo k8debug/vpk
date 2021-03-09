@@ -226,3 +226,7 @@ function handleCPClick(d, i, ct) {
         }
     }
 }
+
+
+//----------------------------------------------------------
+console.log('loaded chartCirclePack.js');

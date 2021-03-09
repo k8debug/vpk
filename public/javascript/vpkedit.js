@@ -20,7 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------
 // format server returned resource definition file and display
 //----------------------------------------------------------
-function editDef(data) {
+function editDef(data, which) {
+    if (typeof which === 'undefined') {
+        which = null;
+    }
     //console.log(JSON.stringify(data, null, 4));
     var part = data.filePart;
     var defkey = data.defkey;
@@ -63,16 +66,30 @@ function editDef(data) {
         fnum = defkey;
     }
 
-    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '" width="50" height="50" ' 
+    if (defkey.endsWith('/ndf')) {
+        fnum = 'No matching file';
+    }
+
+    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '" width="30" height="30" ' 
     + ' onclick="getExplain(\'' + kind + '\',\'' + api + '\')"></img>'
     + '<div style="vertical-align:middle; display:inline;" class="vpkcolor vpkfont pl-2">'
-    + kind + '  (' + fnum + ')'
-    + '</div>';
-    $("#editTitle").html(editImage);
-    initAceEditor(rtn);
-    $('#editorModal').modal('show');
-}
+    + kind + '  (' + fnum + ')';
 
+    if (which === null || which === '') {
+        $("#editTitle").html(editImage + '</div>');
+        initAceEditor(rtn);
+        $('#editorModal').modal('show');
+    } else if (which === '1') {
+        $("#snapTitle1").html('<b>Snapshot 1:</b>&nbsp;' + compareSnap1Selected)
+        $("#compareTitle1").html(editImage + '<hr></div>');
+        compareFile1Editor1(rtn);
+    } else if (which === '2') {
+        $("#snapTitle2").html('<b>Snapshot 2:</b>&nbsp;' + compareSnap2Selected)
+        $("#compareTitle2").html(editImage + '<hr></div>');
+        compareFile2Editor1(rtn);
+    }
+}
+ 
 
 function initAceEditor(rtn) {
     editor = ace.edit("editor");
@@ -95,5 +112,48 @@ function initAceEditor(rtn) {
     editor.renderer.scrollToRow(1);  
 }
 
+function compareFile1Editor1(rtn) {
+    editorC1 = ace.edit("editorC1");
+    editorC1.setValue(rtn);
+    editorC1.setTheme("ace/theme/sqlserver");         // theme for editing
+    editorC1.getSession().setMode("ace/mode/yaml");   // type of file high lighting
+    editorC1.setOptions(
+        {
+            cursorStyle: "wide",
+            fontSize: 11,
+            printMargin: false,
+            tabSize: 2,
+            scrollPastEnd: 0.10,
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true
+        }
+    );
+    editorC1.focus();
+    editorC1.gotoLine(1,0, true);
+    editorC1.renderer.scrollToRow(1);  
+}
+
+function compareFile2Editor1(rtn) {
+    editorC2 = ace.edit("editorC2");
+    editorC2.setValue(rtn);
+    editorC2.setTheme("ace/theme/sqlserver");         // theme for editing
+    editorC2.getSession().setMode("ace/mode/yaml");   // type of file high lighting
+    editorC2.setOptions(
+        {
+            cursorStyle: "wide",
+            fontSize: 11,
+            printMargin: false,
+            tabSize: 2,
+            scrollPastEnd: 0.10,
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true
+        }
+    );
+    editorC2.focus();
+    editorC2.gotoLine(1,0, true);
+    editorC2.renderer.scrollToRow(1);  
+}
+
+
 //----------------------------------------------------------
-console.log('loaded vpkedit.js');
+console.log('loaded vpkEdit.js');

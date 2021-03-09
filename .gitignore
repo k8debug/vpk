@@ -1,13 +1,12 @@
-# Logs
-logs
-*.log
-npm-debug.log*
+#==== Directories and Files to exclude ====
 
-#DS_Store
-public/.DS_Store
+# VpK created runtime directories
+cluster/*
+usage/*
+userconfig.json
 
-# Dependency directories
-node_modules
+# Node packages and other libs
+node_modules/*
 
 # Optional npm cache directory
 .npm
@@ -15,17 +14,25 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
+# VSCode
 .vscode/*
 
+# eslint
 .eslintrc.js
 
-#Directories
-cluster/*
-clis/*
-import/*
-export/*
-usage/*
+# Logs
+logs
+*.log
+npm-debug.log*
 
-#Files
-.eslintrc.js
+# node package
 package-lock.json
+
+# DS_Store
+.DS_Store
+public/.DS_Store
+public/docs/.DS_Store
+public/docs/docimages/.DS_Store
+public/images/.DS_Store
+
+
