@@ -7,6 +7,7 @@
 <a style="float: right;" href="javascript:docPrevTopic()"><i class="fas fa-lg fa-arrow-left"></i>&nbsp;Prev&nbsp;&nbsp;</a>
 
 ###### Storage
+
 ---
 
 View of StroageClasses and requested space.

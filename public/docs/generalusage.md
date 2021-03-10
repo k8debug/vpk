@@ -7,7 +7,9 @@
 <a style="float: right;" href="javascript:docPrevTopic()"><i class="fas fa-lg fa-arrow-left"></i>&nbsp;Prev&nbsp;&nbsp;</a>
 
 ###### User Interface and general usage 
+
 ---
+
 User interface of VpK.  
 
 <div style="margin-left: 150px;">

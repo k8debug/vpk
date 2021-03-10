@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js -p 4200"
   },
-  "author": "David A. Weilert",
+  "author": "K8Debug",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.2",

@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2020 David A. Weilert
+Copyright (c) 2018-2021 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -51,7 +51,11 @@ var dsToggle = 'kind';
 var bootstrapModalCounter = 0;
 var documentationTabTopic = 'toc';
 
-
+// global of which compare snapshot is selected
+let compareSnapButton = 0;
+let compareSnapSelected = '';
+let compareSnap1Selected = '';
+let compareSnap2Selected = '';
 
 // objects that contain html sections that are dnynamically shown
 let svgInfo = {};            			// tool tip pop-ups
@@ -152,6 +156,7 @@ let storageInfo = {};
 let storageData = '';
 let storageInfoID = 0;
 
+let dirtyXrefMsg = 'X-Ref maintenance has changed the defined xrefs.  If a snapshot has been loaded it must be re-parsed to use the updated xrefs.'
 
 let explainInfo = [];
 
@@ -1353,8 +1358,19 @@ function showMessage(msg, level) {
     $("#messageModal").modal('show');
 }
 
+function showDirtyXrefMsg() {
+	$('#messageDiv').addClass('show');
+    $('#messageText').html(dirtyXrefMsg);
+}
+
 function hideMessage() {
     $("#messageModal").modal('hide');
+}
+
+function hideMessage2() {
+    $('#messageText').html('');
+	$('#messageDiv').removeClass('show');
+    $('#messageDiv').addClass('hide');
 }
 
 // used by vpkBuildSecArray and vpkSecUsage
@@ -1467,7 +1483,6 @@ function bldXrefRulesTable() {
 		console.log('Error building xrefRulesTable: ' + err);
 	}
 }
-
 
 //----------------------------------------------------------
 console.log('loaded vpkCommon.js');

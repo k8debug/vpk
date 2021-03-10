@@ -1,5 +1,5 @@
 <topicKey ownerref/>
-<topicBack id="topicNext" link="toc"/>
+<topicBack id="topicNext" link="comparesnap"/>
 <topicNext id="topicBack" link="xreference"/>
 
 <a style="float: right;" href="javascript:docNextTopic()">&nbsp;&nbsp;Next&nbsp;<i class="fas fa-lg fa-arrow-right"></i></a>
@@ -8,6 +8,7 @@
 
 ###### OwnerReference
 
+---
   
 Owner reference links provides a view of the owner reference chain.  
 
