@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2020 David A. Weilert
+Copyright (c) 2018-2021 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -24,6 +24,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // used by chgDirModal
 function closeChgDir() {
     $("#chgDirModal").modal('hide')
+}
+
+function compareShowFiles() {
+    editDef(compFile1, '1')
+    editDef(compFile2, '2')
+    $("#compareFilesModal").modal('show')
 }
 
 
@@ -117,6 +123,7 @@ function xrefDeleteXref() {
     populateXrefLists(data)
     // save to disk
     saveConfig('xref');
+    showDirtyXrefMsg();
     $("#xrefSelect").show();
     $("#xrefEditDescBtn").show(); 
     $("#xrefShowSelected").hide();
@@ -148,6 +155,7 @@ function xrefNameSave() {
     xrefData.names[ xrefData.picked ].xon = onOff;
     setXrefLevel();
     saveConfig('xref');
+    showDirtyXrefMsg();
 
     let data = {'xRefs': xrefData.names}
     //update the drop down lists
@@ -224,6 +232,7 @@ function xrefEditRuleDelete() {
     bldXrefRulesTable();
     // save to disk
     saveConfig('xref');
+    showDirtyXrefMsg();
     // show/hide screen portions
     $("#xrefShowRuleName").hide(); 
     $("#xrefEditQuestion").hide();
@@ -256,6 +265,7 @@ function xrefSaveEditedRule() {
     setXrefRuleEnabledBox();
     // save the update to disk
     saveConfig('xref');
+    showDirtyXrefMsg();
     // update table 
     bldXrefRulesTable();
     // hide edit and editShow, show table
@@ -317,6 +327,7 @@ function xrefSaveNewPathRule() {
     bldXrefRulesTable();
     // save to disk
     saveConfig('xref');
+    showDirtyXrefMsg();
     $("#xrefEditDescBtn").show(); 
     $("#xrefPathRules").show();
     $("#xrefNewPathRule").hide()
@@ -339,6 +350,7 @@ function xrefSaveNewXref() {
         populateXrefLists(data)
         // save to disk
         saveConfig('xref');
+        showDirtyXrefMsg();
         $("#xrefSelect").show();
         $("#xrefEditDescBtn").show(); 
         $("#xrefNewXref").hide()

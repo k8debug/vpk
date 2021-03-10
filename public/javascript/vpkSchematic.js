@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2020 David A. Weilert
+Copyright (c) 2018-2021 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -1512,8 +1512,6 @@ function buildContainerStatus(data) {
 	}
 	return {'msg': statusMsg, 'fill': statusFill }
 }
-
-
 
 //----------------------------------------------------------
 console.log('loaded vpkSchematic.js');

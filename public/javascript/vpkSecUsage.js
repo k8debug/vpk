@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2020 David A. Weilert
+Copyright (c) 2018-2021 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -44,7 +44,6 @@ function updateSecurityBindingCounts(ns) {
     roleRefRoleCnt = 0;
     roleRefClusterRoleCnt = 0; 
     unknownKindCnt = 0; 
-
 }
 
 
@@ -228,8 +227,6 @@ function buildSecStatsTable () {
     rtn = rtn + '</table></div>'
     return rtn;
 }
-
-
 
 //----------------------------------------------------------
 console.log('loaded vpkSecUsage.js');
