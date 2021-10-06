@@ -380,6 +380,14 @@ function xrefCloseFirstRule() {
     $("#xrefSelect").show();
 }
 
+
+//----------------------------------------------------
+// ----- 3D cluster filtering
+function filter3DView() {
+    $("#filter3DModal").modal('show'); 
+}
+
+
 //----------------------------------------------------
 // ----- Security related
 

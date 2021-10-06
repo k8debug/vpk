@@ -22,12 +22,32 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------
 
 
-function buildClusterTab() {
-    let html = clusterTabTable();
+function buildClusterTable() {
+	$('#c3DFilter').prop('disabled',true);
+	$('#cluster3DView').hide();
+	$("#clusterDetail").show();
+	$("#renderCanvas").html('');
+	let html = clusterTabTable();
+	$("#resourceProps").html('');
     $("#clusterDetail").html(html);
 }
 
+//----------------------------------------------------------
+// build 3D data for cluster tab
+//----------------------------------------------------------
 
+function buildCluster3D() {
+	$('#c3DFilter').prop('disabled',false);
+	build3DJSON();
+	$('#cluster3DView').show();
+    build3DView();
+	$("#resourceProps").html('')
+}
+
+
+//----------------------------------------------------------
+// build table list data for cluster tab
+//----------------------------------------------------------
 function clusterTabTable() {
 	let divSection = '<div class="events"><table style="width:100%">';
 	let header1 = '<tr class="partsList"><th class="pt-1 pb-1 pr-1 pl-1">';

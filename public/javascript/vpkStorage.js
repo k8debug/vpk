@@ -208,5 +208,6 @@ function buildPVLine(storCnt, sc, lastSC) {
     return rtn = hdr + rtn + '</svg></div>'
 }
 
+
 //----------------------------------------------------------
 console.log('loaded vpkStorage.js');

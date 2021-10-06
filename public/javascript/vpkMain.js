@@ -194,6 +194,12 @@ $(document).ready(function() {
         placeholder: "select snapshot"
     }); 
 
+    $('#graphic-ns-filter').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "select namespace(s)"
+    }); 
+
     $('#compareInstances').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
@@ -208,11 +214,11 @@ $(document).ready(function() {
     });
 
 
-    $('#graphic-ns-filter').select2({
+    $('#cluster-ns-filter').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select namespace(s)"
-    }); 
+    });  
 
     $('#xref-filter').select2({
         dropdownCssClass: "vpkfont-md",
@@ -294,6 +300,22 @@ $(document).ready(function() {
 });
 
 
+
+var hideClusterPanel = function() {
+    clusterPanelIsClosed = true;
+    clusterFilterPanel.style.webkitTransform = "translateX(300px)";
+    clusterFilterPanel.style.transform = "translateX(300px)"
+};
+
+var check3DFilter = function() {
+    if (clusterPanelIsClosed) {
+        clusterPanelIsClosed = false;
+        clusterFilterPanel.style.webkitTransform = "translateX(0px)";
+        clusterFilterPanel.style.transform = "translateX(0px)"
+    } else {
+        hideClusterPanel()
+    }
+}
 
 //----------------------------------------------------------
 //----------------------------------------------------------
@@ -876,6 +898,12 @@ function reload() {
     $("#schematicDetail").html('');
     $("#ownerRefLinksDetail").empty();
     $("#ownerRefLinksDetail").html('');
+    if (typeof engine !== null) {
+        // scene.dispose();
+        // engine.dispose();
+        $("#Canvas3D").html('<canvas id="renderCanvas"></canvas>');
+        $('#cluster3DView').hide();
+    }
 
     //TODO consider handling other tabs
 
@@ -906,7 +934,7 @@ socket.on('resetResults', function(data) {
         $("#storageDetail").html('')
         $("#clusterDetail").html('')
         getSelectLists('y');
-
+ 
     }
 });
 //==========================================================
@@ -919,21 +947,37 @@ function bldSchematic() {
     getDataRequest = 'schematic';
     socket.emit('schematic');
 }
-function getClusterTabInfo() {
+function getCluster3DInfo() {
     hideMessage();
-    $("#clusterDetail").html(processingRequest)
-    getDataRequest = 'cluster';
+    $("#clusterDetail").hide();
+	$("#clusterDetail").html('');
+    $('#cluster3DView').hide();
+
+    $("#resourceProps").html(processingRequest)
+    getDataRequest = 'cluster3D';
+    socket.emit('schematic');
+}
+function getClusterTableInfo() {
+    hideMessage();
+    $('#cluster3DView').hide();
+    $("#clusterDetail").html('');
+    $("#resourceProps").html(processingRequest);
+    getDataRequest = 'clusterTable';
     socket.emit('schematic');
 }
 //...
 socket.on('schematicResult', function(data) {
     k8cData = data.data;
     hideMessage();
+    $("#clusterDetail").html('')
     if (getDataRequest === 'schematic') {
         schematic();       
     }
-    if (getDataRequest === 'cluster') {
-        buildClusterTab();       
+    if (getDataRequest === 'cluster3D') {
+        buildCluster3D();       
+    }
+    if (getDataRequest === 'clusterTable') {
+        buildClusterTable();
     }
 
 });
@@ -1281,6 +1325,7 @@ function getCluster() {
         keyboard: false        
     }); 
     $("#clusterRunning").hide();
+
     $("#clusterModalFooter").show();
     $("#clusterModal").modal('show');
     $("#clusterStatus").empty();
@@ -1366,6 +1411,7 @@ function getProvider(selected) {
         }
     }
 }
+
 
 //----------------------------------------------------------
 console.log('loaded vpkMain.js');

@@ -23,6 +23,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 function populateSelectLists(data) {
+    // reset indicator for 3d selection dropdown built process
+    foundNSNamesBuilt = false;
+
     popCnt++;
     var options;
 
@@ -38,7 +41,7 @@ function populateSelectLists(data) {
         rootDir = data.baseDir;
         baseDir = data.baseDir;
 
-        // filter bar1 (namespaces)
+        // filter bar1 (namespaces) and grapcis and cluster drop downs
         options = bldOptions(data.namespaces, 'N', 'select2');
         $("#ns-filter").empty();
         $("#ns-filter").select2({ 

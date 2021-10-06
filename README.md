@@ -117,9 +117,9 @@ https://youtu.be/nwm5IFHbR34 - User interface basics
 
 ## Contributors
 
-Dave Weilert
-VJ Landon
-Dave Krier
+Dave Weilert   
+VJ Landon   
+Dave Krier   
 
 https://github.com/k8debug/vpk 
 

@@ -394,18 +394,31 @@
             <div id="cluster" class="tab-pane">
                 <div class="grid mt-1 ml-2 mr-2 mb-2 border rounded">
                     <div class="row vpkButtons mb-1 ml-1 mt-1">
-                        <div class="vpkcolor vpkfont-md ml-2" style="width: 240px;">
-                            Select view
-                        </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-primary btn-sm vpkButtons" id="viewChart01" onclick="getClusterTabInfo()">
-                            &nbsp;Cluster&nbsp;
-                            </button>
+                        <div class="col-md-8">
+                            <button type="button" id="cTableView" class="btn btn-outline-primary btn-sm vpkButtons" onclick="getClusterTableInfo()">&nbsp;Table View&nbsp;</button>
+                            <button type="button" id="c3DView" class="btn btn-outline-primary btn-sm vpkButtons" onclick="getCluster3DInfo()">&nbsp;3D View&nbsp;</button>
+                            <button disabled type="button" id="c3DFilter" class="btn btn-outline-primary btn-sm vpkButtons" onClick="filter3DView()">&nbsp;Filter 3D View&nbsp;</button>
                         </div>
                     </div>
                 </div>
+
+                <div id="resourceProps" class="mb-1 vpkfont vpkcolor">
+                    &nbsp;
+                </div>
+
+                <!-- Cluster 3D View-->
+                <div id="cluster3DView" style="display: none;">
+                    <div class="cluster-wrap">
+                        <div class="cluster-content" id="canvas3D">
+                            <canvas id="renderCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cluster Table View-->
                 <div id="clusterDetail" class="mr-2">                        
                 </div>
+
             </div>  
             
             

@@ -22,6 +22,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------
 
 // Global vars 
+
+// 3D view related
+let clusterPanelIsClosed = true;
+let foundNSNamesBuilt = false;
+let sceneColorR = 0.5;
+let sceneColorG = 0.5;
+let sceneColorB = 0.5;
+let stickColorDark = false;
+let soundFor3D = true;
+
+// global
 var version = 'Get from server';
 var socket = io.connect();
 var svgE = 0; 
@@ -1483,6 +1494,7 @@ function bldXrefRulesTable() {
 		console.log('Error building xrefRulesTable: ' + err);
 	}
 }
+
 
 //----------------------------------------------------------
 console.log('loaded vpkCommon.js');
