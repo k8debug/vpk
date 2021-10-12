@@ -42,14 +42,32 @@ let foundNSNames = [];
 
 
 function set3dBackColor(r,g,b, title) {
+    if (title === 'Stars') {
+        sceneStars = true;
+        sceneClouds = false;
+        stickColorDark = false;
+        $("#colorTitle").html(title);
+        return;
+    }
+
+    if (title === 'Clouds') {
+        sceneClouds = true;
+        sceneStars = false;
+        stickColorDark = true;
+        $("#colorTitle").html(title);
+        return;
+    }
+
+    // Solid color not image
     sceneColorR = r / 255;
     sceneColorG = g / 255;
     sceneColorB = b / 255;
+    console.log(r + ' ' +  g + ' ' + b)
     $("#colorTitle").html(title);
     if (title === 'Straw' || title === 'Grey' || title === 'Lavender' || title === 'Olive' || title === 'Teal' || title === 'White') {
-        stickColorDark = false;
-    } else {
         stickColorDark = true;
+    } else {
+        stickColorDark = false;
     }
 }
 
@@ -248,7 +266,36 @@ const createScene = function () {
     }
 
     const scene = new BABYLON.Scene(engine);
-    scene.clearColor = new BABYLON.Color3(sceneColorR, sceneColorG, sceneColorB);
+
+    // set scene background
+    if (sceneStars === true) {
+        scene.clearColor = new BABYLON.Color3(0.1,0.1,0.1);
+        let skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+        let skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/stars", scene);
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+        skybox.material = skyboxMaterial;
+    } else if (sceneClouds === true) {
+        scene.clearColor = new BABYLON.Color3(0.1,0.1,0.1);
+        let skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+        let skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/clouds", scene);
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+        skybox.material = skyboxMaterial;
+    } else {
+        scene.clearColor = new BABYLON.Color3(sceneColorR, sceneColorG, sceneColorB);
+    }
+
+
+
+
+
     const camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, 3 * Math.PI / 8, 30, BABYLON.Vector3.Zero());
     camera.attachControl(canvas, true);
 
@@ -286,7 +333,7 @@ const createScene = function () {
     pvcColor.diffuseColor = new BABYLON.Color3(0.75, 0.75, 0.10);
 
     let stickColor = new BABYLON.StandardMaterial("serviceColorMat", scene);
-    if (stickColorDark === true) {
+    if (stickColorDark === false) {
         stickColor.diffuseColor = new BABYLON.Color3(1, 1, 1);
     } else {
         stickColor.diffuseColor = new BABYLON.Color3(.20, .20, .20);
@@ -759,6 +806,7 @@ const createScene = function () {
         // update angle for next item to be defined
         angle += PI2 / max;
     }
+
     // return the newly built scene to the calling function
     return scene;
 }

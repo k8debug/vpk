@@ -26,10 +26,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 3D view related
 let clusterPanelIsClosed = true;
 let foundNSNamesBuilt = false;
-let sceneColorR = 0.5;
-let sceneColorG = 0.5;
-let sceneColorB = 0.5;
-let stickColorDark = false;
+let sceneColorR = 0.9;
+let sceneColorG = 0.9;
+let sceneColorB = 0.9;
+let sceneStars = false;
+let sceneClouds = false;
+let stickColorDark = true;
 let soundFor3D = true;
 
 // global

@@ -934,6 +934,8 @@ socket.on('resetResults', function(data) {
         $("#storageDetail").html('')
         $("#clusterDetail").html('')
         getSelectLists('y');
+        // Issue #17 fix
+        foundNSNamesBuilt = false;
  
     }
 });
