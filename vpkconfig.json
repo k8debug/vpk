@@ -7,7 +7,7 @@
                 "command": "kubectl get"
             },
             "authCmd": {
-                "command": "kubectl ",
+                "command": "",
                 "parms": [
                     {
                         "key": "dirName",
@@ -31,7 +31,7 @@
                 "command": "oc get"
             },
             "authCmd": {
-                "command": "oc ",
+                "command": "",
                 "parms": [
                     {
                         "key": "dirName",

@@ -15,12 +15,12 @@ LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE A
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/ 
+*/
 
 //------------------------------------------------------------------------------
 // Main server 
 //------------------------------------------------------------------------------
-const softwareVersion = '5.0.0';
+const softwareVersion = '5.0.1';
 
 //------------------------------------------------------------------------------
 // Require statements
@@ -52,15 +52,15 @@ const clientIO = require('./lib/clientIO');
 //------------------------------------------------------------------------------
 let port = 4200;
 let optionDefinitions = [{
-        name: 'port',
-        alias: 'p',
-        type: Number,
-        defaultOption: 4200
-    },
-    {
-        name: 'help',
-        alias: 'h'
-    }
+    name: 'port',
+    alias: 'p',
+    type: Number,
+    defaultOption: 4200
+},
+{
+    name: 'help',
+    alias: 'h'
+}
 ];
 
 //------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ if (typeof options.help !== 'undefined') {
 if (typeof options.port !== 'undefined' && options.port !== null) {
     port = options.port;
     if (port < 1 || port > 65535) {
-        utl.logMsg('vpkMNL099 - Invalid port number defined.  Valid range is 1 - 65535' );
+        utl.logMsg('vpkMNL099 - Invalid port number defined.  Valid range is 1 - 65535');
         process.exit(-1);
     }
 }
@@ -87,7 +87,7 @@ if (typeof options.port !== 'undefined' && options.port !== null) {
 // splash screen
 //------------------------------------------------------------------------------
 splash.pop(softwareVersion, port);
- 
+
 
 //------------------------------------------------------------------------------
 // read vpk configuration file

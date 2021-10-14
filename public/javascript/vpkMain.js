@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------
 // document ready
 //----------------------------------------------------------
-$(document).ready(function() {
+$(document).ready(function () {
 
     // get version from server
     getVersion();
@@ -32,16 +32,16 @@ $(document).ready(function() {
         }
     });
 
-    $('.carousel-item', '.multi-item-carousel').each(function(){
+    $('.carousel-item', '.multi-item-carousel').each(function () {
         var next = $(this).next();
-        if (! next.length) {
-          next = $(this).siblings(':first');
+        if (!next.length) {
+            next = $(this).siblings(':first');
         }
         next.children(':first-child').clone().appendTo($(this));
-    }).each(function(){
+    }).each(function () {
         var prev = $(this).prev();
-        if (! prev.length) {
-          prev = $(this).siblings(':last');
+        if (!prev.length) {
+            prev = $(this).siblings(':last');
         }
         prev.children(':nth-last-child(2)').clone().prependTo($(this));
     });
@@ -49,8 +49,8 @@ $(document).ready(function() {
     $('.modal').on("hidden.bs.modal", function (e) {
         --bootstrapModalCounter;
         if (bootstrapModalCounter > 0) {
-        //don't need to recalculate backdrop z-index; already handled by css
-        $('body').addClass('modal-open');
+            //don't need to recalculate backdrop z-index; already handled by css
+            $('body').addClass('modal-open');
         }
     }).on("show.bs.modal", function (e) {
         ++bootstrapModalCounter;
@@ -84,10 +84,10 @@ $(document).ready(function() {
     $("#secondSnap").html('&lt;not selected&gt;');
 
     // get the name of selected tab and process
-    $( 'a[data-toggle="tab"]' ).on( 'shown.bs.tab', function( evt ) {
-        currentTab = $( evt.target ).attr( 'href' );
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (evt) {
+        currentTab = $(evt.target).attr('href');
         // take action based on what tab was shown
-        if(currentTab === "#instructions") {
+        if (currentTab === "#instructions") {
             documentationTabTopic = 'overview';
             $('#instructions').show();
         } else {
@@ -97,9 +97,9 @@ $(document).ready(function() {
             checkIfDataLoaded();
             documentationTabTopic = 'tableview';
             $('#tableview').show();
-        } else {            
+        } else {
             $('#tableview').hide();
-        } 
+        }
         if (currentTab === "#schematic") {
             checkIfDataLoaded();
             documentationTabTopic = 'schematics';
@@ -120,18 +120,18 @@ $(document).ready(function() {
             $('#security').show();
         } else {
             $('#security').hide();
-        }    
+        }
         if (currentTab === "#storage") {
             checkIfDataLoaded();
             documentationTabTopic = 'storage';
-            $('#storage').show();            
+            $('#storage').show();
         } else {
-            $('#storage').hide(); 
+            $('#storage').hide();
         }
         if (currentTab === "#cluster") {
             checkIfDataLoaded();
             documentationTabTopic = 'cluster';
-            $('#cluster').show();            
+            $('#cluster').show();
         } else {
             $('#cluster').hide();
         }
@@ -159,12 +159,12 @@ $(document).ready(function() {
 
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
         selectedDef = $el.src;
-        if ( $el.kind === 'Secret') {
+        if ($el.kind === 'Secret') {
             getDefSec(selectedDef);   // secret modal with decode option
         } else {
             getDefFnum(selectedDef);
         }
-     });
+    });
 
     $('#pickDataSource').select2({
         dropdownCssClass: "vpkfont-md",
@@ -172,7 +172,7 @@ $(document).ready(function() {
         placeholder: "Select snapshot"
     });
 
-    $('#pickDataSource').on('select2:select', function (e) { 
+    $('#pickDataSource').on('select2:select', function (e) {
         var selected = $('#pickDataSource option:selected').val();
         pickData(selected);
         $('#pickDataSource').val(null)
@@ -181,32 +181,32 @@ $(document).ready(function() {
     $('#label-filter').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md"
-    }); 
+    });
 
     $('#anno-filter').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md"
-    });  
+    });
 
     $('#dsInstances').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select snapshot"
-    }); 
+    });
 
     $('#graphic-ns-filter').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select namespace(s)"
-    }); 
+    });
 
     $('#compareInstances').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select snapshot"
-    });    
+    });
 
-    $('#compareInstances').on('select2:select', function (e) { 
+    $('#compareInstances').on('select2:select', function (e) {
         var snapDir = $('#compareInstances').select2('data');
         compareSnapSelected = snapDir[0].text;
         console.log('Snap selected: ' + compareSnapSelected);
@@ -218,19 +218,19 @@ $(document).ready(function() {
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select namespace(s)"
-    });  
+    });
 
     $('#xref-filter').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select xref filter values"
-    }); 
+    });
 
     $('#xref-type').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select xref"
-    }); 
+    });
 
     $('#xrefEdit-type').select2({
         dropdownCssClass: "vpkfont-md",
@@ -238,13 +238,13 @@ $(document).ready(function() {
         placeholder: "select xref"
     });
 
-    $('#xrefEdit-type').on('select2:select', function (e) { 
+    $('#xrefEdit-type').on('select2:select', function (e) {
         var selected = $('#xrefEdit-type option:selected').val();
         pickXref(selected);
         $('#xrefEdit-type').val(null)
-    });    
+    });
 
-    $("#searchBtn").click(function(e) {
+    $("#searchBtn").click(function (e) {
         e.preventDefault();
         searchObj();
     });
@@ -254,19 +254,19 @@ $(document).ready(function() {
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "sort order"
-    }); 
+    });
     $('#ownerSort2').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "sort order"
-    }); 
+    });
 
     //-- compare dropdowns
     $('#compareSort1').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "Namespace"
-    }); 
+    });
     $('#compareSort2').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
@@ -279,11 +279,11 @@ $(document).ready(function() {
     });
 
 
-	// 
-	$("#clusterType").change(function(){
-		var selected = $('#clusterType option:selected').val();
+    // 
+    $("#clusterType").change(function () {
+        var selected = $('#clusterType option:selected').val();
         buildClusterUI(selected);
-	});
+    });
 
     editor = ace.edit("editor");
     editorC1 = ace.edit("editorC1");
@@ -294,20 +294,20 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();
 
     //clearDisplay();
-    getSelectLists();   
+    getSelectLists();
     getConfig();
 
 });
 
 
 
-var hideClusterPanel = function() {
+var hideClusterPanel = function () {
     clusterPanelIsClosed = true;
     clusterFilterPanel.style.webkitTransform = "translateX(300px)";
     clusterFilterPanel.style.transform = "translateX(300px)"
 };
 
-var check3DFilter = function() {
+var check3DFilter = function () {
     if (clusterPanelIsClosed) {
         clusterPanelIsClosed = false;
         clusterFilterPanel.style.webkitTransform = "translateX(0px)";
@@ -333,14 +333,14 @@ function saveConfig(what) {
         if (typeof mFlds === 'undefined') {
             mFlds = false;
         }
-        socket.emit('saveConfig', { "managedFields": mFlds, "statusSection": sFlds} );
+        socket.emit('saveConfig', { "managedFields": mFlds, "statusSection": sFlds });
     } else {
-        socket.emit('saveConfig', { "xrefData": xrefData} );
+        socket.emit('saveConfig', { "xrefData": xrefData });
     }
 }
 //...
-socket.on('saveConfigResult', function(data) {
-    $("#configModal").modal('hide'); 
+socket.on('saveConfigResult', function (data) {
+    $("#configModal").modal('hide');
     if (data.result.status !== 'PASS') {
         showMessage(data.result.message, 'fail')
     }
@@ -353,8 +353,8 @@ function showConfig() {
     socket.emit('getConfig');
 }
 //...
-socket.on('getConfigResult', function(data) {
-    
+socket.on('getConfigResult', function (data) {
+
     if (data.config.managedFields === true) {
         $('#mgmFlds').bootstrapToggle('on');
     } else {
@@ -366,7 +366,7 @@ socket.on('getConfigResult', function(data) {
     } else {
         $('#statusFlds').bootstrapToggle('off');
     }
-    $("#configModal").modal('show');    
+    $("#configModal").modal('show');
 });
 //==========================================================
 
@@ -375,18 +375,18 @@ socket.on('getConfigResult', function(data) {
 function getDocumentation(data) {
     let what;
     if (typeof data === 'undefined') {
-        if (documentationTabTopic !== '') {  
+        if (documentationTabTopic !== '') {
             // question mark in top pressed, select the appropriate topic          
-            what = {'doc': documentationTabTopic};
+            what = { 'doc': documentationTabTopic };
         }
     } else {
         // inside documentation modal, navigate to desired topic
-        what = {'doc': data};
+        what = { 'doc': data };
     }
     socket.emit('getDocumentation', what);
 }
 //...
-socket.on('getDocumentationResult', function(data) {
+socket.on('getDocumentationResult', function (data) {
     let content = data.content;
     $('#docsBody').html(content)
     $("#docsModal").modal('show');
@@ -411,7 +411,7 @@ function docPrevTopic() {
 //----------------------------------------------------------
 // show change directory modal 
 function changeDir() {
-    let data = {'which': 0};
+    let data = { 'which': 0 };
     socket.emit('clusterDir', data);
     $("#validateBtn").show();
     $("#loadStatus").hide();
@@ -419,7 +419,7 @@ function changeDir() {
 }
 function getCompareSnap(which) {
     compareSnapButton = which;
-    let data = {'which': which};
+    let data = { 'which': which };
     socket.emit('clusterDir', data);
 }
 
@@ -436,7 +436,7 @@ function setCompareSnap() {
 
 
 //...
-socket.on('clusterDirResult', function(data) {
+socket.on('clusterDirResult', function (data) {
     //build the drop down of existing directories, hide messages, open modal
     var items = bldClusterDir(data.dirs);
     hideMessage();
@@ -461,29 +461,29 @@ socket.on('clusterDirResult', function(data) {
 function compareSnapshots() {
     // check if snapshots are selected before running the compare
     if (compareSnap1Selected === '' && compareSnap1Selected === '') {
-        showMessage('Both Snapshots must be selected before compare processing can be started. ' 
-        + '<br><br>Use the Snapshot 1 and Snapshot 2 buttons to select the snapshots to be compared.'
-        + '<br><br>Optionally set the Sorting and View Results if desired.')
+        showMessage('Both Snapshots must be selected before compare processing can be started. '
+            + '<br><br>Use the Snapshot 1 and Snapshot 2 buttons to select the snapshots to be compared.'
+            + '<br><br>Optionally set the Sorting and View Results if desired.')
     } else {
         // show processing gif and saned request for compare
         console.log('Snap 1: ' + compareSnap1Selected + '  Snap 2: ' + compareSnap2Selected);
 
         let html = '<div class="row">'
-        + '<div class="col mt-1 ml-4">'
-        + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
-        + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>' 
-        + '    </div>'
-        + '</div>';
+            + '<div class="col mt-1 ml-4">'
+            + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
+            + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>'
+            + '    </div>'
+            + '</div>';
         $("#compareDetail").empty();
         $("#compareDetail").html(html);
 
-        let data = {'snap1': compareSnap1Selected, 'snap2': compareSnap2Selected};
+        let data = { 'snap1': compareSnap1Selected, 'snap2': compareSnap2Selected };
         socket.emit('compareSnapshots', data);
     }
 }
 
 //...
-socket.on('compareSnapshotsResults', function(data) {
+socket.on('compareSnapshotsResults', function (data) {
     // pass results data to the compare build UI
     buildCompareResults(data, compareSnap1Selected, compareSnap2Selected);
 });
@@ -506,7 +506,7 @@ function dynamic() {
             fld = fld.trim();
             var content = document.getElementById(fld).value;
             content = content.trim();
-            if (f === 0 ) {
+            if (f === 0) {
                 kStr = kStr + '"' + fld + '":"' + content + '" '
             } else {
                 kStr = kStr + ', "' + fld + '":"' + content + '" '
@@ -523,7 +523,7 @@ function dynamic() {
     $("#clusterStatus").html(resp);
 }
 //...
-socket.on('getKStatus', function(data) {
+socket.on('getKStatus', function (data) {
     //$("#clusterModalFooter").hide();
     $("#clusterStatus").empty();
     $("#clusterStatus").html('');
@@ -532,7 +532,7 @@ socket.on('getKStatus', function(data) {
         msg = data.msg
     }
     let resp = '<br><div class="vpkfont vpkcolor">' + msg + '</div>';
-    $("#clusterStatus").html(resp); 
+    $("#clusterStatus").html(resp);
 
 });
 //==========================================================
@@ -544,14 +544,14 @@ function getDefDecode(def, secret) {
     //$("#multiModal").modal('hide');
     selectedDef = def;
     if (selectedDef.indexOf('undefined') > -1) {
-        showMessage('Unable to locate source yaml.','fail');
+        showMessage('Unable to locate source yaml.', 'fail');
     } else {
-        data = {"file": selectedDef, "secret": secret}
+        data = { "file": selectedDef, "secret": secret }
         socket.emit('getDecode', data);
     }
 }
 //...
-socket.on('getDecodeResult', function(data) {
+socket.on('getDecodeResult', function (data) {
     var content = data.result;
     var keys = Object.keys(content);
     var key;
@@ -570,7 +570,7 @@ socket.on('getDecodeResult', function(data) {
     }
 
     $("#decodeName").empty();
-//    $("#decodeName").html('<span>' + data.secret + '</span>');
+    //    $("#decodeName").html('<span>' + data.secret + '</span>');
     $("#decode").empty();
     $("#decode").html(html);
     $('#decodeModal').modal('show');
@@ -591,7 +591,7 @@ function browseObj() {
     socket.emit('getDef', selectedDef);
 }
 //...
-socket.on('objectDef', function(data) {
+socket.on('objectDef', function (data) {
     // always edit, no longer provide browse 
     editDef(data);
 });
@@ -600,10 +600,10 @@ socket.on('objectDef', function(data) {
 
 //----------------------------------------------------------
 function getCompareFile(fn, which) {
-    socket.emit('getCompareFile', {'fn': fn, 'which': which} );
+    socket.emit('getCompareFile', { 'fn': fn, 'which': which });
 }
 //...
-socket.on('getCompareFileResults', function(data) {
+socket.on('getCompareFileResults', function (data) {
     // if results of first file, get second file, else show files
     if (data.which === '1') {
         compFile1 = data.content;
@@ -627,13 +627,13 @@ function getFileByCid(data, secret) {
             } else {
                 secret = false;
             }
-        } 
+        }
     }
     getFileIsSecret = secret;
     socket.emit('getFileByCid', data);
-} 
+}
 //...
-socket.on('getFileByCidResults', function(data) {
+socket.on('getFileByCidResults', function (data) {
     // always edit, no longer provide browse 
     if (getFileIsSecret === true) {
         getDefSec(data);
@@ -655,7 +655,7 @@ function getChart(type) {
     var processingChart = '<div class="row">'
         + '<div class="col mt-1 ml-4">'
         + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
-        + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>' 
+        + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>'
         + '    </div>'
         + '</div>';
 
@@ -682,10 +682,10 @@ function getChart(type) {
         namespaces = ':all-namespaces:';
     }
 
-    socket.emit('getHierarchy', {"namespaceFilter": namespaces });
+    socket.emit('getHierarchy', { "namespaceFilter": namespaces });
 }
 //...
-socket.on('hierarchyResult', function(data) {
+socket.on('hierarchyResult', function (data) {
     $("#graphicCharts2").empty();
     $("#graphicCharts2").html('');
     if (chartType === 'hierarchy') {
@@ -699,7 +699,7 @@ socket.on('hierarchyResult', function(data) {
         $("#graphicCharts2").removeAttr("height");
         $("#graphicCharts2").removeAttr("width");
         chartCirclePack(data, 'g');
-    } 
+    }
 });
 //==========================================================
 
@@ -709,12 +709,12 @@ function about() {
     socket.emit('getUsage');
     $("#version").empty();
     $("#version").html('');
-    $("#version").html('VERSION&nbsp;' + version  );
+    $("#version").html('VERSION&nbsp;' + version);
     $("#usageResult").hide();
     $("#aboutModal").modal();
 }
 //...
-socket.on('usageResult', function(data) {
+socket.on('usageResult', function (data) {
     let content = '';
     if (typeof data.empty !== 'undefined') {
         content = '<div class="text-center align-middle font-weight-bold vpkfont-lg">' + data.message + '</div>';
@@ -735,7 +735,7 @@ function dirStats() {
     socket.emit('getDirStats');
 }
 //...
-socket.on('dirStatsResult', function(data) {
+socket.on('dirStatsResult', function (data) {
     dsCounts = data;
     if (dsToggle === 'kind' || dsToggle === '') {
         buildKindStats();
@@ -764,7 +764,7 @@ function buildKindStats() {
     let total = data._total._cnt;
     let cKeys;
     let nsText = '';
-    let htm = '<table class="vpkfont-md"><thead><tr class="statsHeader" style="text-align:center">' 
+    let htm = '<table class="vpkfont-md"><thead><tr class="statsHeader" style="text-align:center">'
         + '<th>-Kind-</th><th class="pl-2">-Count-</th><th class="pl-2">-Namespace-</th>'
         + '</tr></thead><tbody>';
     // add overall total line
@@ -772,21 +772,21 @@ function buildKindStats() {
 
 
     for (let i = 0; i < keys.length; i++) {
-        if ( keys[i].startsWith('_') ) {
+        if (keys[i].startsWith('_')) {
             continue;
         }
         htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
-        
+
         htm = htm + '<tr><td>' + keys[i] + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
         for (let c = 0; c < cKeys.length; c++) {
-            if (cKeys[c].startsWith('_') ) {
+            if (cKeys[c].startsWith('_')) {
                 continue;
             } else {
                 nsText = cKeys[c];
-                if (nsText === 'cluster-level' ) {
+                if (nsText === 'cluster-level') {
                     nsText = '< Cluster Level >'
                 }
                 htm = htm + '<tr><td>&nbsp;</td><td class="pl-4">' + data[keys[i]][cKeys[c]] + '</td><td class="pl-2">' + nsText + '</td></tr>'
@@ -813,7 +813,7 @@ function buildNamespaceStats(stats) {
     let total = dsCounts.kind._total._cnt;  // get overall total from the kinds stats
     let cKeys;
     let nsText = '';
-    let htm = '<table class="vpkfont-md"><thead><tr class="statsHeader" style="text-align:center">' 
+    let htm = '<table class="vpkfont-md"><thead><tr class="statsHeader" style="text-align:center">'
         + '<th>-Namespace-</th><th class="pl-2">-Count-</th><th class="pl-2">-Kind-</th>'
         + '</tr></thead><tbody>';
     // add overall total line
@@ -821,21 +821,21 @@ function buildNamespaceStats(stats) {
 
 
     for (let i = 0; i < keys.length; i++) {
-        if ( keys[i].startsWith('_') ) {
+        if (keys[i].startsWith('_')) {
             continue;
         }
         htm = htm + '<tr><td><hr></td><td><hr></td><td><hr></td></tr>'
         nsText = keys[i];
-        if (nsText === 'cluster-level' ) {
+        if (nsText === 'cluster-level') {
             nsText = '< Cluster Level >'
         }
-        
+
         htm = htm + '<tr><td>' + nsText + '</td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 
         cKeys = Object.keys(data[keys[i]]);
         cKeys.sort();
         for (let c = 0; c < cKeys.length; c++) {
-            if (cKeys[c].startsWith('_') ) {
+            if (cKeys[c].startsWith('_')) {
                 continue;
             } else {
                 htm = htm + '<tr><td>&nbsp;</td><td class="pl-4">' + data[keys[i]][cKeys[c]] + '</td><td class="pl-2">' + cKeys[c] + '</td></tr>'
@@ -862,7 +862,7 @@ function closeGetCluster() {
 //$$
 //$$ Also invoked in  $(document).ready(function() $$
 //...
-socket.on('selectListsResult', function(data) {
+socket.on('selectListsResult', function (data) {
     clusterProviders = data.providers;
     populateSelectLists(data);
 });
@@ -875,7 +875,7 @@ function getVersion() {
     socket.emit('getVersion');
 }
 //...
-socket.on('version', function(data) {
+socket.on('version', function (data) {
     version = data.version;
 });
 //==========================================================
@@ -898,20 +898,25 @@ function reload() {
     $("#schematicDetail").html('');
     $("#ownerRefLinksDetail").empty();
     $("#ownerRefLinksDetail").html('');
+    // 3D tab
     if (typeof engine !== null) {
         // scene.dispose();
         // engine.dispose();
         $("#Canvas3D").html('<canvas id="renderCanvas"></canvas>');
         $('#cluster3DView').hide();
     }
+    $('#c3DFilter').prop('disabled', true);
+    $('#cluster3DView').hide();
+    $("#clusterDetail").hide();
+    $("#renderCanvas").html('');
 
-    //TODO consider handling other tabs
+    //TODO is there a need to consider handling other tabs
 
     socket.emit('reload', newDir);
 }
 //$$ also client.emit('selectListsResult', result) when reload is sent to server
 //...
-socket.on('resetResults', function(data) {
+socket.on('resetResults', function (data) {
     if (data.validDir === false) {
         setBaseDir(data.baseDir);
         $("#chgDirModal").modal('hide');
@@ -936,7 +941,7 @@ socket.on('resetResults', function(data) {
         getSelectLists('y');
         // Issue #17 fix
         foundNSNamesBuilt = false;
- 
+
     }
 });
 //==========================================================
@@ -952,7 +957,7 @@ function bldSchematic() {
 function getCluster3DInfo() {
     hideMessage();
     $("#clusterDetail").hide();
-	$("#clusterDetail").html('');
+    $("#clusterDetail").html('');
     $('#cluster3DView').hide();
 
     $("#resourceProps").html(processingRequest)
@@ -968,15 +973,15 @@ function getClusterTableInfo() {
     socket.emit('schematic');
 }
 //...
-socket.on('schematicResult', function(data) {
+socket.on('schematicResult', function (data) {
     k8cData = data.data;
     hideMessage();
     $("#clusterDetail").html('')
     if (getDataRequest === 'schematic') {
-        schematic();       
+        schematic();
     }
     if (getDataRequest === 'cluster3D') {
-        buildCluster3D();       
+        buildCluster3D();
     }
     if (getDataRequest === 'clusterTable') {
         buildClusterTable();
@@ -994,11 +999,11 @@ function bldSecurity() {
     socket.emit('security');
 }
 //...
-socket.on('securityResult', function(data) {
+socket.on('securityResult', function (data) {
     k8cData = data.data;
     hideMessage();
     buildSecArrays();
-    securityDefinitions();      
+    securityDefinitions();
 });
 //==========================================================
 
@@ -1010,7 +1015,7 @@ function getOwnerRefLinks() {
     socket.emit('getOwnerRefLinks');
 }
 //...
-socket.on('getOwnerRefLinksResult', function(data) {
+socket.on('getOwnerRefLinksResult', function (data) {
     ownerRefLinks = data.links;
     //console.log(JSON.stringify(ownerRefLinks, null, 3))
     buildOwnerRefLinks();
@@ -1025,11 +1030,11 @@ function bldSecurityUsage() {
     socket.emit('securityUsage');
 }
 //...
-socket.on('securityUsageResult', function(data) {
+socket.on('securityUsageResult', function (data) {
     k8cData = data.data;
     hideMessage();
     buildSecArrays();
-    securityUsage();       
+    securityUsage();
 });
 //==========================================================
 
@@ -1041,7 +1046,7 @@ function getStorageInfo() {
     socket.emit('getStorage');
 }
 //...
-socket.on('getStorageResult', function(data) {
+socket.on('getStorageResult', function (data) {
     storageData = data.info;
     buildStorage();
 });
@@ -1053,8 +1058,8 @@ socket.on('getStorageResult', function(data) {
 function searchObj() {
     hideMessage();
     var namespaces = '::';
-    var kinds = '::'; 
-    var labels = '::'; 
+    var kinds = '::';
+    var labels = '::';
     var kindnameValue = '';
     var skipU = true;
     var nsKey = false;
@@ -1078,7 +1083,7 @@ function searchObj() {
         var tmp = options[i].text;
         tmp.trim();
         if (skipU === true) {
-            if (tmp.indexOf('(U)') === -1 ) {
+            if (tmp.indexOf('(U)') === -1) {
                 kinds = kinds + tmp + '::';
                 kindKey = true;
             }
@@ -1094,7 +1099,7 @@ function searchObj() {
         tmp.trim();
         labels = labels + tmp + '::';
         labelKey = true;
-    };    
+    };
 
     kindnameValue = $("#kind-name").val();
     if (typeof kindnameValue === 'undefined' || kindnameValue.length === 0) {
@@ -1120,7 +1125,7 @@ function searchObj() {
     }
     if (kinds === '::') {
         kinds = '::all-kinds::'
-    }    
+    }
 
     var data = {
         "kindnameValue": kindnameValue,
@@ -1132,14 +1137,14 @@ function searchObj() {
     socket.emit('search', data);
 }
 //...
-socket.on('searchResult', function(data) {
+socket.on('searchResult', function (data) {
     //console.log(JSON.stringify(data, null, 4))
     $("#searchResults").show();
     buildSearchResults(data);
 });
 //...
 function buildSearchResults(data) {
-    var tmp; 
+    var tmp;
     var a, b, c, d;
     newData = [];
     id = 0;
@@ -1190,7 +1195,7 @@ function bldXrefChart(type) {
         if (tmp[0] !== '') {
             xref = tmp[0];
         } else {
-            showMessage('No xref type selected','warn');
+            showMessage('No xref type selected', 'warn');
             return;
         }
     };
@@ -1200,11 +1205,11 @@ function bldXrefChart(type) {
     if (filter === '') {
         filter = ':all:-xref:';
     }
-    data = {'xref': xref, 'filter': filter};
-    socket.emit('xreference', data); 
+    data = { 'xref': xref, 'filter': filter };
+    socket.emit('xreference', data);
 }
 //...
-socket.on('xrefResult', function(data) {
+socket.on('xrefResult', function (data) {
     $("#xrefCharts2").empty();
     $("#xrefCharts2").html('');
     if (chartType === 'hierarchy') {
@@ -1218,7 +1223,7 @@ socket.on('xrefResult', function(data) {
         $("#xrefCharts2").removeAttr("height");
         $("#xrefCharts2").removeAttr("width");
         chartCirclePack(data, 'x');
-    } 
+    }
 });
 //==========================================================
 
@@ -1229,10 +1234,10 @@ function xrefGetData(tmp) {
     socket.emit('getXrefRules');
 }
 //...
-socket.on('getXrefRulesResult', function(data) {
-    xrefData = data; 
+socket.on('getXrefRulesResult', function (data) {
+    xrefData = data;
     xrefEditModalDialog();
-}); 
+});
 //==========================================================
 
 
@@ -1242,7 +1247,7 @@ function getXrefFilter(data) {
     socket.emit('getXrefFilter', data);
 }
 //...
-socket.on('getXrefFilterResults', function(data) {
+socket.on('getXrefFilterResults', function (data) {
     console.log(JSON.stringify(data, null, 4))
 });
 //==========================================================
@@ -1289,7 +1294,7 @@ function toggleFilterPanel() {
     //     Open filter panel
     // </button>
 
-    if($('#filterdata').is('.collapse:not(.show)')) {
+    if ($('#filterdata').is('.collapse:not(.show)')) {
         // open filter panel
         $("#filterButton").html('Close filter panel');
         $("#filterdata").collapse("show");
@@ -1303,8 +1308,8 @@ function toggleFilterPanel() {
 //----------------------------------------------------------
 // used by search section of main UI
 function toggleStorage(id) {
-    id = '#'+id;
-    if($(id).is('.collapse:not(.show)')) {
+    id = '#' + id;
+    if ($(id).is('.collapse:not(.show)')) {
         // not open, open it
         $(id).collapse("show");
     } else {
@@ -1324,8 +1329,8 @@ function getCluster() {
     $("#clusterButton").show();
     $("#clusterModal").modal({
         backdrop: 'static',
-        keyboard: false        
-    }); 
+        keyboard: false
+    });
     $("#clusterRunning").hide();
 
     $("#clusterModalFooter").show();
@@ -1338,8 +1343,8 @@ function getCluster() {
 // build UI for the get Cluster  
 function buildClusterUI(selected) {
     $("#clusterInfo").empty();
-	$("#clusterInfo").html('');
-    
+    $("#clusterInfo").html('');
+
     var bttn = '<div id="clusterButton">'
         + '<div style="padding-top: 20px;">'
         + '<button id="clusterBtn" type="button" class="btn btn-outline-primary btn-sm" onclick="dynamic()" style="margin: 5px;">'
@@ -1373,26 +1378,26 @@ function buildClusterUI(selected) {
                 for (var g = 0; g < flds.length; g++) {
                     var fn = flds[g];
                     var lp = fn.indexOf('}');
-                    if (lp !== -1 ) {
+                    if (lp !== -1) {
                         fn = fn.substr(0, lp);
                     }
                     if (fn.length > 0) {
                         fields.push(fn);
-                        var inf = tmp01 + fn + tmp02 + fn + tmp03 + tmp04 + fn; 
+                        var inf = tmp01 + fn + tmp02 + fn + tmp03 + tmp04 + fn;
                         var cfn = fn.toUpperCase();
                         if (cfn === 'PASSWORD') {
                             inf = inf + tmp05p;
                         } else {
                             inf = inf + tmp05t;
-                        }                        
-                        if (typeof defs[d] !== 'undefined') { 
+                        }
+                        if (typeof defs[d] !== 'undefined') {
                             inf = inf + tmp06a + defs[d] + tmp06b + tmp07
                             d++;
-                        } else {                        
+                        } else {
                             inf = inf + tmp07;
                         }
                         html = html + inf;
-                    } 
+                    }
                 }
             }
         }
