@@ -30,6 +30,8 @@ var sceneToRender = null;
 var createDefaultEngine = function () { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false }); };
 let foundServices = {};
 let foundNSNames = [];
+let foundStorageClasses = {};
+let foundPVs = {};
 
 // hide the right column in the 3d view
 // function hideColumn() {
@@ -62,7 +64,6 @@ function set3dBackColor(r, g, b, title) {
     sceneColorR = r / 255;
     sceneColorG = g / 255;
     sceneColorB = b / 255;
-    console.log(r + ' ' + g + ' ' + b)
     $("#colorTitle").html(title);
     if (title === 'Straw' || title === 'Grey' || title === 'Lavender' || title === 'Olive' || title === 'Teal' || title === 'White') {
         stickColorDark = true;
@@ -75,7 +76,7 @@ function populate3DSelectNS() {
     if (foundNSNamesBuilt === true) {
         return
     }
-    // filter bar1 (namespaces) and grapcis and cluster drop downs
+    // namespace drop downs
     let data = bldOptions(foundNSNames, 'N', 'select2');
 
     $("#cluster-ns-filter").empty();
@@ -89,12 +90,11 @@ function populate3DSelectNS() {
 
 function build3DJSON() {
     foundNSNames = [];
+    foundStorageClasses = {};
     if (window.hasOwnProperty('cluster')) {
         window.cluster = {};
-        console.log('Previous cluster JSON data sturcture located and cleared')
     } else {
         window.cluster = {};
-        console.log('Empty cluster JSON data sturcture created')
     }
     if (typeof k8cData['0000-clusterLevel'] !== 'undefined') {
         if (typeof k8cData['0000-clusterLevel'].Node !== 'undefined') {
@@ -102,11 +102,29 @@ function build3DJSON() {
             cluster.nodes = nData;
             cluster.maxNodes = nData.length;
             populatePods();
-            //console.log(JSON.stringify(cluster.nodes,null,2))
         }
     }
-    // populate drop down filter with located NS values
+
+    // populate drop down filter with located NS values in this cluster
     populate3DSelectNS();
+
+    // populate storage class array
+    if (typeof k8cData['0000-@storageClass@'] !== 'undefined') {
+        let scKeys = Object.keys(k8cData['0000-@storageClass@']);
+        for (let k = 0; k < scKeys.length; k++) {
+            saveStorageClass(k8cData['0000-@storageClass@'][scKeys[k]].name,
+                k8cData['0000-@storageClass@'][scKeys[k]].fnum)
+        }
+    }
+}
+
+function saveStorageClass(name, fnum) {
+    if (typeof name === 'undefined' || name === null) {
+        return;
+    }
+    if (typeof foundStorageClasses[name] === 'undefined') {
+        foundStorageClasses[name] = { 'name': name, 'fnum': fnum, 'pv': [] }
+    }
 }
 
 function populatePods() {
@@ -118,9 +136,7 @@ function populatePods() {
                 if (!foundNSNames.includes(k8cData[keys[i]].namespace)) {
                     foundNSNames.push(k8cData[keys[i]].namespace)
                 }
-
                 let pod = {};
-                // console.log(JSON.stringify(k8cData[keys[i]],null,2))
                 let nodeName = k8cData[keys[i]].node;
                 pod.name = k8cData[keys[i]].name;
                 pod.ns = k8cData[keys[i]].namespace;
@@ -133,7 +149,6 @@ function populatePods() {
                 } else if (pod.phase === 'Succeeded') {
                     pod.status = 4;
                 } else {
-                    console.log('Pod phase:' + pod.phase)
                     pod.status = 3;
                 }
 
@@ -151,8 +166,11 @@ function populatePods() {
                         pod.pvc = [{
                             'name': k8cData[keys[i]].PersistentVolumeClaim[0].pvcName,
                             'fnum': k8cData[keys[i]].PersistentVolumeClaim[0].pvcFnum,
-                            'storageClassName': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassName,
-                            'storageClassFnum': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassFnum
+                            'pvName': k8cData[keys[i]].PersistentVolumeClaim[0].pvName,
+                            'pvFnum': k8cData[keys[i]].PersistentVolumeClaim[0].pvFnum,
+                            'scName': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassName,
+                            'scFnum': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassFnum,
+                            'ns': k8cData[keys[i]].namespace
                         }]
                     } else {
                         pod.pvc = [];
@@ -176,8 +194,6 @@ function populatePods() {
                     pod.serviceFound = false;
                     pod.services = [];
                 }
-
-                //console.log(JSON.stringify(pod, null, 2))
                 addPodToNode(pod, nodeName);
             }
         }
@@ -226,7 +242,7 @@ const createScene = function () {
     let angle = 0;
     let angleArray = [];
     let nodePtr = 0;
-    let bldWall = true;
+    let buildWall = true;
     let pX, sX;
     let pY, sY;
     let pZ, sZ;
@@ -235,6 +251,7 @@ const createScene = function () {
     let maxRings = 0;
     let namespaces = '';
     let tmp;
+    let showPodInfo = true;
 
     // set the maxium to be used to build nodes and walls.  Two times the number of nodes.
     let max = cluster.maxNodes * 2;
@@ -292,10 +309,6 @@ const createScene = function () {
         scene.clearColor = new BABYLON.Color3(sceneColorR, sceneColorG, sceneColorB);
     }
 
-
-
-
-
     const camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, 3 * Math.PI / 8, 30, BABYLON.Vector3.Zero());
     camera.attachControl(canvas, true);
 
@@ -305,39 +318,45 @@ const createScene = function () {
     const clickSound = new BABYLON.Sound("clickSound", "sounds/LowDing.wav", scene);
 
     // build materials with colors for nodes and pods
-    let mstNodeMat = new BABYLON.StandardMaterial("nMstMat", scene);
+    const mstNodeMat = new BABYLON.StandardMaterial("nMstMat", scene);
     mstNodeMat.diffuseColor = new BABYLON.Color3(0.65, 0.25, 0.25);
 
-    let wrkNodeMat = new BABYLON.StandardMaterial("nWrkMat", scene);
+    const wrkNodeMat = new BABYLON.StandardMaterial("nWrkMat", scene);
     wrkNodeMat.diffuseColor = new BABYLON.Color3(0.90, 0.90, 0.90);
 
-    let podRed = new BABYLON.StandardMaterial("podRedMat", scene);
+    const podRed = new BABYLON.StandardMaterial("podRedMat", scene);
     podRed.diffuseColor = new BABYLON.Color3(1.0, 0.0, 0.0);
 
-    let podGreen = new BABYLON.StandardMaterial("podGreenMat", scene);
+    const podGreen = new BABYLON.StandardMaterial("podGreenMat", scene);
     podGreen.diffuseColor = new BABYLON.Color3(0.0, 1.0, 0.0);
 
-    let podYellow = new BABYLON.StandardMaterial("podYellowMat", scene);
+    const podYellow = new BABYLON.StandardMaterial("podYellowMat", scene);
     podYellow.diffuseColor = new BABYLON.Color3(1.0, 1.0, 0.0);
 
-    let podPurple = new BABYLON.StandardMaterial("podPurbleMat", scene);
+    const podPurple = new BABYLON.StandardMaterial("podPurbleMat", scene);
     podPurple.diffuseColor = new BABYLON.Color3(1.0, 0.0, 1.0);
 
-    let podGrey = new BABYLON.StandardMaterial("podGreyMat", scene);
+    const podGrey = new BABYLON.StandardMaterial("podGreyMat", scene);
     podGrey.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 
-    let serviceColor = new BABYLON.StandardMaterial("serviceColorMat", scene);
+    const serviceColor = new BABYLON.StandardMaterial("serviceColorMat", scene);
     serviceColor.diffuseColor = new BABYLON.Color3(0.5, 0.75, 0.75);
 
-    let pvcColor = new BABYLON.StandardMaterial("serviceColorMat", scene);
+    const pvColor = new BABYLON.StandardMaterial("pvColorMat", scene);
+    pvColor.diffuseColor = new BABYLON.Color3(0.73, 0.53, 0.35);
+
+    const pvcColor = new BABYLON.StandardMaterial("pvcColorMat", scene);
     pvcColor.diffuseColor = new BABYLON.Color3(0.75, 0.75, 0.10);
 
-    let stickColor = new BABYLON.StandardMaterial("serviceColorMat", scene);
+    let stickColor = new BABYLON.StandardMaterial("stickColorMat", scene);
     if (stickColorDark === false) {
         stickColor.diffuseColor = new BABYLON.Color3(1, 1, 1);
     } else {
         stickColor.diffuseColor = new BABYLON.Color3(.20, .20, .20);
     }
+
+    const SCColor = new BABYLON.StandardMaterial("SCColorMat", scene);
+    SCColor.diffuseColor = new BABYLON.Color3(0.98, 0.60, 0.01);
 
 
     // Build inner band for cluster
@@ -409,7 +428,7 @@ const createScene = function () {
 
     //==============================================
     // build the pods to display in the cluster view for this node
-    function bldResources(start, stop, node) {
+    function buildResources(start, stop, node) {
 
         // set node to proper location in cluster by subtracting one
         node = node - 1;
@@ -419,11 +438,12 @@ const createScene = function () {
         let cPtr = start;
         let cCnt = 0;
         let pClr;
-        let bldCnt = 0;
+        let buildCount = 0;
         let pName;
         let pCords;
         let sName;
-        let vName;
+        let pvcName;
+        let pvName;
         let serviceName = '';
         let nCords;
 
@@ -435,7 +455,6 @@ const createScene = function () {
         }
 
         // Get the number of pods in the node
-        // console.log('look')
         if (typeof cluster.nodes[node].pods === 'undefined') {
             console.log(cluster.nodes[node].name + ' has no pods')
             return
@@ -457,7 +476,7 @@ const createScene = function () {
                 // increase length pointer
                 nLen = (lc * LINEFACTOR) + RADIUSINNER + INNERFACTOR;
                 // reset counter for pods built at this lenght pointer 
-                bldCnt = 0;
+                buildCount = 0;
             }
 
             let ns = cluster.nodes[node].pods[cCnt].ns;
@@ -488,29 +507,47 @@ const createScene = function () {
                 // name of service with namespace to create a full name    
                 serviceName = cluster.nodes[node].pods[cCnt].services[0].name + '::' + cluster.nodes[node].pods[cCnt].services[0].namespace;
 
-                if (typeof foundServices[serviceName] === 'undefined') {
-                    foundServices[serviceName] = pCords   // save where this service pod is located
-                    nCords = 'skip';
-                } else {
-                    nCords = foundServices[serviceName];
-                }
+                if (showPodInfo === true) {
+                    if (typeof foundServices[serviceName] === 'undefined') {
+                        foundServices[serviceName] = pCords   // save where this service pod is located
+                        nCords = 'skip';
+                    } else {
+                        nCords = foundServices[serviceName];
+                    }
 
-                buildServiceObj(pCords, sName, cluster.nodes[node].pods[cCnt].services[0].namespace, nCords)
+                    buildServiceObj(pCords, sName, cluster.nodes[node].pods[cCnt].services[0].namespace, nCords)
+                }
             }
 
+            // Storage related PV and PVC
             if (cluster.nodes[node].pods[cCnt].pvc.length > 0) {
-
-                vName = '<div class="vpkfont vpkcolor ml-4">'
+                pvcName = '<div class="vpkfont vpkcolor ml-4">'
                     + '<a href="javascript:getDefFnum(\'' + cluster.nodes[node].pods[cCnt].pvc[0].fnum + '\')">'
                     + '<img src="images/k8/pvc.svg" style="width:40px;height:40px;"></a>'
-                    + '<span class="pl-3"><b>' + RES_NAME + '&nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].pvc[0].name + '</span>'
+                    + '<span class="pl-3"><b>PVC Name: &nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].pvc[0].name + '</span>'
                     + '<span class="pl-3"><b>' + RES_NS + '&nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].ns + '</span>'
                     + '&nbsp;&nbsp&nbsp;&nbsp&nbsp;&nbsp<span class="pl-3 vpkfont-sm">(Press icon to view resource yaml)</span></div>';
 
-                buildPVCObj(pCords, vName, cluster.nodes[node].pods[cCnt].ns)
+                if (typeof cluster.nodes[node].pods[cCnt].pvc[0].pvName !== 'undefined') {
+                    pvName = '<div class="vpkfont vpkcolor ml-4">'
+                        + '<a href="javascript:getDefFnum(\'' + cluster.nodes[node].pods[cCnt].pvc[0].pvFnum + '\')">'
+                        + '<img src="images/k8/pv.svg" style="width:40px;height:40px;"></a>'
+                        + '<span class="pl-3"><b>PV Name: &nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].pvc[0].pvName + '</span>'
+                        + '&nbsp;&nbsp&nbsp;&nbsp&nbsp;&nbsp<span class="pl-3 vpkfont-sm">(Press icon to view resource yaml)</span></div>';
+                } else {
+                    pvName = '';
+                }
+
+                if (showPodInfo === true) {
+                    buildStorageObj(pCords, pvcName, cluster.nodes[node].pods[cCnt].ns, pvName);
+                    // save x,y,z for use with storage class
+                    let key = cluster.nodes[node].pods[cCnt].pvc[0].scName
+                    pCords.ns = ns;
+                    foundStorageClasses[key].pv.push(pCords);
+                }
             }
 
-            bldCnt++
+            buildCount++
 
             // Control spacing between pods
             if (lc > 1) {
@@ -518,6 +555,7 @@ const createScene = function () {
             } else {
                 cPtr = cPtr + 5;
             }
+
         }
         // Update maxRings so outter band/ring is properly placed
         if (maxRings < lc) {
@@ -526,7 +564,7 @@ const createScene = function () {
     }
 
 
-    function buildPVCObj(pCords, vName, ns) {
+    function buildStorageObj(pCords, pvcName, ns, pvName) {
         // Does the namespace get shown
         if (!checkNamespace(ns)) {
             return;
@@ -537,7 +575,7 @@ const createScene = function () {
 
             let pvc = BABYLON.MeshBuilder.CreateCylinder("pvc", { height: .4, diameterTop: .25, diameterBottom: .25, tessellation: 16 });
             // Move the object 
-            pvc.position.y = pCords.y - 5;
+            pvc.position.y = pCords.y - 2.5;
             pvc.position.x = pCords.x;
             pvc.position.z = pCords.z;
             pvc.material = pvcColor;
@@ -547,12 +585,32 @@ const createScene = function () {
             pvc.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
                 BABYLON.ActionManager.OnPickTrigger,
                 function () {
-                    document.getElementById("resourceProps").innerHTML = vName;
+                    document.getElementById("resourceProps").innerHTML = pvcName;
                     if ($('#clusterFilterSound').prop('checked')) {
                         clickSound.play();
                     }
                 }
             ));
+
+            let pv = BABYLON.MeshBuilder.CreateCylinder("pvc", { height: .4, diameterTop: .25, diameterBottom: .25, tessellation: 8 });
+            // Move the object 
+            pv.position.y = pCords.y - 5;
+            pv.position.x = pCords.x;
+            pv.position.z = pCords.z;
+            pv.material = pvColor;
+
+            // register click event for each PVC;
+            pv.actionManager = new BABYLON.ActionManager(scene);
+            pv.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPickTrigger,
+                function () {
+                    document.getElementById("resourceProps").innerHTML = pvName;
+                    if ($('#clusterFilterSound').prop('checked')) {
+                        clickSound.play();
+                    }
+                }
+            ));
+
 
             let stick = BABYLON.MeshBuilder.CreateCylinder("stick", { height: 5.0, diameterTop: .01, diameterBottom: .01, tessellation: 4 });
             // Move the stick
@@ -618,7 +676,6 @@ const createScene = function () {
     // should namespace be shown
     function checkNamespace(ns) {
         if (namespaces.indexOf(':all-namespaces:') === -1) {
-            console.log(namespaces + '   ns: ' + ns)
             // if ns is not in the list skip building the pod
             if (namespaces.indexOf(':' + ns + ':') === -1) {
                 return false;    // not found
@@ -634,7 +691,7 @@ const createScene = function () {
     //==============================================
     // build a sphere for the pod
     function buildPodObj(iAngle, iLen, p, clr, name, ns) {
-
+        showPodInfo = true;
         let wX;
         let wY;
         let wZ;
@@ -650,45 +707,82 @@ const createScene = function () {
         }
 
         // Are pods shown
-        if ($('#clusterFilterPods').prop('checked')) {
+        //if ($('#clusterFilterPods').prop('checked')) {
 
-            // determine if DaemonSet pops is shown
-            if (clr === 0 || clr === '0') {
-                let chkDSPod = $('#clusterFilterDSPods').prop('checked');
-                if (!chkDSPod) {
-                    return { 'x': wX, 'y': wY, 'z': wZ };
-                }
+        // determine if DaemonSet pods are shown
+        if (clr === 0 || clr === '0') {
+            let chkDSPod = $('#clusterFilterDSPods').prop('checked');
+            if (!chkDSPod) {
+                showPodInfo = false;
+                return { 'x': wX, 'y': wY, 'z': wZ };
             }
-
-            let pod = BABYLON.MeshBuilder.CreateCylinder("pod_" + p, { height: POD_HEIGTH, diameterTop: POD_SIZE, diameterBottom: POD_SIZE, tessellation: 6 });
-            pod.position.y = wY;
-            pod.position.x = wX;
-            pod.position.z = wZ;;
-
-            if (clr === 1 || clr === '1') {
-                pod.material = podGreen;
-            } else if (clr === 2 || clr === '2') {
-                pod.material = podRed;
-            } else if (clr === 3 || clr === '3') {
-                pod.material = podYellow;
-            } else if (clr === 4 || clr === '4') {
-                pod.material = podPurple;
-            } else if (clr === 0 || clr === '0') {
-                pod.material = podGrey;
-            }
-
-            // register click event for each pod;
-            pod.actionManager = new BABYLON.ActionManager(scene);
-            pod.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
-                BABYLON.ActionManager.OnPickTrigger,
-                function () {
-                    document.getElementById("resourceProps").innerHTML = name;
-                    if ($('#clusterFilterSound').prop('checked')) {
-                        clickSound.play();
-                    }
-                }
-            ));
         }
+
+        // determine if running pods are shown
+        if (clr === 1 || clr === '1') {
+            let chkSuccess = $('#clusterFilterRunning').prop('checked');
+            if (!chkSuccess) {
+                showPodInfo = false;
+                return { 'x': wX, 'y': wY, 'z': wZ };
+            }
+        }
+
+        // determine if failed pods are shown
+        if (clr === 2 || clr === '2') {
+            let chkSuccess = $('#clusterFilterFailed').prop('checked');
+            if (!chkSuccess) {
+                showPodInfo = false;
+                return { 'x': wX, 'y': wY, 'z': wZ };
+            }
+        }
+
+        // determine if warning pods are shown
+        if (clr === 3 || clr === '3') {
+            let chkSuccess = $('#clusterFilterWarning').prop('checked');
+            if (!chkSuccess) {
+                showPodInfo = false;
+                return { 'x': wX, 'y': wY, 'z': wZ };
+            }
+        }
+
+        // determine if successful pods are shown
+        if (clr === 4 || clr === '4') {
+            let chkSuccess = $('#clusterFilterSuccessful').prop('checked');
+            if (!chkSuccess) {
+                showPodInfo = false;
+                return { 'x': wX, 'y': wY, 'z': wZ };
+            }
+        }
+
+        let pod = BABYLON.MeshBuilder.CreateCylinder("pod_" + p, { height: POD_HEIGTH, diameterTop: POD_SIZE, diameterBottom: POD_SIZE, tessellation: 6 });
+        pod.position.y = wY;
+        pod.position.x = wX;
+        pod.position.z = wZ;;
+
+        if (clr === 1 || clr === '1') {
+            pod.material = podGreen;
+        } else if (clr === 2 || clr === '2') {
+            pod.material = podRed;
+        } else if (clr === 3 || clr === '3') {
+            pod.material = podYellow;
+        } else if (clr === 4 || clr === '4') {
+            pod.material = podPurple;
+        } else if (clr === 0 || clr === '0') {
+            pod.material = podGrey;
+        }
+
+        // register click event for each pod;
+        pod.actionManager = new BABYLON.ActionManager(scene);
+        pod.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+            BABYLON.ActionManager.OnPickTrigger,
+            function () {
+                document.getElementById("resourceProps").innerHTML = name;
+                if ($('#clusterFilterSound').prop('checked')) {
+                    clickSound.play();
+                }
+            }
+        ));
+        //}
         return { 'x': wX, 'y': wY, 'z': wZ };
     }
 
@@ -722,6 +816,71 @@ const createScene = function () {
         customMesh.material = wallMat;
     }
 
+    function buildSCs() {
+        angle = 0;
+        let adjustment = 0;
+        let scData;
+        let scKeys = Object.keys(foundStorageClasses);
+        max = scKeys.length;
+        // loop and build storage classes and connect to PVs
+        for (let index = 0; index < max; index++) {
+            scData = foundStorageClasses[scKeys[index]];
+            // set x,y,z points for storage class icon
+            if (maxRings > 4) {
+                adjustment = 3;
+            }
+            pX = (maxRings - adjustment) * Math.sin(angle);
+            pY = 0;
+            pZ = (maxRings - adjustment) * Math.cos(angle);
+
+            // Determine if node resources are drawn
+            if ($('#clusterFilterStorage').prop('checked')) {
+                // building triangle for SC
+                let can = BABYLON.MeshBuilder.CreateCylinder("sc" + index, { height: 1, tessellation: 3 });
+                can.position.x = pX;
+                can.position.y = pY - 7;
+                can.position.z = pZ;
+                can.material = SCColor;
+
+                let nTxt = '<div class="vpkfont vpkcolor ml-4">'
+                    + '<a href="javascript:getDefFnum(\'' + scData.fnum + '\')">'
+                    + '<img src="images/k8/sc.svg" style="width:40px;height:40px;"></a>'
+                    + '<span class="pl-3 pr-3"><b>Storage Class : &nbsp;&nbsp;</b>' + scData.name + '</span>'
+                    + '&nbsp;&nbsp&nbsp;&nbsp&nbsp;&nbsp<span class="pl-3 vpkfont-sm">(Press icon to view resource yaml)</span></div>'
+
+                // register click event for each node;
+                can.actionManager = new BABYLON.ActionManager(scene);
+                can.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                    BABYLON.ActionManager.OnPickTrigger,
+                    function () {
+                        document.getElementById("resourceProps").innerHTML = nTxt;
+                        if ($('#clusterFilterSound').prop('checked')) {
+                            clickSound.play();
+                        }
+                    }
+                ));
+
+                // connect to all PVCs 
+                if (typeof scData.pv[0] !== 'undefined') {
+                    let path;
+                    for (let c = 0; c < scData.pv.length; c++) {
+                        path = [
+                            new BABYLON.Vector3(pX, pY - 7, pZ),
+                            new BABYLON.Vector3(scData.pv[c].x, scData.pv[c].y - 5, scData.pv[c].z)
+                        ];
+
+                        // Does the namespace for the PVC get shown
+                        if (checkNamespace(scData.pv[c].ns)) {
+                            let stick = BABYLON.MeshBuilder.CreateTube("tube", { path: path, radius: 0.0075, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
+                            stick.material = stickColor;
+                        }
+                    }
+                }
+            }
+            // update angle for next storage class to be defined
+            angle += PI2 / max;
+        }
+    }
 
     //==============================================
     // End of common functions
@@ -745,15 +904,14 @@ const createScene = function () {
             } else {
                 start = 2;
             }
-            bldResources(start, stop, currentNode)
+            buildResources(start, stop, currentNode)
         } else {
             let totV = currentNode * gblCnt;
             start = (totV - gblCnt) + 4;
             stop = totV - 4;
-            bldResources(start, stop, currentNode)
+            buildResources(start, stop, currentNode)
         }
     }
-
 
     //---------------------------------------------------
     // Build outter band/ring and walls for each node
@@ -761,10 +919,11 @@ const createScene = function () {
     maxRings = (maxRings * LINEFACTOR) + RADIUSINNER + OUTTERFACTOR;
     buildOutterRing(maxRings);
 
+
     // loop and build node walls and node objects
     for (let index = 0; index < max; index++) {
 
-        if (bldWall === false) {
+        if (buildWall === false) {
             // set x,y,z points for node icon
             pX = (maxRings + NODE_ICON_ADJ) * Math.sin(angle);
             pY = 0;
@@ -809,7 +968,7 @@ const createScene = function () {
                 ));
             }
 
-            bldWall = true;
+            buildWall = true;
             nodePtr++;
 
         } else {
@@ -824,14 +983,16 @@ const createScene = function () {
             // if single node in cluster no wall is built 
             if (max !== 2) {
                 createWall(pX, pY, pZ, sX, sY, sZ, WALL_HEIGHT, index)
-                bldWall = false;
+                buildWall = false;
             } else {
-                bldWall = false;
+                buildWall = false;
             }
         }
         // update angle for next item to be defined
         angle += PI2 / max;
     }
+
+    buildSCs();
 
     // return the newly built scene to the calling function
     return scene;

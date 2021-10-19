@@ -23,13 +23,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 function buildClusterTable() {
-	$('#c3DFilter').prop('disabled',true);
+	//$('#c3DFilter').prop('disabled',true);
 	$('#cluster3DView').hide();
 	$("#clusterDetail").show();
 	$("#renderCanvas").html('');
 	let html = clusterTabTable();
 	$("#resourceProps").html('');
-    $("#clusterDetail").html(html);
+	$("#clusterDetail").html(html);
 }
 
 //----------------------------------------------------------
@@ -37,10 +37,10 @@ function buildClusterTable() {
 //----------------------------------------------------------
 
 function buildCluster3D() {
-	$('#c3DFilter').prop('disabled',false);
+	//$('#c3DFilter').prop('disabled',false);
 	build3DJSON();
 	$('#cluster3DView').show();
-    build3DView();
+	build3DView();
 	$("#resourceProps").html('')
 }
 
@@ -71,22 +71,22 @@ function clusterTabTable() {
 	let getD;
 	let api4Hdr;
 	let hdrImage;
-	if (typeof k8cData['0000-clusterLevel'] !== 'undefined'){
+	if (typeof k8cData['0000-clusterLevel'] !== 'undefined') {
 		nsHtml = divSection;
 		keys = Object.keys(k8cData['0000-clusterLevel']);
 		keys.sort();
 
 		for (k = 0; k < keys.length; k++) {
 			key = keys[k];
-			if (key === 'display' || key === 'CRB' ) {
+			if (key === 'display' || key === 'CRB') {
 				continue;
 			}
 			parts = k8cData['0000-clusterLevel'][key];
 			api4Hdr = parts[0].api
 
-			hdrImage = checkImage(key, api4Hdr);	
-			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '" width="35" height="35" ' 
-			+ ' onclick="getExplain(\'' + key + '\',\'' + api4Hdr + '\')">&nbsp;'
+			hdrImage = checkImage(key, api4Hdr);
+			headerImg = '<img style="vertical-align:middle;" src="images/' + hdrImage + '" width="35" height="35" '
+				+ ' onclick="getExplain(\'' + key + '\',\'' + api4Hdr + '\')">&nbsp;'
 
 			nsHtml = nsHtml + header1 + headerImg + header2;
 
@@ -94,29 +94,29 @@ function clusterTabTable() {
 
 			hl = parts.length;
 			for (d = 0; d < hl; d++) {
-				nArray.push(parts[d].name+'#@@#'+parts[d].fnum+'#@@#'+parts[d].api);
+				nArray.push(parts[d].name + '#@@#' + parts[d].fnum + '#@@#' + parts[d].api);
 			}
 			nArray.sort();
 			parts = []
 			for (d = 0; d < hl; d++) {
 				let bits = nArray[d].split('#@@#');
-				parts.push({'name': bits[0], 'fnum': bits[1], 'api': bits[2]});
+				parts.push({ 'name': bits[0], 'fnum': bits[1], 'api': bits[2] });
 			}
 
 			for (d = 0; d < hl; d++) {
 				name = parts[d].name;
-                api = parts[d].api;
-                fnum = parts[d].fnum;
+				api = parts[d].api;
+				fnum = parts[d].fnum;
 				if (key === 'Secret') {
 					getD = getDefSec;
 				} else {
 					getD = getDefFnum;
 				}
-				item = '<tr>' 
-				+ '<td width="25%"><span onclick="' + getD + '(\'' + fnum + '\')">' + api + '</td>' 
-				+ '<td width="25%"><span onclick="' + getD + '(\'' + fnum + '\')">' + key + '</td>' 
-				+ '<td width="50%"><span onclick="' + getD + '(\'' + fnum + '\')">' + name + '</td>' 
-				+ '</tr>';
+				item = '<tr>'
+					+ '<td width="25%"><span onclick="' + getD + '(\'' + fnum + '\')">' + api + '</td>'
+					+ '<td width="25%"><span onclick="' + getD + '(\'' + fnum + '\')">' + key + '</td>'
+					+ '<td width="50%"><span onclick="' + getD + '(\'' + fnum + '\')">' + name + '</td>'
+					+ '</tr>';
 				nsHtml = nsHtml + item
 			}
 		}

@@ -905,7 +905,7 @@ function reload() {
         $("#Canvas3D").html('<canvas id="renderCanvas"></canvas>');
         $('#cluster3DView').hide();
     }
-    $('#c3DFilter').prop('disabled', true);
+    //$('#c3DFilter').prop('disabled', true);
     $('#cluster3DView').hide();
     $("#clusterDetail").hide();
     $("#renderCanvas").html('');
