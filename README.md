@@ -66,6 +66,17 @@ Once the above has successfully completed the application can be started.
 
 <br><br>
 
+## 3D View of cluster
+
+Cluster view has been enhanced to include a 3D view of the cluster showing: 
+
+Nodes (master and worker), Pods (Running, Warning, Failed, Successful, DaemonSet), Network Services, Storage (PVC, PV, and Storage Class).
+
+![3DView](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs/docimages/3dView.png)
+
+<br><br>
+
+
 ## Updating software
 
 There is no automated process to update an existing version of this software.   A complete new install is required.  Follow the above __'Installation'__ instructions to install a new version of the software.
