@@ -44,6 +44,10 @@ let foundPVs = {};
 
 
 function set3dBackColor(r, g, b, title) {
+    // reset stars and clouds
+    sceneStars = false;
+    sceneClouds = false;
+    // set if stars or clouds
     if (title === 'Stars') {
         sceneStars = true;
         sceneClouds = false;
