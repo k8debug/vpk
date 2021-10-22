@@ -63,6 +63,32 @@ Change to the directory where the files were placed. Run the following command t
 
 Once the above has successfully completed the application can be started.  
 
+<br><br>
+
+## Schematic of deployed Pods
+
+View schematic of resources used by deployed pods.
+
+![schematic](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-schematic.gif)
+
+
+<br><br>
+
+## RBAC definitions
+
+RBAC definitons shown by cluster or namespace level.
+
+![rbac](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-rbac.gif)
+
+
+<br><br>
+
+## Hierarchy and circle pack graphs
+
+Select cluster or namespace level graphic views of defined resources in the cluster or namespace.
+
+![graphics](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-graphics.gif)
+
 
 <br><br>
 
@@ -72,11 +98,31 @@ Cluster view has been enhanced to include a 3D view of the cluster showing:
 
 Nodes (master and worker), Pods (Running, Warning, Failed, Successful, DaemonSet), Network Services, Storage (PVC, PV, and Storage Class).
 
-![3DView](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs/docimages/3dView.png)
+![3DLegend](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs/docimages/3dView.png)
 
 <br><br>
 
-![3DWow](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-3dview.gif)
+![3dview](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-3dview.gif)
+
+<br><br>
+
+## Storage resources
+
+View defined storage resources include PersistentVolumeClaim, PersistentVolume, and StorageClass.
+
+![storage](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-storage.gif)
+
+
+
+<br><br>
+
+## Snapshot compares
+
+Select cluster snapshots and compare for differences.
+
+![3DView](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-compare.gif)
+
+
 
 
 ## Updating software
