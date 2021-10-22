@@ -36,95 +36,122 @@
                 <img style='vertical-align:middle;' src='images/vpk-flip.gif' width='30' height='30'>
                 <div style='vertical-align:middle; display:inline;' class='vpkcolor vpkfont pl-2'>
                     <span class="vpkfont-lg">V</span><span class="vpkfont">isual </span>
-                    <span class="vpkfont">p</span>
-            </span><span class="vpkfont">arsed</span>
-            <span class="vpkfont-lg">K</span></span><span class="vpkfont">ubernetes</span>
+                    <span class="vpkfont">parsed</span>
+                    <span class="vpkfont-lg">K</span><span class="vpkfont">ubernetes</span>
+                </div>
+            </span>
+            <div class="header-right">
+                <a href="javascript:getDocumentation()">
+                    <i class="fas fa-question mr-3 vpkcolor"></i>
+                </a>
+                <a href="javascript:about()">
+                    <i class="fas fa-info-circle fa-lg mr-3 vpkcolor"></i>
+                </a>
+                <a href="javascript:showConfig()">
+                    <i class="fas fa-cog fa-lg vpkcolor"></i>
+                </a>
+            </div>
         </div>
-        </span>
-        <div class="header-right">
-            <a href="javascript:getDocumentation()">
-                <i class="fas fa-question mr-3 vpkcolor"></i>
-            </a>
-            <a href="javascript:about()">
-                <i class="fas fa-info-circle fa-lg mr-3 vpkcolor"></i>
-            </a>
-            <a href="javascript:showConfig()">
-                <i class="fas fa-cog fa-lg vpkcolor"></i>
-            </a>
+        <div id="datasource" class="header vpkfont-md pt-0 pb-2 ml-5">
+            <div class="ml-2">
+                <select id="pickDataSource" class="vpkfont-md pl-3" style="width: 200px; vertical-align:middle;">
+                    <option></option>
+                    <option>Running cluster</option>
+                    <option>Previous captured snapshot</option>
+                </select>
+                <div class="pl-3" style='vertical-align:middle; display:inline;'>
+                    <button class="btn btn-sm btn-outline-primary vpkfont-md " onclick="dirStats()">
+                        <span id="baseDir" class="float-left"></span>
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-    <div id="datasource" class="header vpkfont-md pt-0 pb-2 ml-5">
-        <div class="ml-2">
-            <select id="pickDataSource" class="vpkfont-md pl-3" style="width: 200px; vertical-align:middle;">
-                <option></option>
-                <option>Running cluster</option>
-                <option>Previous captured snapshot</option>
-            </select>
-            <div class="pl-3" style='vertical-align:middle; display:inline;'>
-                <button class="btn btn-sm btn-outline-primary vpkfont-md " onclick="dirStats()">
-                    <span id="baseDir" class="float-left"></span>
+        <div id="messageDiv" class="collapse hide mt-0 mb-0 vpkfont-md">
+            <div id="messageType" class="alert alert-warning fade show pt-2 pb-2" role="alert">
+                <span id="messageText"></span>
+                <button type="button" class="close pt-0" onclick="hideMessage2()">
+                    <span>&times;</span>
                 </button>
             </div>
         </div>
+        <ul id="tabs" class="nav nav-tabs ml-3 mr-3">
+            <li class="nav-item"><a id="instTab" href="#instructions" data-target="#instructions" data-toggle="tab"
+                    class="nav-link small text-uppercase active">Overview</a></li>
+            <li class="nav-item"><a id="tableTab" href="#tableview" data-target="#tableview" data-toggle="tab"
+                    class="nav-link small text-uppercase">Table View</a></li>
+            <li class="nav-item"><a id="graphicTab" href="#graphic" data-target="#graphic" data-toggle="tab"
+                    class="nav-link small text-uppercase">Graphic View</a></li>
+            <li class="nav-item"><a id="schematicTab" href="#schematic" data-target="#schematic" data-toggle="tab"
+                    class="nav-link small text-uppercase">Schematics</a></li>
+            <li class="nav-item"><a id="securityTab" href="#security" data-target="#security" data-toggle="tab"
+                    class="nav-link small text-uppercase">Security</a></li>
+            <li class="nav-item"><a id="storageTab" href="#storage" data-target="#storage" data-toggle="tab"
+                    class="nav-link small text-uppercase">Storage</a></li>
+            <li class="nav-item"><a id="clusterTab" href="#cluster" data-target="#cluster" data-toggle="tab"
+                    class="nav-link small text-uppercase">Cluster</a></li>
+            <li class="nav-item"><a id="xreferenceTab" href="#xreference" data-target="#xreference" data-toggle="tab"
+                    class="nav-link small text-uppercase">X-Reference</a></li>
+            <li class="nav-item"><a id="ownerliksTab" href="#ownerlinks" data-target="#ownerlinks" data-toggle="tab"
+                    class="nav-link small text-uppercase">OwnerRef Links</a></li>
+            <li class="nav-item"><a id="compareTab" href="#comparesnap" data-target="#comparesnap" data-toggle="tab"
+                    class="nav-link small text-uppercase">Compare Snapshots</a></li>
+        </ul>
     </div>
-    <div id="messageDiv" class="collapse hide mt-0 mb-0 vpkfont-md">
-        <div id="messageType" class="alert alert-warning fade show pt-2 pb-2" role="alert">
-            <span id="messageText"></span>
-            <button type="button" class="close pt-0" onclick="hideMessage2()">
-                <span>&times;</span>
-            </button>
-        </div>
-    </div>
-    <ul id="tabs" class="nav nav-tabs ml-3 mr-3">
-        <li class="nav-item"><a id="instTab" href="#instructions" data-target="#instructions" data-toggle="tab"
-                class="nav-link small text-uppercase active">Overview</a></li>
-        <li class="nav-item"><a id="tableTab" href="#tableview" data-target="#tableview" data-toggle="tab"
-                class="nav-link small text-uppercase">Table View</a></li>
-        <li class="nav-item"><a id="graphicTab" href="#graphic" data-target="#graphic" data-toggle="tab"
-                class="nav-link small text-uppercase">Graphic View</a></li>
-        <li class="nav-item"><a id="schematicTab" href="#schematic" data-target="#schematic" data-toggle="tab"
-                class="nav-link small text-uppercase">Schematics</a></li>
-        <li class="nav-item"><a id="securityTab" href="#security" data-target="#security" data-toggle="tab"
-                class="nav-link small text-uppercase">Security</a></li>
-        <li class="nav-item"><a id="storageTab" href="#storage" data-target="#storage" data-toggle="tab"
-                class="nav-link small text-uppercase">Storage</a></li>
-        <li class="nav-item"><a id="clusterTab" href="#cluster" data-target="#cluster" data-toggle="tab"
-                class="nav-link small text-uppercase">Cluster</a></li>
-        <li class="nav-item"><a id="xreferenceTab" href="#xreference" data-target="#xreference" data-toggle="tab"
-                class="nav-link small text-uppercase">X-Reference</a></li>
-        <li class="nav-item"><a id="ownerliksTab" href="#ownerlinks" data-target="#ownerlinks" data-toggle="tab"
-                class="nav-link small text-uppercase">OwnerRef Links</a></li>
-        <li class="nav-item"><a id="compareTab" href="#comparesnap" data-target="#comparesnap" data-toggle="tab"
-                class="nav-link small text-uppercase">Compare Snapshots</a></li>
-    </ul>
-    </div>
+
 
 
     <div id="viewarea" class="">
+
         <div id="tabsContent" class="tab-content">
+
             <div id="instructions" class="tab-pane active show">
-                <!-- Append the needed UI components -->
-                <div class="mt-5 ml-5 mr-5 mb-5">
-                    <span class="vpkfont">Visual parsed Kubernetes is an application working to bring understanding
+
+                <div class="wow-text vpkfont vpkcolor">
+                    <span>Visual parsed Kubernetes (<b>VpK</b>) brings understanding
                         and insight to the Kubernetes universe.
-                        The software is a read-only tool that captures a snapshot of a Kubernetes cluster. After the
-                        snapshot is captured
-                        the information regarding the cluster is available to analyze and view. Viewing the snapshot
-                        data is accomplished
-                        without access or connection to the cluster.
-                    </span>
+                        VpK is a read-only tool that captures a snapshot of a Kubernetes cluster.
+                        Once captured view and analyze the cluster resources by selecting the above tabs.
+                        Examples of features shown below.</span>
                 </div>
 
-                <%- include('partials/carousel') %>
-
-                    <div class="mt-5 text-center ">
-                        <p>
-                            <span class="mt-5 ml-5 vpkfont vpkcolor">
-                                The software is open source and free.
-                            </span>
-                        </p>
-
+                <div class="wow-wrapper">
+                    <div class="box box1">
+                        <a href="javascript:pickTab('graphic')">
+                            <img style='vertical-align:middle;' src='images/wow/wow-graphics.gif' width='450'
+                                height='315'></a>
                     </div>
+                    <div class="box box1">
+                        <a href="javascript:pickTab('schematic')">
+                            <img style='vertical-align:middle;' src='images/wow/wow-schematic.gif' width='450'
+                                height='315'></a>
+                    </div>
+                    <div class="box box1">
+                        <a href="javascript:pickTab('security')">
+                            <img style='vertical-align:middle;' src='images/wow/wow-rbac.gif' width='450'
+                                height='315'></a>
+                    </div>
+                    <div class="box box1">
+                        <a href="javascript:pickTab('storage')">
+                            <img style='vertical-align:middle;' src='images/wow/wow-storage.gif' width='450'
+                                height='315'></a>
+                    </div>
+                    <div class="box box1">
+                        <a href="javascript:pickTab('cluster')">
+                            <img style='vertical-align:middle;' src='images/wow/wow-3dview.gif' width='450'
+                                height='315'></a>
+                    </div>
+                    <div class="box box1">
+                        <a href="javascript:pickTab('comparesnap')">
+                            <img style='vertical-align:middle;' src='images/wow/wow-compare.gif' width='450'
+                                height='315'></a>
+                    </div>
+                </div>
+
+                <div class="text-center vpkcolor vkpfont-lg wow-tagline">
+                    <span>"VpK&nbsp;&nbsp;visualizing what's inside of Kubernetes"</span>
+                </div>
+
+
             </div>
 
 

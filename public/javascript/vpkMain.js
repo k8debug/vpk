@@ -317,6 +317,57 @@ var check3DFilter = function () {
     }
 }
 
+//Overview tab handler
+function pickTab(tab) {
+    return;
+    currentTab = '#' + tab;
+    if (tab === "cluster") {
+        $('#cluster').show();
+        documentationTabTopic = 'cluster';
+    } else {
+        $('#cluster').hide();
+    }
+
+    if (tab === "schematic") {
+        $('#ownerlinks').show();
+        documentationTabTopic = 'schematic';
+    } else {
+        $('#cluster').hide();
+    }
+
+    if (tab === "graphic") {
+        $('#graphic').show();
+        documentationTabTopic = 'graphicview';
+    } else {
+        $('#graphic').hide();
+    }
+
+    if (tab === "ownerlinks") {
+        $('#ownerlinks').show();
+        documentationTabTopic = 'ownerref';
+    } else {
+        $('#cluster').hide();
+    }
+
+    if (tab === "security") {
+        $('#security').show();
+        documentationTabTopic = 'security';
+    } else {
+        $('#security').hide();
+    }
+
+    if (tab === "comparesnap") {
+        $('#comparesnap').show();
+        documentationTabTopic = 'cluster';
+    } else {
+        $('#comparesnap').hide();
+    }
+}
+
+
+
+
+
 //----------------------------------------------------------
 //----------------------------------------------------------
 // socket io definitions for incoming and out-bound 
