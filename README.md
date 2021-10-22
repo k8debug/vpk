@@ -76,6 +76,8 @@ Nodes (master and worker), Pods (Running, Warning, Failed, Successful, DaemonSet
 
 <br><br>
 
+![3DWow](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-3dview.gif)
+
 
 ## Updating software
 
