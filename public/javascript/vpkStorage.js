@@ -31,14 +31,14 @@ function initStorageVars() {
 function buildStorage() {
     initStorageVars();
 
-	//Build the SVG for storage requests
-	let html = buildStorageSVG();	
-	//If no images were built display message to inform user
-	if (storCnt === 0) {
-		html = '<div class="vpkfont vpkcolor"><br><p>No storage requests located for the selected snapshot</p></div>'
-	}
-	//Update the browser DOM
-	$("#storageDetail").html(html) ;
+    //Build the SVG for storage requests
+    let html = buildStorageSVG();
+    //If no images were built display message to inform user
+    if (storCnt === 0) {
+        html = '<div class="vpkfont vpkcolor"><br><p>No storage requests located for the selected snapshot</p></div>'
+    }
+    //Update the browser DOM
+    $("#storageDetail").html(html);
     $("#storageDetail").show();
 }
 
@@ -50,42 +50,42 @@ function buildStorageSVG() {
     let fmtSpc = '';
     let first = true;
     let rtn = '<div class="mt-0 ml-5 vpkfont-sm vpkcolor"><span pl-5>Click horizontal bars to view StorageClase details</span></div>'
-    + '<svg width="1200" height="10">'
-    + '<line  x1="30"  x2="190"  y1="10" y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="200"  x2="1200"  y1="10" y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<svg width="1200" height="10">'
+        + '<line  x1="30"  x2="190"  y1="10" y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="200"  x2="1200"  y1="10" y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="200"  x2="200"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="250"  x2="250"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="200"  x2="200"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="250"  x2="250"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="300"  x2="300"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="350"  x2="350"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="300"  x2="300"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="350"  x2="350"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="400"  x2="400"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="450"  x2="450"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="400"  x2="400"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="450"  x2="450"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="500"  x2="500"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="550"  x2="550"   y1="6"  y2="10"  stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="500"  x2="500"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="550"  x2="550"   y1="6"  y2="10"  stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="600"  x2="600"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="650"  x2="650"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="600"  x2="600"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="650"  x2="650"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="700"  x2="700"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="750"  x2="750"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="700"  x2="700"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="750"  x2="750"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="800"  x2="800"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="850"  x2="850"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="800"  x2="800"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="850"  x2="850"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="900"  x2="900"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="950"  x2="950"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="900"  x2="900"   y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="950"  x2="950"   y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="1000" x2="1000"  y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="1050" x2="1050"  y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="1000" x2="1000"  y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="1050" x2="1050"  y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="1100" x2="1100"  y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '<line  x1="1150" x2="1150"  y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="1100" x2="1100"  y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '<line  x1="1150" x2="1150"  y1="6"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
 
-    + '<line  x1="1200" x2="1200"  y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
-    + '</svg>'
+        + '<line  x1="1200" x2="1200"  y1="1"  y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
+        + '</svg>'
 
     let name;
     let fnum;
@@ -103,33 +103,39 @@ function buildStorageSVG() {
             tmp = fmtSpc.substring(2);
             tmp = tmp.trim();
             spcLength = parseInt(tmp, 10);
-            
+
         } else {
             fmtSpc = 'GB 0';
             space = 0;
             spcLength = 0;
         }
-        name = storageData.StorageClass[scKeys[s]].name;
+
+        if (typeof storageData.StorageClass[scKeys[s]].name === 'undefined') {
+            continue;
+        } else {
+            name = storageData.StorageClass[scKeys[s]].name;
+        }
+
         fnum = storageData.StorageClass[scKeys[s]].fnum;
         rtn = rtn + '<svg id="sc' + storCnt + '" width="1200" height="50">'
-        + '<image x="10" y="5"  width="40" height="40" href="images/k8/sc.svg" onmousemove="showStorageTooltip(evt,\''
-        + buildStorageInfo(name, 'SC') 
-        + '\');" onmouseout="hideVpkTooltip()"  onclick="getDefFnum(\'' + fnum +'\')"/>'
+            + '<image x="10" y="5"  width="40" height="40" href="images/k8/sc.svg" onmousemove="showStorageTooltip(evt,\''
+            + buildStorageInfo(name, 'SC')
+            + '\');" onmouseout="hideVpkTooltip()"  onclick="getDefFnum(\'' + fnum + '\')"/>'
 
-        + '<text x="60" y="42" fill="black" class="vpkfont-sm" data-toggle="collapse" ' 
-        + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">StorageClass: </text>'
-        + '<text x="125" y="43" fill="black" class="vpkfont" data-toggle="collapse" ' 
-        + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">' + name + '</text>'
-        
-        + '<rect x="200" y="3"  width="' + spcLength + '"  height="28" rx="2" stroke-width="0"  stroke="black" fill="#7ec963" '
-        + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')"/>'
-        
-        + '<rect x="55" y="5"  width="85"  height="18" rx="4" stroke-width="0.5"  stroke="black" fill="lightgray" '
-        + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')"/>'
-        + '<text x="60" y="20" fill="black" class="vpkfont" ' 
-        + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">' + fmtSpc + '</text>'
+            + '<text x="60" y="42" fill="black" class="vpkfont-sm" data-toggle="collapse" '
+            + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">StorageClass: </text>'
+            + '<text x="125" y="43" fill="black" class="vpkfont" data-toggle="collapse" '
+            + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">' + name + '</text>'
 
-        + '<line x1="30" x2="1200" y1="50" y2="50" stroke="gray" stroke-width="0.5" stroke-linecap="round"/>'
+            + '<rect x="200" y="3"  width="' + spcLength + '"  height="28" rx="2" stroke-width="0"  stroke="black" fill="#7ec963" '
+            + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')"/>'
+
+            + '<rect x="55" y="5"  width="85"  height="18" rx="4" stroke-width="0.5"  stroke="black" fill="lightgray" '
+            + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')"/>'
+            + '<text x="60" y="20" fill="black" class="vpkfont" '
+            + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">' + fmtSpc + '</text>'
+
+            + '<line x1="30" x2="1200" y1="50" y2="50" stroke="gray" stroke-width="0.5" stroke-linecap="round"/>'
 
         if (first === false) {
             rtn = rtn + '<line  x1="1"  x2="1200" y1="1" y2="1" stroke="lightgray" stroke-width="0.5" stroke-linecap="round"/>'
@@ -173,15 +179,15 @@ function buildPVLine(storCnt, sc, lastSC) {
             }
 
             rtn = rtn + '<svg id="pv' + p + '" width="1200" height="100">'
-            + '<image x="70" y="5"  width="35" height="35" href="images/k8/pv.svg" onmousemove="showStorageTooltip(evt,\''       
-            + buildStorageInfo(name, 'PV') 
-            + '\')" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + fnum + '\')"/>'
-            + '<text x="145"  y="20" fill="black" class="vpkfont" onclick="getDefFnum(\'' + fnum + '\')">' + storageData.PVinfo[pvKeys[p]][0].fmtSpc + '</text>'
-            + '<text x="145"  y="34" fill="black" class="vpkfont-sm">PV name:</text>'
-            + '<text x="205"  y="34" fill="black" class="vpkfont">' + name + '</text>'
+                + '<image x="70" y="5"  width="35" height="35" href="images/k8/pv.svg" onmousemove="showStorageTooltip(evt,\''
+                + buildStorageInfo(name, 'PV')
+                + '\')" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + fnum + '\')"/>'
+                + '<text x="145"  y="20" fill="black" class="vpkfont" onclick="getDefFnum(\'' + fnum + '\')">' + storageData.PVinfo[pvKeys[p]][0].fmtSpc + '</text>'
+                + '<text x="145"  y="34" fill="black" class="vpkfont-sm">PV name:</text>'
+                + '<text x="205"  y="34" fill="black" class="vpkfont">' + name + '</text>'
 
-            + '<line  x1="30" x2="70"  y1="25" y2="25" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-            + '<line  x1="30" x2="30"  y1="0"  y2="25" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+                + '<line  x1="30" x2="70"  y1="25" y2="25" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+                + '<line  x1="30" x2="30"  y1="0"  y2="25" stroke="black" stroke-width="1" stroke-linecap="round"/>'
 
             pvcName = storageData.PVinfo[pvKeys[p]][0].cRefName;
             pvcNS = storageData.PVinfo[pvKeys[p]][0].cRefNS;
@@ -189,16 +195,16 @@ function buildPVLine(storCnt, sc, lastSC) {
                 if (storageData.PVCinfo[pvcKeys[v]][0].name === pvcName) {
                     if (storageData.PVCinfo[pvcKeys[v]][0].namespace === pvcNS) {
                         rtn = rtn + '<image x="100" y="40"  width="35" height="35" href="images/k8/pvc.svg" '
-                        + ' onmousemove="showStorageTooltip(evt,\'' 
-                        + buildStorageInfo(pvcName, 'PVC')
-                        + '\')" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + pvcKeys[v] + '\')"/>'
-                        + '<text x="145" y="66" fill="black" class="vpkfont">' + storageData.PVCinfo[pvcKeys[v]][0].fmtSpc + '</text>'
-                        + '<text x="145" y="80" fill="black" class="vpkfont-sm">PVC name:</text>'
-                        + '<text x="205" y="80" fill="black" class="vpkfont">' + pvcName + '</text>'
+                            + ' onmousemove="showStorageTooltip(evt,\''
+                            + buildStorageInfo(pvcName, 'PVC')
+                            + '\')" onmouseout="hideVpkTooltip()" onclick="getDefFnum(\'' + pvcKeys[v] + '\')"/>'
+                            + '<text x="145" y="66" fill="black" class="vpkfont">' + storageData.PVCinfo[pvcKeys[v]][0].fmtSpc + '</text>'
+                            + '<text x="145" y="80" fill="black" class="vpkfont-sm">PVC name:</text>'
+                            + '<text x="205" y="80" fill="black" class="vpkfont">' + pvcName + '</text>'
 
-	                    + '<line  x1="100" x2="88" y1="58" y2="58" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-	                    + '<line  x1="88"  x2="88" y1="40" y2="58" stroke="black" stroke-width="1" stroke-linecap="round"/>'
-                        + '<line  x1="35"  x2="1200" y1="99" y2="99" stroke="lightgray" stroke-width="0.5" stroke-linecap="round"/>'
+                            + '<line  x1="100" x2="88" y1="58" y2="58" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+                            + '<line  x1="88"  x2="88" y1="40" y2="58" stroke="black" stroke-width="1" stroke-linecap="round"/>'
+                            + '<line  x1="35"  x2="1200" y1="99" y2="99" stroke="lightgray" stroke-width="0.5" stroke-linecap="round"/>'
                     }
                 }
             }

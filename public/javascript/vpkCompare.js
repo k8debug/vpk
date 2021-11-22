@@ -24,8 +24,24 @@ let getSnapFile1Name;
 let getSnapFile2Name;
 let compFile1Content;
 let compFile2Content;
- 
+let newSnap1;
+let newSnap2;
+
+// replace a single back-slash with double back-slashes to support Windows opsys file names
+function doubleSlash(fname) {
+    let nVal = '';
+    for (let i = 0; i < fname.length; i++) {
+        if (fname.substring(i, i + 1) === '\\') {
+            nVal = nVal + fname.substring(i, i) + '\\\\'
+        } else {
+            nVal = nVal + fname.substring(i, i + 1);
+        }
+    }
+    return nVal;
+}
+
 function buildCompareResults(data, snap1, snap2) {
+    console.log('Compare results started')
     let sortKey;
     let tmp;
 
@@ -34,7 +50,7 @@ function buildCompareResults(data, snap1, snap2) {
         return;
     }
 
-	tmp = $('#compareSort1').select2('data');
+    tmp = $('#compareSort1').select2('data');
     let compSortBy1 = tmp[0].text;
     if (compSortBy1 === '') {
         compSortBy1 = 'Namespace';
@@ -46,21 +62,21 @@ function buildCompareResults(data, snap1, snap2) {
     }
 
     sortKey = setSortOrder(compSortBy1, compSortBy2);
-
+    console.log('Compare sort keys: ' + compSortBy1 + ', and ' + compSortBy2)
     tmp = $('#compareView').select2('data');
     let compView = tmp[0].text;
     if (compView === '') {
         compView = 'All';   // All, Matching, Non-matching
-    }    
+    }
 
     console.log('Compare Sort Order: ' + compSortBy1 + ' & ' + compSortBy2 + ' with View Results: ' + compView)
 
     data = data.result.resources;
 
     let html = '<div class="events"><table style="width:100%">';
-	let hS = '<tr class="partsList centerText">';
+    let hS = '<tr class="partsList centerText">';
     let hNs = '<th class="pt-1 pb-1 pr-1 pl-5">Namespace</th>';
-    let hNa = '<th class="pt-1 pb-1 pr-1 pl-5">Name</th>'; 
+    let hNa = '<th class="pt-1 pb-1 pr-1 pl-5">Name</th>';
     let hKi = '<th colspan="2" class="pt-1 pb-1 pr-1 pl-5">Kind</th>';
     let hFlags = '<th>Snapshot</th><th>CreateTime</th><th>Spec Match</th>';
     let hE = '</tr>';
@@ -86,13 +102,13 @@ function buildCompareResults(data, snap1, snap2) {
     let sp1Only = '&nbsp;Snap 1 Only&nbsp;';
     let sp2Only = '&nbsp;Snap 2 Only&nbsp;';
     let spBoth = '&nbsp;Both&nbsp;';
-    let newK = []; 
+    let newK = [];
 
     let hl;
     let k;
-	let kind;
-	let api;
-	let image;
+    let kind;
+    let api;
+    let image;
     let item;
     let keys;
     let key;
@@ -121,7 +137,9 @@ function buildCompareResults(data, snap1, snap2) {
     }
 
     // get keys from object, build sort keys, and sort
-    keys = Object.keys(data); 
+    keys = Object.keys(data);
+
+    console.log('Number of compare keys: ' + keys.length);
 
     if (sortKey !== 'Namespace.Name.Kind') {
         for (let n = 0; n < keys.length; n++) {
@@ -130,27 +148,29 @@ function buildCompareResults(data, snap1, snap2) {
                 pKs = key.split(':@:');
                 if (pKs.length === 3) {
                     if (sortKey === 'Namespace.Kind.Name') {
-                        tmp = pKs[0]+':@:'+pKs[2]+':@:'+pKs[1];
+                        tmp = pKs[0] + ':@:' + pKs[2] + ':@:' + pKs[1];
                     } else if (sortKey === 'Name.Kind.Namespace') {
-                        tmp = pKs[1]+':@:'+pKs[2]+':@:'+pKs[0];
+                        tmp = pKs[1] + ':@:' + pKs[2] + ':@:' + pKs[0];
                     } else if (sortKey === 'Name.Namespace.Kind') {
-                        tmp = pKs[1]+':@:'+pKs[0]+':@:'+pKs[2];
+                        tmp = pKs[1] + ':@:' + pKs[0] + ':@:' + pKs[2];
                     } else if (sortKey === 'Kind.Name.Namespace') {
-                        tmp = pKs[2]+':@:'+pKs[1]+':@:'+pKs[0];
+                        tmp = pKs[2] + ':@:' + pKs[1] + ':@:' + pKs[0];
                     } else if (sortKey === 'Kind.Namespace.Name') {
-                        tmp = pKs[2]+':@:'+pKs[0]+':@:'+pKs[1];
-                    } 
-                    newK.push(tmp);  
+                        tmp = pKs[2] + ':@:' + pKs[0] + ':@:' + pKs[1];
+                    }
+                    newK.push(tmp);
                 } else {
                     console.log('Compare did not find 3-part key: ' + key)
-                } 
-            }  
+                }
+            }
         }
         keys = newK;
     }
 
     // sort keys to selected sortKey
     keys.sort();
+
+    console.log('Keys sorted');
 
     newK = [];
 
@@ -159,16 +179,16 @@ function buildCompareResults(data, snap1, snap2) {
             key = keys[y];
             pKs = key.split(':@:');
             if (sortKey === 'Namespace.Kind.Name') {
-                tmp = pKs[0]+':@:'+pKs[2]+':@:'+pKs[1];
+                tmp = pKs[0] + ':@:' + pKs[2] + ':@:' + pKs[1];
             } else if (sortKey === 'Name.Kind.Namespace') {
-                tmp = pKs[2]+':@:'+pKs[0]+':@:'+pKs[1];
+                tmp = pKs[2] + ':@:' + pKs[0] + ':@:' + pKs[1];
             } else if (sortKey === 'Name.Namespace.Kind') {
-                tmp = pKs[1]+':@:'+pKs[0]+':@:'+pKs[2];
+                tmp = pKs[1] + ':@:' + pKs[0] + ':@:' + pKs[2];
             } else if (sortKey === 'Kind.Name.Namespace') {
-                tmp = pKs[2]+':@:'+pKs[1]+':@:'+pKs[0];
+                tmp = pKs[2] + ':@:' + pKs[1] + ':@:' + pKs[0];
             } else if (sortKey === 'Kind.Namespace.Name') {
-                tmp = pKs[1]+':@:'+pKs[2]+':@:'+pKs[0];
-            } 
+                tmp = pKs[1] + ':@:' + pKs[2] + ':@:' + pKs[0];
+            }
             newK.push(tmp);
         }
         keys = newK;
@@ -176,8 +196,20 @@ function buildCompareResults(data, snap1, snap2) {
 
     hl = keys.length;
 
+
     try {
-        if (hl > 0 ){
+
+        console.log('Platform: ' + navigator.userAgent);
+        // check if Windows opsys, if so change snap1 and snap2 to support Windows file names
+        if (navigator.userAgent.indexOf("Win") != -1) {
+            console.log('Windows OS detected');
+            newSnap1 = doubleSlash(snap1)
+            console.log('New snap1: ' + newSnap1);
+            newSnap2 = doubleSlash(snap2)
+            console.log('New snap2: ' + newSnap2);
+        };
+
+        if (hl > 0) {
             for (k = 0; k < hl; k++) {
                 key = keys[k];
                 if (data[key] !== null) {
@@ -185,9 +217,17 @@ function buildCompareResults(data, snap1, snap2) {
                     item = '';
                     kind = data[key].kind
                     api = data[key].api
-                    image = checkImage(kind, api);	
-                    fn1 = snap1 + '/' + data[key].fn1;
-                    fn2 = snap2 + '/' + data[key].fn2;
+                    image = checkImage(kind, api);
+
+                    // if window opsys set build name of file with double back-slashes, thus needing four slashes
+                    if (navigator.userAgent.indexOf("Win") != -1) {
+                        fn1 = newSnap1 + '\\\\' + data[key].fn1;
+                        fn2 = newSnap2 + '\\\\' + data[key].fn2;
+                    } else {
+                        fn1 = snap1 + '/' + data[key].fn1;
+                        fn2 = snap2 + '/' + data[key].fn2;
+                    }
+
                     // build output elements
                     icon = '<td>' + ic1 + image + ic2 + kind + ic3 + api + ic4 + '</td>';
                     // remove '@' from ns if @clusterLevel
@@ -203,13 +243,13 @@ function buildCompareResults(data, snap1, snap2) {
                     match = true
                     // build name flag
                     if (data[key].fn1 === 'ndf') {
-                        flags = flags + sTdx + paleR + sp2Only + eSpan + eTd; 
+                        flags = flags + sTdx + paleR + sp2Only + eSpan + eTd;
                         match = false;
                     } else if (data[key].fn2 === 'ndf') {
                         flags = flags + sTdx + paleR + sp1Only + eSpan + eTd;
-                        match = false; 
+                        match = false;
                     } else {
-                        flags = flags + sTdx + paleG + spBoth + eSpan + eTd; 
+                        flags = flags + sTdx + paleG + spBoth + eSpan + eTd;
                     }
 
                     // build time flag
@@ -257,36 +297,36 @@ function buildCompareResults(data, snap1, snap2) {
         }
         html = html + '</table></div>';
         $("#compareDetail").html(html);
-    } catch(err) {
+    } catch (err) {
         console.log('Compare table build error, message: ' + err);
         console.log('Stack: ' + err.stack);
         console.log('Record key: ' + key)
         console.log(JSON.stringify(data[key], null, 4));
     }
-	//return html;
+    //return html;
 }
 
 function setSortOrder(s1, s2) {
     let ns = 'Namespace';
     let na = 'Name';
     let ki = 'Kind';
-    
+
     if (s1 === s2) {
-        return ns+'.'+na+'.'+ki;
-    }   
+        return ns + '.' + na + '.' + ki;
+    }
 
     if (s1 === ns && s2 === na) {
-        return ns+'.'+na+'.'+ki;
+        return ns + '.' + na + '.' + ki;
     } else if (s1 === ns && s2 === ki) {
-        return ns+'.'+ki+'.'+na;
+        return ns + '.' + ki + '.' + na;
     } else if (s1 === na && s2 === ns) {
-        return na+'.'+ns+'.'+ki;
+        return na + '.' + ns + '.' + ki;
     } else if (s1 === na && s2 === ki) {
-        return na+'.'+ki+'.'+ns;
+        return na + '.' + ki + '.' + ns;
     } else if (s1 === ki && s2 === ns) {
-        return ki+'.'+ns+'.'+na;
+        return ki + '.' + ns + '.' + na;
     } else if (s1 === ki && s2 === na) {
-        return ki+'.'+na+'.'+ns;
+        return ki + '.' + na + '.' + ns;
     }
 }
 
