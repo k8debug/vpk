@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -22,6 +22,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------
 
 // Global vars 
+
+// Schematic related
+let collapseNamespaces = {};
 
 // 3D view related
 let clusterPanelIsClosed = true;
@@ -194,8 +197,8 @@ let RBAClegend = '<div class="vpkfont-md mb-2 mt-2">'
 	+ '<span class="pl-1 vpkfont-md">(click colored background text for info)</span>';
 
 let processingRequest = '<div class="row">'
-	+ '<div class="col mt-4 ml-4">'
-	+ '  <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
+	+ '<div class="col mt-1 ml-4">'
+	+ '  <img style="float:left" src="images/loading.gif" width="30" height="30"/>'
 	+ '  <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>'
 	+ '  </div>'
 	+ '</div>';
@@ -219,6 +222,14 @@ function getExplain(kind, api) {
 	}
 }
 
+// Open a collapse section using namespace
+function openNamespace(ns) {
+	let id;
+	if (collapseNamespaces[ns] !== undefined) {
+		id = '#collid-' + collapseNamespaces[ns];
+		$(id).collapse("show");
+	}
+}
 
 function openAll(type) {
 	collapseAction('O', type)
@@ -338,6 +349,11 @@ function printDiv(id) {
 	   along with the link to the external CSS file and finally the IFRAME document is printed using the 
 	   JavaScript Window Print command and the IFRAME is removed from the pag
 	*/
+
+	// if (window.getComputedStyle(id).display === "none") {
+	// 	console.log('Element is hidden')// Do something..
+	// }
+
 	var contents = $(id).html();
 	var frame1 = $('<iframe />');
 	frame1[0].name = "frame1";
@@ -384,7 +400,7 @@ function checkImage(kind, api) {
 	} else if (kind === 'CatalogSource') {
 		image = 'other/ocp.svg';
 	} else if (kind === 'CephCluster') {
-		image = 'other/rook.svg';
+		image = 'other/rook2.svg';
 	} else if (kind === 'CertificateSigningRequest') {
 		image = 'k8/k8.svg';
 	} else if (kind === 'ClusterRole') {
@@ -519,13 +535,17 @@ function checkImage(kind, api) {
 			} else if (api.indexOf('noobaa.io') > -1) {
 				image = 'other/redhat.svg';
 			} else if (api.indexOf('.rook.') > -1) {
-				image = 'other/rook.svg';
+				image = 'other/rook2.svg';
 			} else if (api.indexOf('.konghq.com') > -1) {
 				image = 'other/kong.svg';
 			} else if (api.indexOf('.cattle.') > -1) {
 				image = 'other/rancher.svg';
 			} else if (api.indexOf('.volcano.') > -1) {
 				image = 'other/volcano.svg';
+			} else if (api.indexOf('.fluentd.') > -1) {
+				image = 'other/fluentd.svg';
+			} else if (api.indexOf('.fluentd.') > -1) {
+				image = 'other/coreDNS2.svg';
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -16,6 +16,7 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMA
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
 
 //----------------------------------------------------------
 // build svg for workloads 
@@ -143,6 +144,7 @@ function buildNoPods() {
 
 				noPo = noPo + line;
 				collapseIDs.push(breakID);
+				collapseNamespaces[newKey] = breakID;
 			}
 		}
 
@@ -222,9 +224,8 @@ function buildCSVG() {
 
 			//
 
-
-
 			collapseIDs.push(breakID);
+			collapseNamespaces[oldNS] = breakID;
 
 			let nsWide = nsChange(oldNS);
 
@@ -725,13 +726,11 @@ function bldEvents(fnum) {
 
 function svgHeader(data, fnum) {
 	let nodeInfo = { 'name': 'Node', 'fnum': '<unk>' };
-	if (typeof k8cData['0000-clusterLevel'] !== 'undefined') {
-		if (typeof k8cData['0000-clusterLevel'].Node !== 'undefined') {
-			if (typeof k8cData['0000-clusterLevel'].Node[0].name !== 'undefined') {
-				nodeInfo.name = k8cData['0000-clusterLevel'].Node[0].name;
-			}
-			if (typeof k8cData['0000-clusterLevel'].Node[0].fnum !== 'undefined') {
-				nodeInfo.fnum = k8cData['0000-clusterLevel'].Node[0].fnum;
+	if (typeof data.node !== 'undefined') {
+		nodeInfo.name = data.node;
+		for (let i = 0; i < k8cData['0000-clusterLevel'].Node.length; i++) {
+			if (data.node === k8cData['0000-clusterLevel'].Node[i].name) {
+				nodeInfo.fnum = k8cData['0000-clusterLevel'].Node[i].fnum;
 			}
 		}
 	}
@@ -1496,7 +1495,7 @@ function buildContainerStatus(data) {
 				} else {
 					statusFill = 'grey';
 					statusMsg = statusMsg + data.state.waiting.reason;
-					console.log('data.state.waiting.reason: ' + data.state.waiting.reason)
+					//console.log('data.state.waiting.reason: ' + data.state.waiting.reason)
 				}
 			}
 		} else if (typeof data.state.terminated !== 'undefined') {
@@ -1506,7 +1505,7 @@ function buildContainerStatus(data) {
 			} else {
 				statusFill = 'lightgrey';
 				statusMsg = 'Unknown';
-				console.log('UnProcessed terminated status: ' + JSON.stringify(data.state.terminated, null, 2))
+				//console.log('UnProcessed terminated status: ' + JSON.stringify(data.state.terminated, null, 2))
 			}
 		} else if (typeof data.state.running !== 'undefined') {
 			statusFill = '#66ed8a';

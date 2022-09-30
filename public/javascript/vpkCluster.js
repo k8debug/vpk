@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -37,13 +37,52 @@ function buildClusterTable() {
 //----------------------------------------------------------
 
 function buildCluster3D() {
-	//$('#c3DFilter').prop('disabled',false);
+	//$('#c3DFilter').prop('disabled',false); 
 	build3DJSON();
 	$('#cluster3DView').show();
 	build3DView();
 	$("#resourceProps").html('')
 }
 
+function close3DFilter() {
+	document.getElementById("clicker").checked = false;
+	document.getElementById("filterPanel").style.width = "0px";
+	document.getElementById("banner").style.marginLeft = "0px";
+	document.getElementById("viewarea").style.marginLeft = "0px";
+
+}
+
+function filter3DView() {
+	let boxChecked = $('#clicker').prop('checked');
+	if (boxChecked) {
+		document.getElementById("filterPanel").style.width = "0px";
+		document.getElementById("banner").style.marginLeft = "0px";
+		document.getElementById("viewarea").style.marginLeft = "0px";
+		document.getElementById("clicker").checked = false;
+	} else {
+		document.getElementById("filterPanel").style.width = "340px";
+		document.getElementById("banner").style.marginLeft = "340px";
+		document.getElementById("viewarea").style.marginLeft = "340px";
+		document.getElementById("clicker").checked = true;
+	}
+}
+
+async function showSchematic(ns, fnum) {
+	console.log(ns)
+	console.log(fnum)
+	let myPromise = new Promise(function (resolve, reject) {
+		resolve(openNamespace(ns))
+	});
+
+	let cont = await myPromise;
+
+	let tab = 'schematic';
+	$('.nav-tabs a[href="#' + tab + '"]').tab('show');
+
+	let element = document.getElementById("fnum-" + fnum);
+	element.scrollIntoView();
+
+}
 
 //----------------------------------------------------------
 // build table list data for cluster tab

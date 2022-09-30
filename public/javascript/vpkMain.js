@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -86,75 +86,122 @@ $(document).ready(function () {
     // get the name of selected tab and process
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (evt) {
         currentTab = $(evt.target).attr('href');
+        let px;
+        let element;
         // take action based on what tab was shown
         if (currentTab === "#instructions") {
+            close3DFilter();
+            px = 75;
             documentationTabTopic = 'overview';
             $('#instructions').show();
+            $('#instructionsHdr').show();
         } else {
             $('#instructions').hide();
+            $('#instructionsHdr').hide();
         }
         if (currentTab === "#tableview") {
+            close3DFilter();
+            px = 113;
             checkIfDataLoaded();
             documentationTabTopic = 'tableview';
             $('#tableview').show();
+            $('#tableviewHdr').show();
         } else {
             $('#tableview').hide();
+            $('#tableviewHdr').hide();
         }
         if (currentTab === "#schematic") {
+            close3DFilter();
+            px = 120;
             checkIfDataLoaded();
             documentationTabTopic = 'schematics';
             $('#schematic').show();
+            $('#schematicHdr').show();
         } else {
             $('#schematic').hide();
+            $('#schematicHdr').hide();
         }
         if (currentTab === "#graphic") {
+            close3DFilter();
+            px = 157;
             checkIfDataLoaded();
             documentationTabTopic = 'graphicview';
             $('#graphic').show();
+            $('#graphicHdr').show();
         } else {
             $('#graphic').hide();
+            $('#graphicHdr').hide();
         }
         if (currentTab === "#security") {
+            close3DFilter();
+            px = 123;
             checkIfDataLoaded();
             documentationTabTopic = 'security';
             $('#security').show();
+            $('#securityHdr').show();
         } else {
             $('#security').hide();
+            $('#securityHdr').hide();
         }
         if (currentTab === "#storage") {
+            close3DFilter();
+            px = 123;
             checkIfDataLoaded();
             documentationTabTopic = 'storage';
             $('#storage').show();
+            $('#storageHdr').show();
         } else {
             $('#storage').hide();
+            $('#storageHdr').hide();
         }
         if (currentTab === "#cluster") {
+            px = 165;
             checkIfDataLoaded();
             documentationTabTopic = 'cluster';
             $('#cluster').show();
+            $('#clusterHdr').show();
         } else {
             $('#cluster').hide();
+            $('#clusterHdr').hide();
         }
         if (currentTab === "#xreference") {
+            close3DFilter();
+            px = 122;
             checkIfDataLoaded();
             documentationTabTopic = 'xreference';
             $('#xreference').show();
+            $('#xreferenceHdr').show();
         } else {
             $('#xreference').hide();
+            $('#xreferenceHdr').hide();
         }
         if (currentTab === "#ownerlinks") {
+            close3DFilter();
+            px = 130;
             checkIfDataLoaded();
             documentationTabTopic = 'ownerref';
             $('#ownerlinks').show();
+            $('#ownerlinksHdr').show();
         } else {
             $('#ownerlinks').hide();
+            $('#ownerlinksHdr').hide();
         }
         if (currentTab === "#comparesnap") {
+            close3DFilter();
+            px = 202;
             documentationTabTopic = 'comparesnap';
             $('#comparesnap').show();
+            $('#comparesnapHdr').show();
         } else {
             $('#comparesnap').hide();
+            $('#comparesnapHdr').hide();
         }
+
+        element = document.getElementById("banner")
+        element.style['height'] = px + "px";
+        element = document.getElementById("viewarea")
+        px++;
+        element.style['top'] = px + "px";
     });
 
     $("#tableL").on("click-cell.bs.table", function (field, value, row, $el) {
@@ -278,11 +325,78 @@ $(document).ready(function () {
         placeholder: "All"
     });
 
-
-    // 
     $("#clusterType").change(function () {
         var selected = $('#clusterType option:selected').val();
         buildClusterUI(selected);
+    });
+
+    $('#cluster-bar1-select').focusout(function () {
+        console.log('No FOCUS')
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterNodes]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterStorage]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterNetwork]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterRunning]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterWarning]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterFailed]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterSuccessful]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterDSPods]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterMemoryLimit]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterMemoryRequest]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterCPULimit]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterCPURequest]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterNodeMemory]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterNodeCPU]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterNodeStorage]').change(function () {
+        toggle3DView()
+    });
+
+    $('input[name=clusterFilterControlP]').change(function () {
+        toggle3DView()
     });
 
     editor = ace.edit("editor");
@@ -300,7 +414,23 @@ $(document).ready(function () {
 });
 
 
+// function checkForData() {
+//     console.log('baseDir:@' + baseDir + '@')
+//     if (baseDir !== null) {
+//         if (baseDir !== '-none-') {
+//             socket.emit('schematic');
+//             console.log('Asked for k8cData')
+//             clearInterval(checkInterval);
+//         }
+//     } else {
+//         console.log('Interval fired')
+//     }
+// }
 
+// let checkInterval = setInterval(checkForData, 1000);
+
+
+// Cluster tab slideout filter panel
 var hideClusterPanel = function () {
     clusterPanelIsClosed = true;
     clusterFilterPanel.style.webkitTransform = "translateX(300px)";
@@ -316,56 +446,6 @@ var check3DFilter = function () {
         hideClusterPanel()
     }
 }
-
-//Overview tab handler
-function pickTab(tab) {
-    return;
-    currentTab = '#' + tab;
-    if (tab === "cluster") {
-        $('#cluster').show();
-        documentationTabTopic = 'cluster';
-    } else {
-        $('#cluster').hide();
-    }
-
-    if (tab === "schematic") {
-        $('#ownerlinks').show();
-        documentationTabTopic = 'schematic';
-    } else {
-        $('#cluster').hide();
-    }
-
-    if (tab === "graphic") {
-        $('#graphic').show();
-        documentationTabTopic = 'graphicview';
-    } else {
-        $('#graphic').hide();
-    }
-
-    if (tab === "ownerlinks") {
-        $('#ownerlinks').show();
-        documentationTabTopic = 'ownerref';
-    } else {
-        $('#cluster').hide();
-    }
-
-    if (tab === "security") {
-        $('#security').show();
-        documentationTabTopic = 'security';
-    } else {
-        $('#security').hide();
-    }
-
-    if (tab === "comparesnap") {
-        $('#comparesnap').show();
-        documentationTabTopic = 'cluster';
-    } else {
-        $('#comparesnap').hide();
-    }
-}
-
-
-
 
 
 //----------------------------------------------------------
@@ -518,15 +598,8 @@ function compareSnapshots() {
     } else {
         // show processing gif and saned request for compare
         console.log('Snap 1: ' + compareSnap1Selected + '  Snap 2: ' + compareSnap2Selected);
-
-        let html = '<div class="row">'
-            + '<div class="col mt-1 ml-4">'
-            + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
-            + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>'
-            + '    </div>'
-            + '</div>';
         $("#compareDetail").empty();
-        $("#compareDetail").html(html);
+        $("#compareDetail").html(processingRequest);
 
         let data = { 'snap1': compareSnap1Selected, 'snap2': compareSnap2Selected };
         socket.emit('compareSnapshots', data);
@@ -703,22 +776,15 @@ socket.on('getFileByCidResults', function (data) {
 //----------------------------------------------------------
 // send request to server to get hierarchy data
 function getChart(type) {
-    var processingChart = '<div class="row">'
-        + '<div class="col mt-1 ml-4">'
-        + '    <img style="float:left" src="images/loading.gif" width="40" height="40"/>'
-        + '    <div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span>'
-        + '    </div>'
-        + '</div>';
-
     hideMessage();
     chartType = type;
     $("#graphicCharts2").empty();
     $("#chartInfo").empty();
-    $("#chartInfo").html(processingChart);
+    $("#chartInfo").html(processingRequest);
 
-    var namespaces = '';
-    var tmp;
-    var options = $('#graphic-ns-filter').select2('data');
+    let namespaces = '';
+    let tmp;
+    let options = $('#graphic-ns-filter').select2('data');
     for (var i = 0; i < options.length; i++) {
         tmp = options[i].text;
         tmp = tmp.trim();
@@ -950,21 +1016,18 @@ function reload() {
     $("#ownerRefLinksDetail").empty();
     $("#ownerRefLinksDetail").html('');
     // 3D tab
-    if (typeof engine !== null) {
-        // scene.dispose();
-        // engine.dispose();
-        $("#Canvas3D").html('<canvas id="renderCanvas"></canvas>');
-        $('#cluster3DView').hide();
-    }
-    //$('#c3DFilter').prop('disabled', true);
+    // $("#renderCanvas").html('');
+    $("#canvas3D").html('<canvas id="renderCanvas"></canvas>');
     $('#cluster3DView').hide();
-    $("#clusterDetail").hide();
-    $("#renderCanvas").html('');
 
-    //TODO is there a need to consider handling other tabs
+    //No longer an option to show cluster table
+    // $("#clusterDetail").hide();
 
+    //This will clear any previously loaded data
+    k8cData = null;
     socket.emit('reload', newDir);
 }
+
 //$$ also client.emit('selectListsResult', result) when reload is sent to server
 //...
 socket.on('resetResults', function (data) {
@@ -996,6 +1059,23 @@ socket.on('resetResults', function (data) {
     }
 });
 //==========================================================
+function closeVpK() {
+    $("#closeVpKModal").modal('show');
+}
+function cancelShutdown() {
+    $("#closeVpKModal").modal('hide');
+}
+function shutdownVpK() {
+    socket.emit('shutdownVpK');
+    let html1 = '<div class="text-center vpkcolor vpkfont-lg">'
+        + '<img class="vpk-vert-mid" src="images/vpk-flip.gif" width="60" height="60"></div>'
+    let html2 = '<div class="text-center vpkcolor vpkfont-lg mt-5">'
+        + '<span> VpK shutdown complete</span></div></div>'
+    $("#closeVpKModal").modal('hide')
+    $("#banner").html(html1);
+    $("#viewarea").html(html2)
+}
+
 
 
 //----------------------------------------------------------
@@ -1003,26 +1083,31 @@ function bldSchematic() {
     hideMessage();
     $("#schematicDetail").html(processingRequest)
     getDataRequest = 'schematic';
-    socket.emit('schematic');
+    if (typeof k8cData === 'undefined' || k8cData === null) {
+        socket.emit('schematic');
+    } else {
+        console.log('k8cData exists')
+        schematic();
+    }
 }
+
 function getCluster3DInfo() {
     hideMessage();
-    $("#clusterDetail").hide();
-    $("#clusterDetail").html('');
+    // $("#clusterDetail").hide();
+    // $("#clusterDetail").html('');
     $('#cluster3DView').hide();
-
     $("#resourceProps").html(processingRequest)
     getDataRequest = 'cluster3D';
     socket.emit('schematic');
+
+    // if (typeof k8cData === 'undefined' || k8cData === null) {
+    //     socket.emit('schematic');
+    // } else {
+    //     console.log('k8cData exists')
+    //     buildCluster3D();
+    // }
 }
-function getClusterTableInfo() {
-    hideMessage();
-    $('#cluster3DView').hide();
-    $("#clusterDetail").html('');
-    $("#resourceProps").html(processingRequest);
-    getDataRequest = 'clusterTable';
-    socket.emit('schematic');
-}
+
 //...
 socket.on('schematicResult', function (data) {
     k8cData = data.data;
@@ -1039,15 +1124,23 @@ socket.on('schematicResult', function (data) {
     }
 
 });
-//==========================================================
 
+//==========================================================
 
 
 //----------------------------------------------------------
 function bldSecurity() {
     hideMessage();
     $("#securityDetail").html(processingRequest)
-    socket.emit('security');
+    console.log(typeof k8cData);
+    if (typeof k8cData === 'undefined' || k8cData === null) {
+        socket.emit('security');
+    } else {
+        console.log('k8cData exists')
+        hideMessage();
+        buildSecArrays();
+        securityDefinitions();
+    }
 }
 //...
 socket.on('securityResult', function (data) {
@@ -1055,6 +1148,31 @@ socket.on('securityResult', function (data) {
     hideMessage();
     buildSecArrays();
     securityDefinitions();
+});
+//==========================================================
+
+
+//----------------------------------------------------------
+function bldSecurityUsage() {
+    hideMessage();
+    $("#securityDetail").html(processingRequest)
+    socket.emit('securityUsage');
+
+    if (typeof k8cData === 'undefined' || k8cData === null) {
+        socket.emit('securityUsage');
+    } else {
+        console.log('k8cData exists')
+        hideMessage();
+        buildSecArrays();
+        securityUsage();
+    }
+}
+//...
+socket.on('securityUsageResult', function (data) {
+    k8cData = data.data;
+    hideMessage();
+    buildSecArrays();
+    securityUsage();
 });
 //==========================================================
 
@@ -1070,22 +1188,6 @@ socket.on('getOwnerRefLinksResult', function (data) {
     ownerRefLinks = data.links;
     //console.log(JSON.stringify(ownerRefLinks, null, 3))
     buildOwnerRefLinks();
-});
-//==========================================================
-
-
-//----------------------------------------------------------
-function bldSecurityUsage() {
-    hideMessage();
-    $("#securityDetail").html(processingRequest)
-    socket.emit('securityUsage');
-}
-//...
-socket.on('securityUsageResult', function (data) {
-    k8cData = data.data;
-    hideMessage();
-    buildSecArrays();
-    securityUsage();
 });
 //==========================================================
 
@@ -1194,6 +1296,8 @@ socket.on('searchResult', function (data) {
     buildSearchResults(data);
 });
 //...
+
+
 function buildSearchResults(data) {
     var tmp;
     var a, b, c, d;
@@ -1232,12 +1336,6 @@ function bldXrefChart(type) {
     let filter = '';
     let tmp;
     let data;
-    let processingChart = '<div class="row">'
-        + '<div class="col mt-1 ml-1">'
-        + '<img style="float:left" src="images/loading.gif" width="40" height="40"/>'
-        + '<div class="vpkfont-md vpkcolor mt-2"><span>&nbsp;&nbsp;Processing request</span></div>'
-        + '</div>'
-        + '</div>';
     let xref = $('#xref-type').select2('data');
     let options = $('#xref-type').select2('data');
     for (var i = 0; i < options.length; i++) {
@@ -1252,7 +1350,7 @@ function bldXrefChart(type) {
     };
     $("#xrefCharts").empty();
     $("#xrefInfo").empty();
-    $("#xrefInfo").html(processingChart);
+    $("#xrefInfo").html(processingRequest);
     if (filter === '') {
         filter = ':all:-xref:';
     }
@@ -1339,26 +1437,32 @@ function pickXref(tmp) {
 // used by search section of main UI
 function toggleFilterPanel() {
 
-    // <button id="filterButton" type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1 mr-2"
-    //     data-toggle="collapse" data-target="#filterdata"
-    //     onclick="toggleFilterPanel()">
-    //     Open filter panel
-    // </button>
-
+    let px;
     if ($('#filterdata').is('.collapse:not(.show)')) {
         // open filter panel
         $("#filterButton").html('Close filter panel');
         $("#filterdata").collapse("show");
+        px = 303;
     } else {
         $("#filterButton").html('Open filter panel');
         $("#filterdata").collapse("hide");
+        px = 113;
     }
+
+    element = document.getElementById("banner")
+    element.style['height'] = px + "px";
+
+    element = document.getElementById("viewarea")
+    px++;
+    element.style['top'] = px + "px";
+
 }
 
 
 //----------------------------------------------------------
 // used by search section of main UI
 function toggleStorage(id) {
+
     id = '#' + id;
     if ($(id).is('.collapse:not(.show)')) {
         // not open, open it
@@ -1366,11 +1470,13 @@ function toggleStorage(id) {
     } else {
         $(id).collapse("hide");
     }
+
+
 }
 
 
 //----------------------------------------------------------
-// get Cluster information 
+// get Cluster information
 function getCluster() {
     hideMessage();
     // generate the UI base on selected cluster
@@ -1391,7 +1497,7 @@ function getCluster() {
 }
 
 //----------------------------------------------------------
-// build UI for the get Cluster  
+// build UI for the get Cluster
 function buildClusterUI(selected) {
     $("#clusterInfo").empty();
     $("#clusterInfo").html('');
@@ -1402,13 +1508,13 @@ function buildClusterUI(selected) {
         + 'Connect'
         + '</button>'
         + '</div></div>';
-    // values to be used in building the UI    
+    // values to be used in building the UI
     var tmp00 = '<dir class="form-row">';
     var tmp01 = '<label class="col-sm-4 col-form-label vpkcolor" for="';       //add name part 1
     var tmp02 = '" style="padding-top: 15px;">';                               //add name part 2
     var tmp03 = '</label>';
     var tmp04 = '<input id="'                                                  //add ???
-    var tmp05t = '" type="text" class="form-control col-sm-8" ';               //plain text input 
+    var tmp05t = '" type="text" class="form-control col-sm-8" ';               //plain text input
     var tmp05p = '" type="password" class="form-control col-sm-8" ';           //password input
     var tmp06a = 'value="';                                                    //if default value is provided add the value
     var tmp06b = '"';
@@ -1469,7 +1575,6 @@ function getProvider(selected) {
         }
     }
 }
-
 
 //----------------------------------------------------------
 console.log('loaded vpkMain.js');

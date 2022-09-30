@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -44,39 +44,39 @@ function populateSelectLists(data) {
         // filter bar1 (namespaces) and grapcis and cluster drop downs
         options = bldOptions(data.namespaces, 'N', 'select2');
         $("#ns-filter").empty();
-        $("#ns-filter").select2({ 
+        $("#ns-filter").select2({
             data: options,
             dropdownCssClass: "vpkfont-md",
             containerCssClass: "vpkfont-md"
         });
 
         $("#graphic-ns-filter").empty();
-        $("#graphic-ns-filter").select2({ 
+        $("#graphic-ns-filter").select2({
             data: options,
             dropdownCssClass: "vpkfont-md",
             containerCssClass: "vpkfont-md"
-        });        
+        });
 
         // filter bar2 (resource kinds)
         options = bldOptions(data.kinds, 'K', 'select2');
         $("#kind-filter").empty();
-        $("#kind-filter").select2({ 
+        $("#kind-filter").select2({
             data: options,
             dropdownCssClass: "vpkfont-md",
             containerCssClass: "vpkfont-md"
-         });
+        });
 
         // filter bar3 (resource kinds)
         if (typeof data.labels !== 'undefined') {
             options = bldOptions(data.labels, 'L', 'select2');
             $("#label-filter").empty();
-            $("#label-filter").select2({ 
+            $("#label-filter").select2({
                 data: options,
                 dropdownCssClass: "vpkfont-md",
                 containerCssClass: "vpkfont-md"
             });
         }
-    
+
         populateXrefLists(data);
 
         populateExplains(data);
@@ -140,7 +140,7 @@ function populateXrefLists(data) {
         options = buildXrefType(data.xRefs);
 
         $("#xref-type").empty();
-        $("#xref-type").select2({ 
+        $("#xref-type").select2({
             data: options,
             dropdownCssClass: "vpkfont-md",
             containerCssClass: "vpkfont-md"
@@ -148,7 +148,7 @@ function populateXrefLists(data) {
 
         // Populate xrefEdit-type with the same content as xref-type
         $("#xrefEdit-type").empty();
-        $("#xrefEdit-type").select2({ 
+        $("#xrefEdit-type").select2({
             data: options,
             dropdownCssClass: "vpkfont-md",
             containerCssClass: "vpkfont-md"
@@ -163,11 +163,11 @@ function buildXrefType(data) {
     let keys = Object.keys(data);
     let listArray = [];
     listArray.push(listitem);
-    keys.sort(); 
+    keys.sort();
     for (let i = 0; i < keys.length; i++) {
-        listitem = {'id': keys[i], 'text': keys[i] + ' : ' + data[keys[i]].desc};
+        listitem = { 'id': keys[i], 'text': keys[i] + ' : ' + data[keys[i]].desc };
         listArray.push(listitem);
-    }    
+    }
     return listArray;
 }
 
@@ -176,8 +176,8 @@ function buildStatsToggle() {
         buildNamespaceStats();
         dsToggle = 'ns'
     } else {
-        buildKindStats(); 
-        dsToggle = 'kind'   
+        buildKindStats();
+        dsToggle = 'kind'
     }
 }
 
@@ -207,12 +207,12 @@ function bldOptions(options, type, style) {
                 listitems = '<option>all-kinds</option>'
             } else {
                 id++;
-                listArrary.push({id: id, text:'all-kinds'});
+                listArrary.push({ id: id, text: 'all-kinds' });
             }
         }
 
         var cki = items[i];
-        if (!cki.endsWith(' (U)')) {  
+        if (!cki.endsWith(' (U)')) {
             if (style !== 'select2') {
                 if (cki === ": " || cki === "") {
                     listitems += '<option>&lt;cluster-level&gt;</option>';
@@ -222,10 +222,10 @@ function bldOptions(options, type, style) {
             } else {
                 if (cki === ": " || cki === "") {
                     id++;
-                    listArrary.push({id: id, text: '<cluster-level>'});
+                    listArrary.push({ id: id, text: '<cluster-level>' });
                 } else {
                     id++;
-                    listArrary.push({id: id, text: items[i]});
+                    listArrary.push({ id: id, text: items[i] });
                 }
             }
 
@@ -235,7 +235,7 @@ function bldOptions(options, type, style) {
         }
     }
     if (style !== 'select2') {
-        return listitems; 
+        return listitems;
     } else {
         return listArrary;
     }
@@ -251,7 +251,7 @@ function bldProviders(options) {
     }
 
     // sort by the dropdown value
-    options.sort((a,b) => (a.dropdown > b.dropdown) ? 1 : ((b.dropdown > a.dropdown) ? -1 : 0)); 
+    options.sort((a, b) => (a.dropdown > b.dropdown) ? 1 : ((b.dropdown > a.dropdown) ? -1 : 0));
     var listitems = '<option value="none">select cluster type</option>';
 
 

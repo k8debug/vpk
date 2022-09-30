@@ -4,104 +4,11 @@
     touch-action: none;
 }
 
-
-.wow-wrapper {
-    margin-left: 10px;
-    margin-top: 10px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 340px;
-}
-
-.wow-box1 {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.wow-text {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    margin-left: 25px;
-    margin-right: 25px;
-}
-
-.wow-tagline {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    font-size: 150%;
-    font-weight: bold;
-}
-
-.cluster-wrap {
-    /* max-width: 1280px; */
-    min-height: 100%;
-    background: #f9f9f9;
-    padding: 5px;
-    margin: auto;
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: auto 0px;
-    grid-template-rows: auto;
-    grid-template-areas:
-        "center_content right_content"
-}
-
-.cluster-content {
-    grid-area: center_content;
-}
-.cluster-sidebar {
-    grid-area: right_content;
-}
-
-.cluster-sidebar,
-.cluster-content {
-    cursor: pointer;
-    padding: 5px 20px;
-    background: #eee;
-    border: 1px solid #ccc;
-    color: #000;
-    font-size: 1.0rem;
-}
-
-.cluster-hide .cluster-sidebar {
+#sliceKey {
     display: none;
 }
 
-.cluster-hide .cluster-content {
-    grid-column: 1 / 3;
-}
-
-
-
 /* ---------- Filter slideout in 3D related ------------ */
-
-
-/* #clusterFilterPanel {
-	position: absolute;
-	right: 0;
-	width: 300px;
-	top: 2em;
-	z-index: 10;
-	transition: transform .15s ease-in-out;
-	transform: translateX(300px);
-	-webkit-transition: -webkit-transform .15s ease-in-out;
-	-webkit-transform: translateX(300px)
-}
-
-#clusterControlsZone {
-	width: 100%;
-	height: 100%;
-	background-color: #ccc;
-	color: #000;
-	padding: 20px;
-	border-bottom-left-radius: 10px 10px;
-	border-top-left-radius: 10px 10px
-} */
-
-.hidden {
-	display: none
-}
-
 .nested {
     display: grid;
     grid-template-columns: 25% 70%;
@@ -109,19 +16,167 @@
     word-break: break-all;
 }
 
-.nested > div{
+.nested>div {
     text-align: left;
 }
-.nested > div:nth-child(odd){
+
+.nested>div:nth-child(odd) {
     padding-top: 3px;
     font-size: 90%;
     vertical-align: baseline;
     text-align: right;
 }
 
-.nested > div:nth-child(even){
+.nested>div:nth-child(even) {
     background: #fff;
     padding-left: 3px;
     padding-right: 3px;
 }
 
+.memoryRequest {
+    background-color: #1e18ef;
+}
+
+.memoryLimit {
+    background-color: #f4a8e6;
+}
+
+.cpuRequest {
+    background-color: #66b0aa;
+}
+
+.cpuLimit {
+    background-color: #ef5818;
+}
+
+.podRunning {
+    background-color: #00ff00;
+}
+
+.podWarn {
+    background-color: #ffff00;
+}
+
+.podFail {
+    background-color: #bf0000;
+}
+
+.podSuccessful {
+    background-color: #00a6ff;
+}
+
+.podDaemon {
+    background-color: #808080;
+}
+
+.nodeMst {
+    background-color: #804040;
+}
+
+.nodeWrk {
+    background-color: #c4bec4
+}
+
+.endpoint {
+    background-color: #0000ef
+}
+
+.service {
+    background-color: #80bfbf
+}
+
+.pvc {
+    background-color: #bfbf1a
+}
+
+.pv {
+    background-color: #ba8759
+}
+
+.storageClass {
+    background-color: #fa9903
+}
+
+.nodeMemory {
+    background-color: #7b737b
+}
+
+.nodeCPU {
+    background-color: #f58b4e
+}
+
+.nodeStorage {
+    background-color: #f72141
+}
+
+.controlPlane {
+    background-color: #725db7
+}
+
+.filterBorder {
+    padding-top: 15px;
+}
+
+.hideBox {
+    display: none;
+}
+
+/* ----------- FILTER SIDE PANEL ----------- */
+.sidePanelHdr1 {
+    height: 18px;
+}
+
+.sidePanelHdrText {
+    text-decoration: underline;
+    text-align: center;
+}
+
+.sidePanelHdr2 {
+    margin-left: -10px;
+    height: 34px;
+}
+
+.sidepanel {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #f2f2f2;
+    overflow-x: hidden;
+    transition: 0.1s;
+    padding-top: 40px;
+    margin-left: 5px;
+}
+
+.sidepanel a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: rgb(0, 123, 255);
+    display: block;
+    transition: 0.1s;
+}
+
+.sidepanel a:hover {
+    color: #818181;
+}
+
+.sidepanel .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidepanel {
+        padding-top: 15px;
+    }
+
+    .sidepanel a {
+        font-size: 18px;
+    }
+}

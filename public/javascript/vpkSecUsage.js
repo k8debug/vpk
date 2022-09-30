@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -26,8 +26,8 @@ function initVars() {
     coleBindingCnt = 0;
     clusterRoleBindingCnt = 0;
     roleRefRoleCnt = 0;
-    roleRefClusterRoleCnt = 0; 
-    unknownKindCnt = 0;   
+    roleRefClusterRoleCnt = 0;
+    unknownKindCnt = 0;
     bindingStatCounts = [];
 }
 
@@ -38,12 +38,12 @@ function updateSecurityBindingCounts(ns) {
         'clusterRoleBindingCnt': clusterRoleBindingCnt,
         'roleRefRoleCnt': roleRefRoleCnt,
         'roleRefClusterRoleCnt': roleRefClusterRoleCnt
-    });		
+    });
     roleBindingCnt = 0;
     clusterRoleBindingCnt = 0;
     roleRefRoleCnt = 0;
-    roleRefClusterRoleCnt = 0; 
-    unknownKindCnt = 0; 
+    roleRefClusterRoleCnt = 0;
+    unknownKindCnt = 0;
 }
 
 
@@ -51,10 +51,10 @@ function securityUsage() {
     // load security arrays if not loaded
     buildRBACs();
 
-	let cLevel = '';
-	//Clear and initialize the variables
-	initVars();
-	//Clear the browse DOM elements
+    let cLevel = '';
+    //Clear and initialize the variables
+    initVars();
+    //Clear the browse DOM elements
     $("#securityDetail").hide();
     $("#securityDetail").empty();
     $("#securityDetail").html('');
@@ -67,49 +67,49 @@ function securityUsage() {
 
     let html = buildRoleRefTable();
 
-	//Update the browser DOM
-	$("#securityDetail").html(html);
-	$("#securityDetail").show();
+    //Update the browser DOM
+    $("#securityDetail").html(html);
+    $("#securityDetail").show();
 }
 
-function buildRoleRefTable () {
+function buildRoleRefTable() {
     let keys = Object.keys(whereRoleRefs);
     let key = '';
     let rtn = '';
     let item = '';
     let line = '';
-	let divSection = '<div class="events" ><table style="width:100%">';
-    let header = '<tr class="partsList">' 
-    + '<th class="align-middle text-center">Role<br>Name</th>' 
-    + '<th class="text-left pl-3">Binding Level</th>' 
-    + '<th class="text-left pl-3">Binding Name</th>' 
-    + '<th class="text-left pl-3">Subject Kind</th>' 
-    + '<th class="text-left pl-3">Subject Name</th>' 
-    + '</tr>';    
+    let divSection = '<div class="events" ><table style="width:100%">';
+    let header = '<tr class="partsList">'
+        + '<th class="align-middle text-center">Role<br>Name</th>'
+        + '<th class="text-left pl-3">Binding Level</th>'
+        + '<th class="text-left pl-3">Binding Name</th>'
+        + '<th class="text-left pl-3">Subject Kind</th>'
+        + '<th class="text-left pl-3">Subject Name</th>'
+        + '</tr>';
     rtn = rtn + divSection + RBAClegend + header
 
     for (let i = 0; i < keys.length; i++) {
         key = keys[i];
         item = whereRoleRefs[key];
-        line = '<tr class="mt-0 mb-0">' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '</tr>'
+        line = '<tr class="mt-0 mb-0">'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '</tr>'
 
-        + '<tr><td style="width="30%" colspan="3"><span class="bg-clusterRole" ' 
-        + ' onclick="getSecRole(\'' + key + '\')">' + key + '</span></td>' 
-        + '<td></td>  <td></td>' 
-        + '<td></td>   </tr> '
-        + '<tr class="mt-0 mb-0">' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-        + '</tr>';
+            + '<tr><td style="width="30%" colspan="3"><span class="bg-clusterRole" '
+            + ' onclick="getSecRole(\'' + key + '\')">' + key + '</span></td>'
+            + '<td></td>  <td></td>'
+            + '<td></td>   </tr> '
+            + '<tr class="mt-0 mb-0">'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+            + '</tr>';
         rtn = rtn + line;
         for (let d = 0; d < item.length; d++) {
             let sFnum = '';
@@ -127,21 +127,21 @@ function buildRoleRefTable () {
                 bNs = item[d].bindingNamespace;
             }
 
-            line = '<tr class=""><td>&nbsp;</td>' 
-            + '<td class="pr-4  align-text-top">' + item[d].kind + '</td>'
-            + '<td class="pr-4"><span class="bg-rbn text-light" onclick="getDefFnum(\'' + item[d].fnum + '\')">' 
-            + item[d].bindingName + '</span><br>Namespace: ' + bNs + '</td>'
-            + '<td class="pr-1 text-right align-text-top ' + subjectTextColor(item[d].subjectKind) + '"><b>' + item[d].subjectKind + '</b></td>'
-            + '<td class="pr-4">' + subject + '<br>Namespace: ' + item[d].subjectNamespace + '</td>'
-            + '</tr>'
+            line = '<tr class=""><td>&nbsp;</td>'
+                + '<td class="pr-4  align-text-top">' + item[d].kind + '</td>'
+                + '<td class="pr-4"><span class="bg-rbn text-light" onclick="getDefFnum(\'' + item[d].fnum + '\')">'
+                + item[d].bindingName + '</span><br>Namespace: ' + bNs + '</td>'
+                + '<td class="pr-1 text-right align-text-top ' + subjectTextColor(item[d].subjectKind) + '"><b>' + item[d].subjectKind + '</b></td>'
+                + '<td class="pr-4">' + subject + '<br>Namespace: ' + item[d].subjectNamespace + '</td>'
+                + '</tr>'
             rtn = rtn + line;
-            line = '<tr class="mt-0 mb-0">' 
-            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-            + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>' 
-            + '</tr>';
+            line = '<tr class="mt-0 mb-0">'
+                + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+                + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+                + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+                + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+                + '<td class="mt-0 mb-0"><hr class="mt-0 mb-0"></td>'
+                + '</tr>';
             rtn = rtn + line;
         }
     }
@@ -161,7 +161,7 @@ function lookupSubjectName(name, ns, kind) {
         }
 
         for (let s = 0; s < saList.length; s++) {
-            if (saList[s].name === name ) {
+            if (saList[s].name === name) {
                 if (typeof saList[s].fnum !== 'undefined') {
                     return saList[s].fnum;
                 }
@@ -184,44 +184,44 @@ function subjectTextColor(kind) {
     } else if (kind === 'SystemUser') {
         color = 'text-secondary';
     }
-    return color; 
+    return color;
 }
 
 // STATS in not currently in use or shown in UI
 function showSecurityStats() {
     if (typeof k8cData === 'undefined') {
-        showMessage('No data loaded','fail');
+        showMessage('No data loaded', 'fail');
         return;
     }
     buildRBACs();
     buildRBACUsage();
     $("#schemHeader").html('RBAC Security statistics');
     if (typeof bindingStatCounts[0] !== 'undefined') {
-        $("#schemBody").html(buildSecStatsTable() );
+        $("#schemBody").html(buildSecStatsTable());
     } else {
         $("#schemBody").html('No security statistics available');
     }
     $("#schemModal").modal('show');
 }
 
-function buildSecStatsTable () {
+function buildSecStatsTable() {
     let rtn = '';
     let item = '';
     let line = '';
-	let divSection = '<div class="events" ><hr><table style="width:100%">';
-    let header = '<tr class="partsList"><th>Namespace</th><th>ClusterRoleBinding</th><th>RoleBinding</th>' 
-    + '<th>ClusterRole</th><th>Role</th></tr>';    
-    
+    let divSection = '<div class="events" ><hr><table style="width:100%">';
+    let header = '<tr class="partsList"><th>Namespace</th><th>ClusterRoleBinding</th><th>RoleBinding</th>'
+        + '<th>ClusterRole</th><th>Role</th></tr>';
+
     rtn = rtn + divSection + header
 
     for (let i = 0; i < bindingStatCounts.length; i++) {
         item = bindingStatCounts[i];
-        line = '<tr class="vpkcolor"><td>' + item.namespace 
-        + '</td><td>' + item.clusterRoleBindingCnt
-        + '</td><td>' + item.roleBindingCnt
-        + '</td><td>' + item.roleRefClusterRoleCnt
-        + '</td><td>' + item.roleRefRoleCnt
-        + '</td></tr>'
+        line = '<tr class="vpkcolor"><td>' + item.namespace
+            + '</td><td>' + item.clusterRoleBindingCnt
+            + '</td><td>' + item.roleBindingCnt
+            + '</td><td>' + item.roleRefClusterRoleCnt
+            + '</td><td>' + item.roleRefRoleCnt
+            + '</td></tr>'
         rtn = rtn + line;
     }
     rtn = rtn + '</table></div>'

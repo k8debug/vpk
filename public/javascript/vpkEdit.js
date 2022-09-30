@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -43,16 +43,16 @@ function editDef(data, which) {
         line = newData[d]
         outData.push(line + '\n');
         //line = line.trim();
-        if (line.startsWith('kind: ') ) {
+        if (line.startsWith('kind: ')) {
             kind = line.substring(5);
             kind = kind.trim();
         }
-        if (line.startsWith('apiVersion: ') ) {
+        if (line.startsWith('apiVersion: ')) {
             api = line;
             api = api.trim();
         }
-        image = checkImage(kind, api);       
-    } 
+        image = checkImage(kind, api);
+    }
     newData = null;
     rtn = outData.join('');
     if (defkey.indexOf('config') > -1) {
@@ -62,7 +62,7 @@ function editDef(data, which) {
             fp = fnum.indexOf('.yaml');
             fnum = fnum.substring(0, fp)
         }
-    }  else {
+    } else {
         fnum = defkey;
     }
 
@@ -70,10 +70,10 @@ function editDef(data, which) {
         fnum = 'No matching file';
     }
 
-    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '" width="30" height="30" ' 
-    + ' onclick="getExplain(\'' + kind + '\',\'' + api + '\')"></img>'
-    + '<div style="vertical-align:middle; display:inline;" class="vpkcolor vpkfont pl-2">'
-    + kind + '  (' + fnum + ')';
+    var editImage = '<img style="vertical-align:middle;" src="images/' + image + '" width="30" height="30" '
+        + ' onclick="getExplain(\'' + kind + '\',\'' + api + '\')"></img>'
+        + '<div style="vertical-align:middle; display:inline;" class="vpkcolor vpkfont pl-2">'
+        + kind + '  (' + fnum + ')';
 
     if (which === null || which === '') {
         $("#editTitle").html(editImage + '</div>');
@@ -89,7 +89,7 @@ function editDef(data, which) {
         compareFile2Editor1(rtn);
     }
 }
- 
+
 
 function initAceEditor(rtn) {
     editor = ace.edit("editor");
@@ -108,8 +108,8 @@ function initAceEditor(rtn) {
         }
     );
     editor.focus();
-    editor.gotoLine(1,0, true);
-    editor.renderer.scrollToRow(1);  
+    editor.gotoLine(1, 0, true);
+    editor.renderer.scrollToRow(1);
 }
 
 function compareFile1Editor1(rtn) {
@@ -129,8 +129,8 @@ function compareFile1Editor1(rtn) {
         }
     );
     editorC1.focus();
-    editorC1.gotoLine(1,0, true);
-    editorC1.renderer.scrollToRow(1);  
+    editorC1.gotoLine(1, 0, true);
+    editorC1.renderer.scrollToRow(1);
 }
 
 function compareFile2Editor1(rtn) {
@@ -150,8 +150,8 @@ function compareFile2Editor1(rtn) {
         }
     );
     editorC2.focus();
-    editorC2.gotoLine(1,0, true);
-    editorC2.renderer.scrollToRow(1);  
+    editorC2.gotoLine(1, 0, true);
+    editorC2.renderer.scrollToRow(1);
 }
 
 

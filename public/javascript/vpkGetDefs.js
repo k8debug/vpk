@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -27,14 +27,14 @@ function getDef(def) {
 
     selectedDef = def;
     if (selectedDef.indexOf('undefined') > -1) {
-        showMessage('Unable to locate source yaml.','fail');
+        showMessage('Unable to locate source yaml.', 'fail');
     } else {
         editObj();
     }
 }
 
 function getDef2(def) {
-    let parts = def.split('@'); 
+    let parts = def.split('@');
     let data;
     let type;
     if (parts.length === 2) {
@@ -64,7 +64,7 @@ function getDef2(def) {
     } else if (type === 'UnKn') {
         // ToDo consider adding a message that informs user about this
         return;
-    } 
+    }
 }
 
 
@@ -74,24 +74,24 @@ function getDefSec(data) {
     let src;
     // Old lookup handler will check for source file 
     if (items.length === 3) {
-        console.log('Using source file ' + items[0] )
+        console.log('Using source file ' + items[0])
         if (items[2] === 'file') {
             items[2] = 'Secret';
         }
         nData.push({
-            'source': items[0], 
-            'part': items[1], 
+            'source': items[0],
+            'part': items[1],
             'name': items[2]
-        }); 
+        });
         multiList('Secret', nData);
 
     } else {
-                
+
 
         nData.push({
             'fnum': data,
             'name': 'secret'
-        }); 
+        });
         multiList('Secret', nData);
     }
 }
@@ -113,17 +113,17 @@ function partArray(type, data) {
         if (type === 'Secret') {
             multiList(type, data)
         }
-        if (data.length > 1)  {
+        if (data.length > 1) {
             multiList(type, data)
         } else {
             if (typeof data[0].source !== 'undefined') {
-                console.log('Using file source: ' +  selectedDef + '::' + data[0].part + '::' + data[0].name)
+                console.log('Using file source: ' + selectedDef + '::' + data[0].part + '::' + data[0].name)
                 selectedDef = data[0].source
                 if (typeof data[0].part !== 'undefined') {
                     selectedDef = selectedDef + '::' + data[0].part + '::' + data[0].name;
                 } else {
                     selectedDef = selectedDef + '::0::name';
-                }     
+                }
             } else {
                 if (typeof data[0].fnum !== 'undefined') {
                     selectedDef = data[0].fnum;
@@ -225,7 +225,7 @@ function multiList(type, data) {
         if (typeof data[i].source !== 'undefined') {
             console.log('Using file source: ' + data[i].source + '::' + data[i].part + '::' + data[i].name);
             ref = data[i].source + '::' + data[i].part + '::' + data[i].name;
-        } 
+        }
 
         if (typeof data[i].fnum !== 'undefined') {
             getDef = 'getDefFnum';
@@ -237,18 +237,18 @@ function multiList(type, data) {
         } else {
             use = '';
         }
-        html = html 
-        + '<div class="multiList">'
-        + '<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
-        + 'onclick="' + getDef + '(\'' + ref + '\')">' + type + '</button>';
+        html = html
+            + '<div class="multiList">'
+            + '<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
+            + 'onclick="' + getDef + '(\'' + ref + '\')">' + type + '</button>';
 
         if (type === 'Secret') {
-            html = html 
-            + '&nbsp;&nbsp<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
-            + 'onclick="getDefDecode(\'' + ref + '\', \'' +  data[i].name + use + '\')">Decode</button>';
+            html = html
+                + '&nbsp;&nbsp<button type="button" class="btn btn-sm btn-outline-primary vpkfont-md ml-1"'
+                + 'onclick="getDefDecode(\'' + ref + '\', \'' + data[i].name + use + '\')">Decode</button>';
         }
-        html = html 
-        + '&nbsp;&nbsp;' + data[i].name + use + '</div>'
+        html = html
+            + '&nbsp;&nbsp;' + data[i].name + use + '</div>'
     }
 
     $("#multiContents").html(html)

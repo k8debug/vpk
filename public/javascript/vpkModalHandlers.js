@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -60,23 +60,23 @@ function getEvtsTable(key) {
 function xrefEditModalDialog() {
     hideMessage();
     $("#xrefSelect").show();
-    $("#xrefNewXref").hide();   
-    $("#xrefShowSelected").hide();    
-    $("#xrefEditName").hide();    
+    $("#xrefNewXref").hide();
+    $("#xrefShowSelected").hide();
+    $("#xrefEditName").hide();
     $("#xrefTable").html('');
-    $("#xrefEditQuestion").hide();    
-    $("#xrefEditRule").hide();  
-    $("#xrefShowRuleName").hide(); 
+    $("#xrefEditQuestion").hide();
+    $("#xrefEditRule").hide();
+    $("#xrefShowRuleName").hide();
     $("#xrefNewPathRule").hide();
     $("#xrefFirstRule").hide();
     $("#xrefPathRules").hide();
-    $("#xrefEditModal").modal('show')    
+    $("#xrefEditModal").modal('show')
 }
 
 // show xref info that was selected to process
 function xrefHhandleSelection() {
     // hiding dropdown
-    $("#xrefSelect").hide();     
+    $("#xrefSelect").hide();
     // populate what will be shown
     setXrefLevel();
     bldXrefRulesTable();
@@ -92,8 +92,8 @@ function xrefHhandleSelection() {
 
 // populate screen display and input fields
 function setXrefLevel() {
-    $("#xrefShowName").html(xrefData.picked);   
-    $("#xrefShowDesc").html(xrefData.names[xrefData.picked].desc); 
+    $("#xrefShowName").html(xrefData.picked);
+    $("#xrefShowDesc").html(xrefData.names[xrefData.picked].desc);
     $("#xrefDesc").val(xrefData.names[xrefData.picked].desc);     // edit field
 }
 
@@ -106,7 +106,7 @@ function xrefDeleteXref() {
     for (let i = 0; i < keys.length; i++) {
         newRules = [];
         pathRules = xrefData.rules[keys[i]];
-        hl =  pathRules.length;
+        hl = pathRules.length;
         for (let c = 0; c < hl; c++) {
             if (pathRules[c].xrk === drop) {
                 continue;
@@ -119,13 +119,13 @@ function xrefDeleteXref() {
 
     delete xrefData.names[drop]
 
-    let data = {'xRefs': xrefData.names}
+    let data = { 'xRefs': xrefData.names }
     populateXrefLists(data)
     // save to disk
     saveConfig('xref');
     showDirtyXrefMsg();
     $("#xrefSelect").show();
-    $("#xrefEditDescBtn").show(); 
+    $("#xrefEditDescBtn").show();
     $("#xrefShowSelected").hide();
     $("#xrefPathRules").hide()
 
@@ -136,13 +136,13 @@ function xrefEditName() {
     setXrefLevel();
     $("#xrefShowSelected").hide();
     $("#xrefPathRules").hide();
-    $("#xrefEditName").show()    
+    $("#xrefEditName").show()
 }
 
 // xref name editing cancel button was pressed
 function xrefNameCancel() {
     // let desc = $("#xrefDesc").val();
-    $("#xrefEditName").hide()  
+    $("#xrefEditName").hide()
     $("#xrefPathRules").show();
     $("#xrefShowSelected").show();
 }
@@ -151,13 +151,13 @@ function xrefNameCancel() {
 function xrefNameSave() {
     let onOff = $("#xrefLevelOnOff").is(':checked');
     let desc = $("#xrefDesc").val();
-    xrefData.names[xrefData.picked].desc = desc; 
-    xrefData.names[ xrefData.picked ].xon = onOff;
+    xrefData.names[xrefData.picked].desc = desc;
+    xrefData.names[xrefData.picked].xon = onOff;
     setXrefLevel();
     saveConfig('xref');
     showDirtyXrefMsg();
 
-    let data = {'xRefs': xrefData.names}
+    let data = { 'xRefs': xrefData.names }
     //update the drop down lists
     populateXrefLists(data);
     $("#xrefEditName").hide();
@@ -169,16 +169,16 @@ function xrefNameSave() {
 function xrefCancel() {
     $("#xrefShowSelected").hide();
     $("#xrefPathRules").hide();
-    $("#xrefSelect").show()    
+    $("#xrefSelect").show()
 }
 
 // xref show table rule selected, invoked when rule in table is clicked
 function xrefEditPathRule(key) {
     // save in global var the selected xref path rule key
     xrefSelectedRuleKey = key;
-	let parts = key.split(':');
-	let ptr = parseInt(parts[1], 10);
-    let rule = xrefData.rules[ parts[0] ] [ ptr];
+    let parts = key.split(':');
+    let ptr = parseInt(parts[1], 10);
+    let rule = xrefData.rules[parts[0]][ptr];
     // save in global var the selected xref path rule
     xrefSelectedRule = rule;
     $("#xrefRule").val(rule.xrw);
@@ -189,7 +189,7 @@ function xrefEditPathRule(key) {
 
     $("#xrefEditDescBtn").hide();
     $("#xrefPathRules").hide();
-    $("#xrefShowRuleName").show(); 
+    $("#xrefShowRuleName").show();
     $("#xrefEditQuestion").show();
 
 }
@@ -207,9 +207,9 @@ function setXrefRuleEnabledBox() {
 }
 
 function xrefEditRuleOpen() {
-    $("#xrefShowRuleName").hide(); 
+    $("#xrefShowRuleName").hide();
     $("#xrefEditQuestion").hide();
-    $("#xrefEditRule").show();    
+    $("#xrefEditRule").show();
 }
 
 function xrefEditRuleDelete() {
@@ -234,7 +234,7 @@ function xrefEditRuleDelete() {
     saveConfig('xref');
     showDirtyXrefMsg();
     // show/hide screen portions
-    $("#xrefShowRuleName").hide(); 
+    $("#xrefShowRuleName").hide();
     $("#xrefEditQuestion").hide();
     $("#xrefEditRule").hide();
     $("#xrefEditDescBtn").show();
@@ -242,10 +242,10 @@ function xrefEditRuleDelete() {
 }
 
 function xrefEditRuleCancel() {
-    $("#xrefEditRule").hide(); 
+    $("#xrefEditRule").hide();
     $("#xrefEditQuestion").hide();
     $("#xrefShowRuleName").hide();
-    $("#xrefEditDescBtn").show(); 
+    $("#xrefEditDescBtn").show();
     $("#xrefPathRules").show();
 }
 
@@ -254,8 +254,8 @@ function xrefSaveEditedRule() {
     let ruleDef = $("#xrefRule").val();
     let parts = xrefSelectedRuleKey.split(':');
     // update in memory values
-    xrefData.rules[ parts[0] ][ parts[1]].xrw = ruleDef; 
-    xrefData.rules[ parts[0] ][ parts[1]].xon = onOff; 
+    xrefData.rules[parts[0]][parts[1]].xrw = ruleDef;
+    xrefData.rules[parts[0]][parts[1]].xon = onOff;
     // update UI values
     $("#xrefRuleText").html(ruleDef);
     // update xrefSelectedRule
@@ -270,27 +270,27 @@ function xrefSaveEditedRule() {
     bldXrefRulesTable();
     // hide edit and editShow, show table
     // show/hide screen portions
-    $("#xrefEditRule").hide(); 
+    $("#xrefEditRule").hide();
     $("#xrefEditQuestion").hide();
     $("#xrefShowRuleName").hide();
-    $("#xrefEditDescBtn").show(); 
+    $("#xrefEditDescBtn").show();
     $("#xrefPathRules").show();
 }
 
-function xrefCancelEditRule() {    
-    $("#xrefEditRule").hide(); 
+function xrefCancelEditRule() {
+    $("#xrefEditRule").hide();
     $("#xrefEditQuestion").hide();
     $("#xrefShowRuleName").hide();
-    $("#xrefEditDescBtn").show(); 
+    $("#xrefEditDescBtn").show();
     $("#xrefPathRules").show();
 }
 
 // add new xref 
-function xrefNewXref() { 
-    alert('create code to add new xref');  
-    
-    
-    let data = {'xRefs': xrefData.names}
+function xrefNewXref() {
+    alert('create code to add new xref');
+
+
+    let data = { 'xRefs': xrefData.names }
     //update the drop down lists
     populateXrefLists(data);
 }
@@ -305,7 +305,7 @@ function xrefNewPathRule() {
 }
 
 function xrefCancelNewPathRule() {
-    $("#xrefEditDescBtn").show(); 
+    $("#xrefEditDescBtn").show();
     $("#xrefPathRules").show();
     $("#xrefNewPathRule").hide()
 }
@@ -328,14 +328,14 @@ function xrefSaveNewPathRule() {
     // save to disk
     saveConfig('xref');
     showDirtyXrefMsg();
-    $("#xrefEditDescBtn").show(); 
+    $("#xrefEditDescBtn").show();
     $("#xrefPathRules").show();
     $("#xrefNewPathRule").hide()
 }
 
 
 function xrefOpenNewXref() {
-    $("#xrefEditDescBtn").hide(); 
+    $("#xrefEditDescBtn").hide();
     $("#xrefPathRules").hide();
     $("#xrefSelect").hide();
     $("#xrefNewXref").show()
@@ -345,14 +345,14 @@ function xrefSaveNewXref() {
     let name = $("#xrefNewXrefName").val();
     let desc = $("#xrefNewXrefDesc").val();
     if (typeof xrefData.names[name] === 'undefined') {
-        xrefData.names[name] = {'desc': desc};
-        let data = {'xRefs': xrefData.names}
+        xrefData.names[name] = { 'desc': desc };
+        let data = { 'xRefs': xrefData.names }
         populateXrefLists(data)
         // save to disk
         saveConfig('xref');
         showDirtyXrefMsg();
         $("#xrefSelect").show();
-        $("#xrefEditDescBtn").show(); 
+        $("#xrefEditDescBtn").show();
         $("#xrefNewXref").hide()
     } else {
         alert('Xref name already exists')
@@ -361,7 +361,7 @@ function xrefSaveNewXref() {
 
 function xrefCancelNewXref() {
     $("#xrefSelect").show();
-    $("#xrefEditDescBtn").show(); 
+    $("#xrefEditDescBtn").show();
     $("#xrefNewXref").hide()
 }
 
@@ -384,7 +384,7 @@ function xrefCloseFirstRule() {
 //----------------------------------------------------
 // ----- 3D cluster filtering
 function filter3DView() {
-    $("#filter3DModal").modal('show'); 
+    $("#filter3DModal").modal('show');
 }
 
 
@@ -397,7 +397,7 @@ function getRoleBindingByNs(ns) {
     let showNs = formatShowNs(ns);
     if (typeof securityRoleBindingInfo[key] === 'undefined') {
         buildRoleBindings(key);
-    } 
+    }
     $("#schemBody").html(securityRoleBindingInfo[key]);
     $("#schemHeader").html('RoleBindings for <span class="font-weight-bold">' + showNs + '</span>');
     $("#schemModal").modal('show');
@@ -413,7 +413,7 @@ function getSecRoleByNs(ns) {
     let showNs = formatShowNs(ns);
     if (typeof securityRoleInfo[key] === 'undefined') {
         buildRoles(key, level);
-    } 
+    }
     $("#schemBody").html(securityRoleInfo[key]);
     $("#schemHeader").html('Roles for <span class="font-weight-bold">' + showNs + '</span>');
     $("#schemModal").modal('show');
@@ -425,7 +425,7 @@ function getSecSubjectsByNs(ns) {
     let showNs = formatShowNs(ns);
     if (typeof securitySubjectInfo[key] === 'undefined') {
         buildRoleBindings(key);
-    } 
+    }
     $("#schemBody").html(securitySubjectInfo[key]);
     $("#schemHeader").html('Subjects for <span class="font-weight-bold">' + showNs + '</span> definitions');
     $("#schemModal").modal('show');
@@ -449,8 +449,8 @@ function formatShowNs(ns) {
             showNs = '&lt;Cluster Level&gt;';
         }
     } else {
-        showNs = ' namespace: ' +ns;
-    } 
+        showNs = ' namespace: ' + ns;
+    }
     return showNs;
 }
 
