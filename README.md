@@ -1,7 +1,60 @@
 <img style="float: center;" src="https://raw.githubusercontent.com/k8debug/vpk/main/public/images/vpk.png" width="70" height="70">
 
-## Visual parsed Kubernetes 
----
+## Visual parsed Kubernetes - VpK
+
+
+Vpk can be installed on a local computer or run from a Docker container.  Below are the two options followed with a description of VpK.
+
+<br>
+
+
+## Local installation
+	
+__Node.js__ and __npm__ are required to install and execute this application.
+
+You cannot install and run this application without first installing node.js and npm.  After the prerequisites are installed proceed to the next step. 
+
+Download the source files and place in a directory.  The source files are available on github and can be downloaded using the following clone command or retrieved 
+
+git clone http://github.com/k8debug/vpk.git/ 
+
+Change to the directory where the files were placed. Run the following command to install the required Node modules:
+
+	npm install
+
+Once the above has successfully completed the application can be started by using 
+
+	npm start
+	
+	
+<br>
+
+
+## Docker container
+	
+VpK is available as a Docker container.  The container is available from the following: __k8debug/vpk__
+
+```
+docker pull k8debug/vpk
+```
+
+The container requires a volume parameter to identify the direcotyr that will contain cluster snapshots along with port parameter to allow accessing the user interface via a browser.  
+
+Once the image is pulled it can be run by using a command similar to the following.  Replace the "SNAPDIR" in with the directory for the local stored snapshots. The default port is 4200 and is mapped to the same locally.
+
+```
+docker container  run -v SNAPDIR:/vpk/cluster -p 4200:4200 k8debug/vpk
+```
+
+The cluster snapshot files to be used with the container are created using another progarm available from this same github account.  The repository is for this application is:
+
+git clone http://github.com/k8debug/snapshot.git/ 
+
+Follow the instructions in the snapshot repository for how to build and install the snapshot application.
+
+<br>
+
+## VpK described
 
 VpK was created as the result of wanting a tool to aid in understanding what is defined in Kubernetes.   
 
@@ -36,141 +89,104 @@ What is VpK?
 - Usage of RBAC definitions.
 
 - Create and view custom cross reference information of K8 resource elements.	
-
 - Compare previously captured snapshots.  
 
 <br><br>
 
-## Vpk Architecture
+
+### Vpk Architecture
 
 ![Architecture](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs/docimages/architecture.png)
 
-<br><br>
 
-## Installation
-	
-__Node.js__ and __npm__ are required to install and execute this application.
+<br>
 
-You cannot install and run this application without first installing node.js and npm.  After the prerequisites are installed proceed to the next step. 
+---
 
-Download the source files and place in a directory.  The source files are available on github and can be downloaded using the following clone command or retrieved 
-
-git clone http://github.com/k8debug/vpk.git/ 
-
-Change to the directory where the files were placed. Run the following command to install the required Node modules:
-
-	npm install
-
-Once the above has successfully completed the application can be started.  
-
-<br><br>
-
-## Schematic of deployed Pods
-
-View schematic of resources used by deployed pods.
-
-![schematic](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-schematic.gif)
+VpK user interface is comprised of multiple tabs. The following sections are screen captures of portions of the tabs.
 
 
-<br><br>
+### Cluster tab
 
-## RBAC definitions
+Cluster view provides a 3D view of the cluster showing Nodes (master and worker), Pods (Running, Warning, Failed, Successful, DaemonSet), Network Services, Storage (PVC, PV, and Storage Class), and resource for memory, cpu, and storage.
 
-RBAC definitons shown by cluster or namespace level.
+![clusterTab](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-cluster.png)
 
-![rbac](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-rbac.gif)
+<br>
 
+### Schematic tab
 
-<br><br>
+Kubernetes resources associated with a Pod are shown in a schematic similar to the following diagram.
 
-## Hierarchy and circle pack graphs
+![schematicTab](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-schematic.png)
+
+<br>
+
+### Graphic tab
 
 Select cluster or namespace level graphic views of defined resources in the cluster or namespace.
 
-![graphics](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-graphics.gif)
+![graphicTab](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-graphic.png)
 
+<br>
 
-<br><br>
-
-## 3D View of cluster
-
-Cluster view has been enhanced to include a 3D view of the cluster showing: 
-
-Nodes (master and worker), Pods (Running, Warning, Failed, Successful, DaemonSet), Network Services, Storage (PVC, PV, and Storage Class).
-
-![3DLegend](https://raw.githubusercontent.com/k8debug/vpk/main/public/docs/docimages/3dView.png)
-
-<br><br>
-
-![3dview](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-3dview.gif)
-
-<br><br>
-
-## Storage resources
+### Storage tab
 
 View defined storage resources include PersistentVolumeClaim, PersistentVolume, and StorageClass.
 
-![storage](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-storage.gif)
+![storageTab](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-storage.png)
 
+<br>
 
+### Security tab
 
-<br><br>
+RBAC definitons of Role, Subject, and RoleBinding are shown by cluster or namespace level.
 
-## Snapshot compares
+![storage](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-security.png)
 
-Select cluster snapshots and compare for differences.
+<br>
 
-![3DView](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/wow-compare.gif)
+### Table View tab
 
+View all resources in the cluster and filter as desired.
 
+![rbac](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-tableview.png)
 
+<br>
 
-## Updating software
+### OwnerRef Links tab
 
-There is no automated process to update an existing version of this software.   A complete new install is required.  Follow the above __'Installation'__ instructions to install a new version of the software.
+View ownership chains of resources in the cluster.
 
-<br><br>
+![rbac](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-ownerref.png)
 
-## Start parameters
+<br>
 
-Start the VpK server by running either of the followings command from the directory where the software is installed.
+### Snapshot compares
 
-```
-npm start (or) node server.js  
-```
+Select two cluster snapshots and compare for differences.
 
+![3DView](https://raw.githubusercontent.com/k8debug/vpk/main/public/images/wow/pic-comparesnapshots.png)
 
-VpK has an optional start parameters for the port of where the browser can access the application.   The default value for the port is 4200.  The following example starts the server using port 3000 and not the default.
+<br>
 
-```
-node server.js  -p 3000   
-``` 
-
-Once the server is started open a browser using the appropriate port.
-
-```
-http://localhost:4200     (url shown using the default port of 4200)
-``` 
-
-<br><br>
-
-## Usage
+### YouTube videos on how to use VpK
 
 To assist in understanding YouTube videos are available that discuss may of the features of the product.
 Videos are sorted alpha by topic.
 
-https://youtu.be/8LtXugxdASY - Cluster view  
-https://youtu.be/pykzLsiAcP4 - Custom X-Refs (cross references)  
-https://youtu.be/oLnhPCZa_fo - Getting started  
-https://youtu.be/1_KdZJfKJVw - Graphic view  
-https://youtu.be/HNzobmCYRBo - Help, Information, and Configuration  
-https://youtu.be/EqknUXaIRnk - Owner Reference links  
-https://youtu.be/10lPGzn0VCk - Schematics (viewing deployed workloads)  
-https://youtu.be/zqzGLhoS1VY - Security view  
-https://youtu.be/7sjFh8N6FrY - Snapshots (creating and using)  
-https://youtu.be/zgJlWk5QqBM - Storage view  
-https://youtu.be/_YY3190mlkw - Table view  
-https://youtu.be/nwm5IFHbR34 - User interface basics  
+[https://youtu.be/8LtXugxdASY](https://youtu.be/8LtXugxdASY) - Cluster view __(out of date needs to be updated)__  
+[https://youtu.be/pykzLsiAcP4](https://youtu.be/pykzLsiAcP4) - Custom X-Refs (cross references)  
+[https://youtu.be/oLnhPCZa_fo](https://youtu.be/oLnhPCZa_fo) - Getting started  
+[https://youtu.be/1_KdZJfKJVw](https://youtu.be/1_KdZJfKJVw) - Graphic view  
+[https://youtu.be/HNzobmCYRBo](https://youtu.be/HNzobmCYRBo) - Help, Information, and Configuration  
+[https://youtu.be/EqknUXaIRnk](https://youtu.be/EqknUXaIRnk) - Owner Reference links  
+[https://youtu.be/10lPGzn0VCk](https://youtu.be/10lPGzn0VCk) - Schematics (viewing deployed workloads)  
+[https://youtu.be/zqzGLhoS1VY](https://youtu.be/zqzGLhoS1VY) - Security view  
+[https://youtu.be/7sjFh8N6FrY](https://youtu.be/7sjFh8N6FrY) - Snapshots (creating and using)  
+[https://youtu.be/zgJlWk5QqBM](https://youtu.be/zgJlWk5QqBM) - Storage view  
+[https://youtu.be/_YY3190mlkw](https://youtu.be/_YY3190mlkw) - Table view  
+[https://youtu.be/nwm5IFHbR34](https://youtu.be/nwm5IFHbR34) - User interface basics  
 
 <br><br>
 
@@ -180,12 +196,12 @@ Dave Weilert
 VJ Landon   
 Dave Krier   
 
-https://github.com/k8debug/vpk 
+
 
 
 ## License
 
-Copyright (c) 2018-2021 K8Debug
+Copyright (c) 2018-2022 K8Debug
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
