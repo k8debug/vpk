@@ -4,7 +4,8 @@
   "description": "Visual parsed Kubernetes",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js -p 4200"
+    "start": "node server.js -p 4200",
+    "container": "node server.js -p 4200 -c yes"
   },
   "author": "K8Debug",
   "license": "MIT",

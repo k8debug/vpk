@@ -4,15 +4,15 @@
         "statusSection": true
     },
     "xrefNames": {
-        "example01": {
-            "desc": "Example defined Xref"
+        "example444": {
+            "desc": "Testing user defined Xref"
         }
     },
     "xrefRules": {
         "Deployment": [
             {
                 "xon": true,
-                "xrk": "example01",
+                "xrk": "example444",
                 "xrw": "spec.selector.matchLabels"
             }
         ]

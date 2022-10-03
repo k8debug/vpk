@@ -25,6 +25,7 @@ $(document).ready(function () {
     // get version from server
     getVersion();
 
+
     document.addEventListener("keypress", function onPress(event) {
         if (event.key === "p" && event.ctrlKey) {
             // Do something awesome
@@ -216,7 +217,7 @@ $(document).ready(function () {
     $('#pickDataSource').select2({
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
-        placeholder: "Select snapshot"
+        placeholder: "Select option"
     });
 
     $('#pickDataSource').on('select2:select', function (e) {
@@ -224,6 +225,19 @@ $(document).ready(function () {
         pickData(selected);
         $('#pickDataSource').val(null)
     });
+
+    $('#pickDataSource2').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "Select option"
+    });
+
+    $('#pickDataSource2').on('select2:select', function (e) {
+        var selected = $('#pickDataSource2 option:selected').val();
+        pickData(selected);
+        $('#pickDataSource2').val(null)
+    });
+
 
     $('#label-filter').select2({
         dropdownCssClass: "vpkfont-md",
@@ -990,12 +1004,27 @@ socket.on('selectListsResult', function (data) {
 //----------------------------------------------------------
 // send request to server to get software version
 function getVersion() {
+    console.log('get version')
     socket.emit('getVersion');
 }
 //...
 socket.on('version', function (data) {
     version = data.version;
+    runMode = data.runMode;
+    console.log('runMode: ' + runMode)
+    // hide one of the select sections in the html
+    if (runMode === 'C') {
+        var link = document.getElementById('runLocal');
+        link.style.display = 'none'; //or
+        link.style.visibility = 'hidden';
+    } else {
+        var link = document.getElementById('runContainer');
+        link.style.display = 'none'; //or
+        link.style.visibility = 'hidden';
+    }
 });
+
+
 //==========================================================
 
 
@@ -1514,6 +1543,29 @@ function getCluster() {
     $("#clusterStatus").html('&nbsp');
 }
 
+function sendCommand() {
+    let command = $("#commandInput").val();
+    console.log('send command: ' + command);
+    socket.emit('runCommand', command);
+}
+
+socket.on('commandResult', function (data) {
+    let out = data.output;
+    let html = '';
+    for (let i = 0; i < out.length; i++) {
+        html = html + out[i] + '\n';
+    }
+
+    $("#commandOutput").html(html);
+});
+
+function closeRunCommand() {
+    $("#commandModal").modal('hide');
+}
+
+function openRunCommand() {
+    $("#commandModal").modal('show');
+}
 //----------------------------------------------------------
 // build UI for the get Cluster
 function buildClusterUI(selected) {

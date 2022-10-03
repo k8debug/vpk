@@ -80,6 +80,11 @@ let optionDefinitions = [{
     type: String
 },
 {
+    name: 'container',
+    description: 'Indicates VpK is running from a container.',
+    alias: 'c'
+},
+{
     name: 'help',
     description: 'Display this usage guide.',
     alias: 'h'
@@ -106,7 +111,7 @@ if (typeof options.port !== 'undefined' && options.port !== null) {
     }
 }
 
-// -s used
+// -s snapshot volume
 if (typeof options.snapshot !== 'undefined' && options.snapshot !== null) {
     snapshot = options.snapshot;
     if (fs.existsSync(snapshot)) {
@@ -117,7 +122,7 @@ if (typeof options.snapshot !== 'undefined' && options.snapshot !== null) {
     }
 }
 
-// -u used
+// -u userconfig volume
 if (typeof options.userconfig !== 'undefined' && options.userconfig !== null) {
     userconfig = options.userconfig;
     if (fs.existsSync(userconfig)) {
@@ -126,6 +131,15 @@ if (typeof options.userconfig !== 'undefined' && options.userconfig !== null) {
         utl.logMsg('vpkMNL103 - Did not locate user config directory: ' + userconfig);
         process.exit(-1);
     }
+}
+
+// -c container instance
+if (typeof options.container !== 'undefined' && options.container !== null) {
+    vpk.runMode = 'C';
+    startMsg.push('vpkMNL104 - Vpk running from container');
+} else {
+    vpk.runMode = 'L';
+    startMsg.push('vpkMNL105 - Vpk running locally');
 }
 
 //------------------------------------------------------------------------------

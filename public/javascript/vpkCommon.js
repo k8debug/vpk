@@ -39,6 +39,7 @@ let soundFor3D = true;
 
 // global
 var version = 'Get from server';
+var runMode = 'L';
 var socket = io.connect();
 var svgE = 0;
 var baseDir;
@@ -1377,11 +1378,14 @@ function hideVpkTooltip() {
 
 
 function pickData(tmp) {
+	console.log(tmp)
 	tmp.trim();
 	if (tmp === 'Running cluster') {
 		getCluster();
-	} else {
+	} else if (tmp === 'Previous captured snapshot') {
 		changeDir();
+	} else if (tmp === 'Run command in container') {
+		openRunCommand();
 	}
 }
 

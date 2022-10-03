@@ -313,11 +313,22 @@
                 </div>
 
                 <div id="datasource" class="header vpkfont-md ml-3 vpk-hdr-mid vpkinline">
-                    <select id="pickDataSource" class="vpkfont-md pl-3 vpk-hdr-mid">
-                        <option></option>
-                        <option>Running cluster</option>
-                        <option>Previous captured snapshot</option>
-                    </select>
+                    <div id="runLocal" style="display: inline;">
+                        <select id="pickDataSource" class="vpkfont-md pl-3 vpk-hdr-mid">
+                            <option></option>
+                            <option>Running cluster</option>
+                            <option>Previous captured snapshot</option>
+                        </select>
+                    </div>
+                    <div id="runContainer" style="display: inline;">
+                        <select id="pickDataSource2" class="vpkfont-md pl-3 vpk-hdr-mid">
+                            <option></option>
+                            <option>Running cluster</option>
+                            <option>Previous captured snapshot</option>
+                            <option>Run command in container</option>
+                        </select>
+                    </div>
+
                     <button class="btn btn-sm btn-outline-primary vpkfont-md ml-2" onclick="dirStats()">
                         <span id="baseDir" class="float-left"></span>
                     </button>
