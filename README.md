@@ -1,9 +1,15 @@
 <img style="float: center;" src="https://raw.githubusercontent.com/k8debug/vpk/main/public/images/vpk.png" width="70" height="70">
 
-## Visual parsed Kubernetes - VpK
+## VpK - Visual parsed Kubernetes
 
 
-Vpk can be installed on a local computer or run from a Docker container.  Below are the two options followed with a description of VpK.
+Vpk can be installed on a local computer or run from a Docker container.  Refer to the appropriate section for installing the software.
+
+
+Refer to the __VpK described__ and __YouTube videos on how to use VpK__ sections of this document for information about using the application.  
+
+The Help feature of the application also provides access to the video links along with additional descriptions of VpK features.
+
 
 <br>
 
@@ -26,25 +32,46 @@ Once the above has successfully completed the application can be started by usin
 
 	npm start
 	
-	
 <br>
 
 
+
+<br>
+
 ## Docker container
 	
-VpK is available as a Docker container.  The container is available from the following: __k8debug/vpk__
+VpK is available as a Docker container.  The container is available from the following DockerHub account: __k8debug__  container: __vpk__
 
+Example docker pull command: 
 ```
 docker pull k8debug/vpk
 ```
 
+The container hosts a web application at the default port 4200.
+
 The container requires a volume parameter to identify the direcotyr that will contain cluster snapshots along with port parameter to allow accessing the user interface via a browser.  
 
-Once the image is pulled it can be run by using a command similar to the following.  Replace the "SNAPDIR" in with the directory for the local stored snapshots. The default port is 4200 and is mapped to the same locally.
+Optionally a second volume parameter can be defined to point to a common user configuration file, usercongi.json. Use of this optional parameter will ensure any settings or user defined x-references are available to the container instance of VpK.
+
+Once the image is pulled it can be run by using a command similar to the following.  For the required volume replace "SNAPDIR" with the directory for the local stored snapshots. For the optional volume replace "USERCONF" with the directory that contains the __userconfig.json__ file.
+
+Required volume:
+```
+-v SNAPDIR:/vpk/cluster
+```
+
+Optional volume:
+```
+-v USERCONFIG:/Vpk/userconfig
+```
+
+Example with both volumes defined and mapping local port 4200 to the default port:
 
 ```
-docker container  run -v SNAPDIR:/vpk/cluster -p 4200:4200 k8debug/vpk
+docker run -v /data/snapshot:/vpk/cluster -v /data/parms:/vpk/cluster -p 4200:4200 k8debug/vpk
 ```
+
+
 
 The cluster snapshot files to be used with the container are created using another progarm available from this same github account.  The repository is for this application is:
 

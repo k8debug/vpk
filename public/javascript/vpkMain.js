@@ -519,6 +519,7 @@ function getDocumentation(data) {
 //...
 socket.on('getDocumentationResult', function (data) {
     let content = data.content;
+    console.log(data.content);
     $('#docsBody').html(content)
     $("#docsModal").modal('show');
 });
@@ -1015,14 +1016,9 @@ function reload() {
     $("#schematicDetail").html('');
     $("#ownerRefLinksDetail").empty();
     $("#ownerRefLinksDetail").html('');
-    // 3D tab
-    // $("#renderCanvas").html('');
-    $("#canvas3D").html('<canvas id="renderCanvas"></canvas>');
-    $('#cluster3DView').hide();
-
-    //No longer an option to show cluster table
-    // $("#clusterDetail").hide();
-
+    if (typeof engine !== null) {
+        $("#Canvas3D").html('<canvas id="renderCanvas"></canvas>');
+    }
     //This will clear any previously loaded data
     k8cData = null;
     socket.emit('reload', newDir);
@@ -1066,16 +1062,34 @@ function cancelShutdown() {
     $("#closeVpKModal").modal('hide');
 }
 function shutdownVpK() {
-    socket.emit('shutdownVpK');
-    let html1 = '<div class="text-center vpkcolor vpkfont-lg">'
-        + '<img class="vpk-vert-mid" src="images/vpk-flip.gif" width="60" height="60"></div>'
-    let html2 = '<div class="text-center vpkcolor vpkfont-lg mt-5">'
-        + '<span> VpK shutdown complete</span></div></div>'
+    let html1 = '<div>&nbsp;</div>'
+    let html2 = '<div class="text-center vpkcolor vpkfont-lg mb-5 mt-5">'
+        + '<img class="vpk-vert-mid" src="images/vpk.png" width="100" height="100"></div>'
+        + '<div class="text-center mt-2 vpkfont-giant vpkcolor">'
+        + '<span id="shutdownMsg">VpK shutdown in progress</span></div></div>'
     $("#closeVpKModal").modal('hide')
     $("#banner").html(html1);
     $("#viewarea").html(html2)
+    let doit = setTimeout(sendShutdownS1, 1000);
 }
 
+function sendShutdownS1() {
+    let html2 = '<div class="text-center vpkcolor vpkfont-lg mt-5">'
+        + '<img class="vpk-vert-mid" src="images/vpk.png" width="200" height="200"></div>'
+        + '<div class="text-center mt-5 mb-5 vpkfont-giant vpkcolor">'
+        + '<span id="shutdownMsg" >VpK shutdown in progress</span></div></div></div>'
+    $("#viewarea").html(html2);
+    let doit = setTimeout(sendShutdownS2, 1000);
+}
+
+function sendShutdownS2() {
+    let html2 = '<div class="text-center vpkcolor vpkfont-lg mt-5">'
+        + '<img class="vpk-vert-mid" src="images/vpk.png" width="300" height="300"></div>'
+        + '<div class="text-center mt-5 mb-5 vpkfont-giant vpkcolor">'
+        + '<span id="shutdownMsg" >VpK shutdown complete</span></div></div></div>'
+    $("#viewarea").html(html2);
+    socket.emit('shutdownVpK');
+}
 
 
 //----------------------------------------------------------
@@ -1086,8 +1100,12 @@ function bldSchematic() {
     if (typeof k8cData === 'undefined' || k8cData === null) {
         socket.emit('schematic');
     } else {
-        console.log('k8cData exists')
-        schematic();
+        if (typeof k8cData['0000-clusterLevel'] === 'undefined') {
+            socket.emit('schematic');
+        } else {
+            console.log('k8cData exists')
+            schematic();
+        }
     }
 }
 

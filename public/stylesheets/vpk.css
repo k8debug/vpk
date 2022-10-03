@@ -44,6 +44,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     color: black;
 }
 
+
+.vpkbackgrey {
+    background-color: #f2f2f2;
+}
+
+.vpkbackwhite {
+    background-color: #ffffff;
+}
+
 .vpkfont {
     font-size: 0.90rem;
 }
@@ -60,6 +69,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 .vpkfont-xl {
     font-size: 1.50rem;
+}
+
+.vpkfont-giant {
+    font-size: 3.00rem;
 }
 
 .vpkcolor {

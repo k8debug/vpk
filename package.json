@@ -20,10 +20,11 @@
     "express-ejs-layouts": "^2.5.0",
     "express-partials": "^0.3.0",
     "express-session": "^1.17.1",
+    "flatted": "^3.2.7",
     "fs": "0.0.2",
     "fs-extra": "^5.0.0",
     "js-yaml": "^3.10.0",
-    "marked": "^1.2.5",
+    "markdown-it": "^13.0.1",
     "q": "^1.5.1",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"

@@ -304,8 +304,7 @@
         <div id="header-bar" class="header ml-1 mr-0 pt-1 pb-1">
             <!-- <span onclick="printDiv()"> -->
             <span>
-                <img class="vpk-vert-mid" src='images/vpk-flip.gif' width='30' height='30'
-                    onclick="getDocumentation('toc')">
+                <img class="vpk-vert-mid" src='images/vpk.png' width='30' height='30' onclick="getDocumentation('toc')">
 
                 <div class="vpkcolor vpkfont pl-1 vpkinline vpk-vert-mid" onclick="getDocumentation('toc')">
                     <span class="vpkfont-lg">V</span><span class="vpkfont">isual </span>
@@ -646,33 +645,20 @@
 
             <div id="comparesnapHdr" class="vpkhidden">
                 <div class="grid mt-1 ml-2 mr-2 mb-2 border rounded">
-                    <!-- <div id="comparesources" class="header vpkfont-md pt-0 pb-2 ml-5"> -->
-                    <div class="ml-3 mt-2 vpkcolor vpkfont-sm">
-                        <p>Select snapshots, sorting, and viewing results.
-                            Once selected press the Compare button.
-                        </p>
-                    </div>
-
                     <div class="ml-0 mt-1 vpkfont-md">
-                        <span class="vpkfont-md vpkcolor ml-3">Snapshots:</span>
-                        <div class="pl-3" style='vertical-align:middle; display:inline;'>
+                        <span class="vpkfont-md vpkcolor ml-1">Snapshots:</span>
+                        <div class="pl-1" style='vertical-align:middle; display:inline;'>
                             <button class="btn btn-sm btn-outline-primary vpkfont-md vpkwhite"
                                 onclick="getCompareSnap('1')">
                                 <span id="firstSnapDir" class="float-left">Snapshot 1</span>
                             </button>
-                        </div>
-
-                        <div class="pl-3" style='vertical-align:middle; display:inline;'>
                             <button class="btn btn-sm btn-outline-primary vpkfont-md vpkwhite"
                                 onclick="getCompareSnap('2')">
                                 <span id="secondSnapDir" class="float-left">Snapshot 2</span>
                             </button>
-                        </div>
-
-                        <div class="pl-3" style='vertical-align:middle; display:inline;'>
-                            <span class="vpkfont-md vpkcolor ml-5">Sorting: &nbsp;&nbsp;&nbsp;First by</span>
+                            <span class="vpkfont-md vpkcolor ml-1">Sort:<span class="ml-2 vpkfont-sm">1st</span></span>
                             <div class="ml-1 mt-1" style="display: inline;">
-                                <select id="compareSort1" class="vpkfont-md pl-3"
+                                <select id="compareSort1" class="vpkfont-sm pl-3"
                                     style="width: 100px; vertical-align:middle;">
                                     <option></option>
                                     <option>Namespace</option>
@@ -680,10 +666,7 @@
                                     <option>Kind</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="pl-1" style='vertical-align:middle; display:inline;'>
-                            <span class="vpkfont-md vpkcolor ml-1">Second by</span>
+                            <span class="vpkfont-md vpkcolor ml-1"><span class="vpkfont-sm">2nd</span></span>
                             <div class="ml-1 mt-1" style="display: inline;">
                                 <select id="compareSort2" class="vpkfont-md pl-3"
                                     style="width: 100px; vertical-align:middle;">
@@ -693,10 +676,7 @@
                                     <option>Kind</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="pl-1" style='vertical-align:middle; display:inline;'>
-                            <span class="vpkfont-md vpkcolor ml-5">View Results</span>
+                            <span class="vpkfont-md vpkcolor ml-4">View:</span>
                             <div class="ml-1 mt-1" style="display: inline;">
                                 <select id="compareView" class="vpkfont-md pl-3"
                                     style="width: 100px; vertical-align:middle;">
@@ -707,29 +687,29 @@
                                 </select>
                             </div>
                         </div>
-
-                        <div class="pl-5" style='vertical-align:middle; display:inline;'>
-                            <button class="btn btn-sm btn-outline-primary vpkfont-md ml-5 vpkwhite"
-                                onclick="compareSnapshots()">
-                                <span id="snapCompare" class="float-left">Compare snapshots</span>
-                            </button>
-                        </div>
                     </div>
                     <div class="ml-2 mt-2">
-                        <div class="vpkfont-sm vpkcolor ml-2"><b>Snapshot 1:&nbsp;</b> <span id="firstSnap"
+                        <div class="vpkfont-sm vpkcolor ml-0"><b>Snapshot 1:&nbsp;</b> <span id="firstSnap"
                                 class="vpkfont-sm vpkcolor"></span>
                         </div>
-                        <div class="vpkfont-sm vpkcolor ml-2"><b>Snapshot 2:&nbsp;</b> <span id="secondSnap"
+                        <div class="vpkfont-sm vpkcolor ml-0"><b>Snapshot 2:&nbsp;</b> <span id="secondSnap"
                                 class="vpkfont-sm vpkcolor"></span>
                         </div>
                     </div>
-                    <!-- <div> -->
-                </div>
-            </div>
 
+                    <div class="ml-0 mt-1 mb-1 vpkfont-md">
+                        <button class="btn btn-sm btn-outline-primary vpkfont-md ml-2 vpkwhite"
+                            onclick="compareSnapshots()">
+                            <span id="snapCompare" class="float-left">&nbsp;&nbsp;&nbsp;&nbsp;Compare
+                                snapshots&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     </div>
-
     <div id="viewarea">
         <div id="tabsContent" class="tab-content">
             <div id="instructions" class="tab-pane active show">

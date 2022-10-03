@@ -7,8 +7,8 @@
 
 | Topic | Description |
 |---|---|
-| <a href="javascript:docNextTopic('gettingstarted')">Getting started</a> | &nbsp;Vpk installation and initial use |
-| <a href="javascript:docNextTopic('generalusage')">User Interface</a> | &nbsp;General usage of the UI |
+| <a href="javascript:docNextTopic('gettingstarted')">Getting started</a> | Vpk installation and initial use |
+| <a href="javascript:docNextTopic('generalusage')">User Interface</a> | General usage of the UI |
 | <a href="javascript:docNextTopic('overview')">Overview</a> | &nbsp;Vpk application overview an architecture |
 | <a href="javascript:docNextTopic('snapshot')">Snapshot</a> | &nbsp;K8 data to analyze |
 | <a href="javascript:docNextTopic('tableview')">Table View</a> | &nbsp;Tabular view of K8 resources |

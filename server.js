@@ -30,6 +30,7 @@ const vpkReset = require('./lib/vpkReset');
 const docm = require('./lib/documentation');
 const appRoutes = require('./lib/appRoutes')
 const splash = require('./lib/splash')
+const vpk = require('./lib/vpk');
 
 // third-party requires and configuration
 const bodyParser = require('body-parser');
@@ -40,7 +41,7 @@ let socketio = require('socket.io');
 const partials = require('express-partials');
 const compression = require('compression');
 const cors = require('cors');
-
+const fs = require('fs');
 // server and socketio configuration
 let app = express();
 let server = http.createServer(app);
@@ -51,14 +52,36 @@ const clientIO = require('./lib/clientIO');
 // Application start parms
 //------------------------------------------------------------------------------
 let port = 4200;
+let snapshot = "";
+let userconfig = "";
+let startMsg = [];
+let cwd = process.cwd();
 let optionDefinitions = [{
     name: 'port',
+    description: 'Port to provide access for the browser to the VpK application. Range is 1 to 65535.',
     alias: 'p',
     type: Number,
     defaultOption: 4200
 },
 {
+    name: 'snapshot',
+    description: 'Directory that contains the cluster Snapshot files. '
+        + 'Provide the complete path to the snapshot instances. '
+        + 'If not defined the directory: ' + cwd + '/cluster will be used.',
+    alias: 's',
+    type: String
+},
+{
+    name: 'userconfig',
+    description: 'Directory that contains the userconfig.json file. '
+        + 'Provide the complete path to the file. '
+        + 'If not defined the directory: ' + cwd + ' will be used.',
+    alias: 'u',
+    type: String
+},
+{
     name: 'help',
+    description: 'Display this usage guide.',
     alias: 'h'
 }
 ];
@@ -70,7 +93,7 @@ let options = commandLineArgs(optionDefinitions);
 
 // -help used
 if (typeof options.help !== 'undefined') {
-    splash.help();
+    splash.help(optionDefinitions);
     process.exit(0);
 }
 
@@ -83,19 +106,49 @@ if (typeof options.port !== 'undefined' && options.port !== null) {
     }
 }
 
+// -s used
+if (typeof options.snapshot !== 'undefined' && options.snapshot !== null) {
+    snapshot = options.snapshot;
+    if (fs.existsSync(snapshot)) {
+        startMsg.push('vpkMNL100 - Using snapshot directory: ' + snapshot);
+    } else {
+        utl.logMsg('vpkMNL101 - Did not locate snapshot directory: ' + snapshot);
+        process.exit(-1);
+    }
+}
+
+// -u used
+if (typeof options.userconfig !== 'undefined' && options.userconfig !== null) {
+    userconfig = options.userconfig;
+    if (fs.existsSync(userconfig)) {
+        startMsg.push('vpkMNL102 - Using user config directory: ' + userconfig);
+    } else {
+        utl.logMsg('vpkMNL103 - Did not locate user config directory: ' + userconfig);
+        process.exit(-1);
+    }
+}
+
 //------------------------------------------------------------------------------
 // splash screen
 //------------------------------------------------------------------------------
 splash.pop(softwareVersion, port);
 
+if (startMsg.length > 0) {
+    for (let m = 0; m < startMsg.length; m++) {
+        utl.logMsg(startMsg[m]);
+    }
+}
+
+vpk.snapshotDir = snapshot;
+vpk.userconfigDir = userconfig;
 
 //------------------------------------------------------------------------------
 // read vpk configuration file
 //------------------------------------------------------------------------------
 let gcstatus = utl.readConfig('vpkconfig.json');
+let vf = 'userconfig.json';
 if (gcstatus === 'OK') {
     // get userconfig.json data
-    vf = 'userconfig.json';
     utl.readConfig(vf);
 } else {
     utl.logMsg('vpkMNL095 - Terminating application unable to find configuration file: ' + vf);
@@ -146,7 +199,10 @@ function startServer() {
     try {
         server.listen(port);              // start server
         utl.readLicenseFile();            // read license text into global vpk
-        utl.makedir('cluster');           // create the cluster directory if it does not exist
+        // create the cluster directory if it does not exist
+        if (vpk.snapshotDir === "") {
+            utl.makedir('cluster');
+        }
         utl.makedir('usage');             // create the usage directory if it does not exist
         docm.buildDocumentation();        // read, parse, and load documentation markdown file into global vpk
     } catch (err) {

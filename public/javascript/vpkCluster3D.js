@@ -21,11 +21,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // build data for cluster tab
 //----------------------------------------------------------
 
-
 let canvas = document.getElementById("renderCanvas");
-
 var engine = null;
 var camera = null;
+//var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, 3 * Math.PI / 8, 30, BABYLON.Vector3.Zero());
 var scene = null;
 var sceneToRender = null;
 var createDefaultEngine = function () { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false }); };
@@ -2110,6 +2109,7 @@ function createScene() {
     buildSCs();
 
     // return the newly built scene to the calling function
+    //console.log(stringify(scene))
     return scene;
 }
 
