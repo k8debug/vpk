@@ -39,7 +39,7 @@ fi
 
 # default target docker repository
 if [ -z "$3" ]; then
-    TR="docker.io/dweilert"
+    TR="docker.io/k8debug"
     echo "  Using default image repository : $TR"
 else 
     TR=$3

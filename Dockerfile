@@ -5,14 +5,16 @@ LABEL maintainer="k8debug"
 RUN mkdir /vpk
 RUN mkdir /vpk/cluster
 RUN mkdir /vpk/usage
+RUN mkdir /vpk/userconfig
 
 WORKDIR /vpk
 COPY lib/ ./lib
 COPY public/ ./public
+COPY userconfig/ ./userconfig
 COPY server.js .
-COPY userconfig.json .
 COPY vpkconfig.json .
 COPY package.json .
+COPY LICENSE .
 
 RUN apt-get install -y  curl \
     && npm install \
@@ -22,6 +24,6 @@ RUN apt-get install -y  curl \
 CMD ["npm", "start"]
 EXPOSE 4200/tcp
 
-#docker run -it dweilert/vpk sh
-#docker run -v /Users/bob/cluster/:/vpk/cluster -p 4200:4200 dweilert/vpk
+#docker run -it k8debug/vpk sh
+#docker run -v /Users/bob/cluster/:/vpk/cluster -v /Users/bob/userconfig/:/vpk/userconfig -p 4200:4200 k8debug/vpk
 #docker tag k8debug/vpk:5.2.0 k8debug/vpk:latest
