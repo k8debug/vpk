@@ -1,0 +1,20 @@
+{
+    "defaults": {
+        "managedFields": false,
+        "statusSection": true
+    },
+    "xrefNames": {
+        "example01": {
+            "desc": "Example defined Xref"
+        }
+    },
+    "xrefRules": {
+        "Deployment": [
+            {
+                "xon": true,
+                "xrk": "example01",
+                "xrw": "spec.selector.matchLabels"
+            }
+        ]
+    }
+}
