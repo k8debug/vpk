@@ -21,9 +21,9 @@ RUN apt-get install -y  curl \
     && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \ 
     && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl  
 
-CMD ["node", "server -c yesrun container"]
+CMD ["sh", "-c", "node server.js -c yes"]
 EXPOSE 4200/tcp
 
 #docker run -it k8debug/vpk sh
-#docker run -v /Users/bob/cluster/:/vpk/cluster -v /Users/bob/userconfig/:/vpk/userconfig -p 4200:4200 k8debug/vpk
+#docker run -v /Users/bob/snaptest/:/vpk/cluster -v /Users/bob/userconfig/:/vpk/userconfig -p 4500:4200 k8debug/vpk
 #docker tag k8debug/vpk:5.2.0 k8debug/vpk:latest
