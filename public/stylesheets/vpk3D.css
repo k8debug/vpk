@@ -8,29 +8,128 @@
     display: none;
 }
 
-/* ---------- Filter slideout in 3D related ------------ */
-.nested {
-    display: grid;
-    grid-template-columns: 25% 70%;
-    grid-gap: 6px;
-    word-break: break-all;
+/* 3D cluster legend and filter slideouts */
+.cluster_legend_close {
+    position: absolute;
+    right: 100%;
+    top: 0;
+    color: red;
+    cursor: pointer;
+    font-size: 24px;
+    background: #7d1515;
+    padding: 0 5px;
+    border-radius: 3px 0 0 3px;
+    box-shadow: -2px 0 3px rbga(0, 0, 0, 0.2);
 }
 
-.nested>div {
-    text-align: left;
+.cluster_legend_box {
+    position: fixed;
+    right: 0;
+    top: 25%;
+    /* bottom: 200px; */
+    width: 320px;
+    height: 300px;
+    z-index: 1000;
+    padding: 25px;
+    background: #7d1515;
+    color: #fff;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease-in-out;
+    min-height: 200px;
+    transform: translateX(120%);
 }
 
-.nested>div:nth-child(odd) {
-    padding-top: 3px;
-    font-size: 90%;
-    vertical-align: baseline;
-    text-align: right;
+.cluster_legend_box.active {
+    transform: translateX(0%);
 }
 
-.nested>div:nth-child(even) {
-    background: #fff;
-    padding-left: 3px;
-    padding-right: 3px;
+.cluster_legend {
+    position: fixed;
+    right: -25px;
+    top: 50%;
+    background: #f93010;
+    color: #fff;
+    padding: 10px 22px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    transform: translateY(-50%) rotate(90deg);
+    border-radius: 0 0 5px 5px;
+    z-index: 100;
+}
+
+.cluster_legend:hover {
+    color: #fff;
+    text-decoration: none;
+    background: #bf4104;
+}
+
+/* cluster filter slidout */
+.cluster_filter_close {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    background: rgb(0, 123, 255);
+    padding: 0 5px;
+    border-radius: 0 3px 3px 0;
+    border-top: 1px solid rgb(0, 123, 255);
+    border-right: 1px solid rgb(0, 123, 255);
+    border-bottom: 1px solid rgb(0, 123, 255);
+    box-shadow: -2px 0 3px rbga(0, 0, 0, 0.2);
+}
+
+.cluster_filter_box {
+    position: fixed;
+    left: 0;
+    top: 16%;
+    /* bottom: 200px; */
+    width: 300px;
+    height: 750px;
+    z-index: 1000;
+    padding: 5px;
+    background: #eee;
+    color: #555;
+    border: 1px solid rgb(0, 123, 255);
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease-in-out;
+    min-height: 200px;
+    transform: translateX(-120%);
+}
+
+.cluster_filter_box.active {
+    transform: translateX(0%);
+}
+
+.cluster_filter {
+    position: fixed;
+    left: -36px;
+    top: 50%;
+    /* background: rgb(0, 123, 255); */
+    background: #bbbbbb;
+    color: #fff;
+    padding: 10px 22px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    transform: translateY(-50%) rotate(-90deg);
+    border-radius: 0 0 5px 5px;
+    z-index: 100;
+
+}
+
+.cluster_filter:hover {
+    color: #fff;
+    text-decoration: none;
+    /* background: #bbbbbb; */
+    background: rgb(0, 123, 255);
+
+}
+
+.filter-checkbox {
+    margin-top: 1px;
 }
 
 .memoryRequest {
@@ -119,64 +218,4 @@
 
 .hideBox {
     display: none;
-}
-
-/* ----------- FILTER SIDE PANEL ----------- */
-.sidePanelHdr1 {
-    height: 18px;
-}
-
-.sidePanelHdrText {
-    text-decoration: underline;
-    text-align: center;
-}
-
-.sidePanelHdr2 {
-    margin-left: -10px;
-    height: 34px;
-}
-
-.sidepanel {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #f2f2f2;
-    overflow-x: hidden;
-    transition: 0.1s;
-    padding-top: 40px;
-    margin-left: 5px;
-}
-
-.sidepanel a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    color: rgb(0, 123, 255);
-    display: block;
-    transition: 0.1s;
-}
-
-.sidepanel a:hover {
-    color: #818181;
-}
-
-.sidepanel .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-}
-
-@media screen and (max-height: 450px) {
-    .sidepanel {
-        padding-top: 15px;
-    }
-
-    .sidepanel a {
-        font-size: 18px;
-    }
 }

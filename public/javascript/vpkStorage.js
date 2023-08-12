@@ -49,7 +49,20 @@ function buildStorageSVG() {
     let space = 0;
     let fmtSpc = '';
     let first = true;
-    let rtn = '<div class="mt-0 ml-5 vpkfont-sm vpkcolor"><span pl-5>Click horizontal bars to view StorageClase details</span></div>'
+
+    let rtn = '<div class="mt-0 ml-5 vpkfont-sm vpkcolor"><span pl-5>Click horizontal bars to view StorageClase details</span>'
+        + '<span class="pl-3">'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #F8BBD0; color: black;">KiloByte</span>'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #B39DDB; color: white;">MegaByte</span>'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #90CAF9; color: black;">GigaByte</span>'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #4CAF50; color: white;">TeraByte</span>'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #C0CA33; color: black;">PetaByte</span>'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #FFA000; color: black;">ExaByte</span>'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #D84315; color: white;">ZettaByte</span>'
+        + '<span class="pl-3 pr-3 pb-1 pt-1 mr-2" style="background-color: #4E342E; color: white;">YottaByte</span>'
+
+
+        + '</div>'
         + '<svg width="1200" height="10">'
         + '<line  x1="30"  x2="190"  y1="10" y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
         + '<line  x1="200"  x2="1200"  y1="10" y2="10" stroke="black" stroke-width="0.5" stroke-linecap="round"/>'
@@ -92,6 +105,9 @@ function buildStorageSVG() {
     let spcLength = 09;
     let cSec = '';
     let tmp;
+    let fillColor;
+    let textColor;
+    let spcAbv;
     scKeys.sort();
     for (let s = 0; s < scKeys.length; s++) {
         storCnt++;
@@ -105,7 +121,7 @@ function buildStorageSVG() {
             spcLength = parseInt(tmp, 10);
 
         } else {
-            fmtSpc = 'GB 0';
+            fmtSpc = 'None used';
             space = 0;
             spcLength = 0;
         }
@@ -116,23 +132,73 @@ function buildStorageSVG() {
             name = storageData.StorageClass[scKeys[s]].name;
         }
 
+        // set fillColor
+
+        spcAbv = fmtSpc.substring(0, 2);
+        switch (spcAbv) {
+            case "KB":
+                fillColor = "#F8BBD0"
+                textColor = "black";
+                break;
+            case "MB":
+                fillColor = "#B39DDB"
+                textColor = "white";
+                break;
+            case "GB":
+                fillColor = "#90CAF9"
+                textColor = "black";
+                break;
+            case "TB":
+                fillColor = "#4CAF50"
+                textColor = "white";
+                break;
+            case "PB":
+                fillColor = "#C0CA33"
+                textColor = "black";
+                break;
+            case "EB":
+                fillColor = "#FFA000"
+                textColor = "black";
+                break;
+            case "ZB":
+                fillColor = "#D84315"
+                textColor = "white";
+                break;
+            case "YB":
+                fillColor = "#4E342E"
+                textColor = "white";
+                break;
+            default:
+                fillColor = "#999999"
+                textColor = "black";
+        }
+
+        if (fmtSpc === "None used") {
+            fillColor = "#eeeeee"
+            textColor = "#666666";
+        }
+
+
+
         fnum = storageData.StorageClass[scKeys[s]].fnum;
         rtn = rtn + '<svg id="sc' + storCnt + '" width="1200" height="50">'
             + '<image x="10" y="5"  width="40" height="40" href="images/k8/sc.svg" onmousemove="showStorageTooltip(evt,\''
             + buildStorageInfo(name, 'SC')
             + '\');" onmouseout="hideVpkTooltip()"  onclick="getDefFnum(\'' + fnum + '\')"/>'
 
-            + '<text x="60" y="42" fill="black" class="vpkfont-sm" data-toggle="collapse" '
+            + '<text x="60" y="42" fill="black" class="vpkfont" data-toggle="collapse" '
             + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">StorageClass: </text>'
-            + '<text x="125" y="43" fill="black" class="vpkfont" data-toggle="collapse" '
+
+            + '<text x="160" y="42" fill="black" class="vpkfont" data-toggle="collapse" '
             + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">' + name + '</text>'
 
-            + '<rect x="200" y="3"  width="' + spcLength + '"  height="28" rx="2" stroke-width="0"  stroke="black" fill="#7ec963" '
+            + '<rect x="200" y="5"  width="' + spcLength + '"  height="18" rx="0" stroke-width="0"  stroke="black" fill="' + fillColor + '" '
             + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')"/>'
 
-            + '<rect x="55" y="5"  width="85"  height="18" rx="4" stroke-width="0.5"  stroke="black" fill="lightgray" '
+            + '<rect x="55" y="5"  width="85"  height="18" rx="1" stroke-width="0.5"  stroke="' + textColor + '" fill="' + fillColor + '" '
             + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')"/>'
-            + '<text x="60" y="20" fill="black" class="vpkfont" '
+
+            + '<text x="60" y="19" fill="' + textColor + '" class="vpkfont" '
             + ' onclick="toggleStorage(\'sc' + storCnt + 'pv\')">' + fmtSpc + '</text>'
 
             + '<line x1="30" x2="1200" y1="50" y2="50" stroke="gray" stroke-width="0.5" stroke-linecap="round"/>'

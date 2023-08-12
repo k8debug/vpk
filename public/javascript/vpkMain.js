@@ -91,7 +91,6 @@ $(document).ready(function () {
         let element;
         // take action based on what tab was shown
         if (currentTab === "#instructions") {
-            close3DFilter();
             px = 75;
             documentationTabTopic = 'overview';
             $('#instructions').show();
@@ -101,7 +100,6 @@ $(document).ready(function () {
             $('#instructionsHdr').hide();
         }
         if (currentTab === "#tableview") {
-            close3DFilter();
             px = 113;
             checkIfDataLoaded();
             documentationTabTopic = 'tableview';
@@ -112,7 +110,6 @@ $(document).ready(function () {
             $('#tableviewHdr').hide();
         }
         if (currentTab === "#schematic") {
-            close3DFilter();
             px = 120;
             checkIfDataLoaded();
             documentationTabTopic = 'schematics';
@@ -123,7 +120,6 @@ $(document).ready(function () {
             $('#schematicHdr').hide();
         }
         if (currentTab === "#graphic") {
-            close3DFilter();
             px = 157;
             checkIfDataLoaded();
             documentationTabTopic = 'graphicview';
@@ -134,7 +130,6 @@ $(document).ready(function () {
             $('#graphicHdr').hide();
         }
         if (currentTab === "#security") {
-            close3DFilter();
             px = 123;
             checkIfDataLoaded();
             documentationTabTopic = 'security';
@@ -145,7 +140,6 @@ $(document).ready(function () {
             $('#securityHdr').hide();
         }
         if (currentTab === "#storage") {
-            close3DFilter();
             px = 123;
             checkIfDataLoaded();
             documentationTabTopic = 'storage';
@@ -166,7 +160,6 @@ $(document).ready(function () {
             $('#clusterHdr').hide();
         }
         if (currentTab === "#xreference") {
-            close3DFilter();
             px = 122;
             checkIfDataLoaded();
             documentationTabTopic = 'xreference';
@@ -177,7 +170,6 @@ $(document).ready(function () {
             $('#xreferenceHdr').hide();
         }
         if (currentTab === "#ownerlinks") {
-            close3DFilter();
             px = 130;
             checkIfDataLoaded();
             documentationTabTopic = 'ownerref';
@@ -188,7 +180,6 @@ $(document).ready(function () {
             $('#ownerlinksHdr').hide();
         }
         if (currentTab === "#comparesnap") {
-            close3DFilter();
             px = 202;
             documentationTabTopic = 'comparesnap';
             $('#comparesnap').show();
@@ -212,6 +203,11 @@ $(document).ready(function () {
         } else {
             getDefFnum(selectedDef);
         }
+    });
+
+    $("#secTable").on("click-cell.bs.table", function (field, value, row, $el) {
+        selectedDef = $el.fnum;
+        getDefFnum(selectedDef);
     });
 
     $('#pickDataSource').select2({
@@ -259,6 +255,18 @@ $(document).ready(function () {
         dropdownCssClass: "vpkfont-md",
         containerCssClass: "vpkfont-md",
         placeholder: "select namespace(s)"
+    });
+
+    // $('#security-ns-filter').select2({
+    //     dropdownCssClass: "vpkfont-md",
+    //     containerCssClass: "vpkfont-md",
+    //     placeholder: "select namespace"
+    // });
+
+    $('#security-ns-filter').select2({
+        dropdownCssClass: "vpkfont-md",
+        containerCssClass: "vpkfont-md",
+        placeholder: "select namespace"
     });
 
     $('#compareInstances').select2({
@@ -346,71 +354,71 @@ $(document).ready(function () {
 
     $('#cluster-bar1-select').focusout(function () {
         console.log('No FOCUS')
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterNodes]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterStorage]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterNetwork]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterRunning]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterWarning]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterFailed]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterSuccessful]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterDSPods]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterMemoryLimit]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterMemoryRequest]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterCPULimit]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterCPURequest]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterNodeMemory]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterNodeCPU]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterNodeStorage]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     $('input[name=clusterFilterControlP]').change(function () {
-        toggle3DView()
+        filter3DView()
     });
 
     editor = ace.edit("editor");
@@ -420,6 +428,22 @@ $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    //cluster tab slideout for filter and/or legend
+
+    $(".cluster_legend").click(function (event) {
+        $(".cluster_legend_box").addClass("active")
+    });
+    $(".cluster_legend_close").click(function (event) {
+        $(".cluster_legend_box").removeClass("active")
+    });
+
+    $(".cluster_filter").click(function (event) {
+        $(".cluster_filter_box").addClass("active")
+    });
+    $(".cluster_filter_close").click(function (event) {
+        $(".cluster_filter_box").removeClass("active")
+    });
 
     //clearDisplay();
     getSelectLists();
@@ -444,22 +468,22 @@ $(document).ready(function () {
 // let checkInterval = setInterval(checkForData, 1000);
 
 
-// Cluster tab slideout filter panel
-var hideClusterPanel = function () {
-    clusterPanelIsClosed = true;
-    clusterFilterPanel.style.webkitTransform = "translateX(300px)";
-    clusterFilterPanel.style.transform = "translateX(300px)"
-};
+// // Cluster tab slideout filter panel
+// var hideClusterPanel = function () {
+//     clusterPanelIsClosed = true;
+//     clusterFilterPanel.style.webkitTransform = "translateX(300px)";
+//     clusterFilterPanel.style.transform = "translateX(300px)"
+// };
 
-var check3DFilter = function () {
-    if (clusterPanelIsClosed) {
-        clusterPanelIsClosed = false;
-        clusterFilterPanel.style.webkitTransform = "translateX(0px)";
-        clusterFilterPanel.style.transform = "translateX(0px)"
-    } else {
-        hideClusterPanel()
-    }
-}
+// var check3DFilter = function () {
+//     if (clusterPanelIsClosed) {
+//         clusterPanelIsClosed = false;
+//         clusterFilterPanel.style.webkitTransform = "translateX(0px)";
+//         clusterFilterPanel.style.transform = "translateX(0px)"
+//     } else {
+//         hideClusterPanel()
+//     }
+// }
 
 
 //----------------------------------------------------------
@@ -597,6 +621,7 @@ socket.on('clusterDirResult', function (data) {
         $('#compareInstances').html(items);
         $("#compareModal").modal('show');
     }
+    k8cData = null;
 
 });
 //==========================================================
@@ -672,6 +697,18 @@ socket.on('getKStatus', function (data) {
     }
     let resp = '<br><div class="vpkfont vpkcolor">' + msg + '</div>';
     $("#clusterStatus").html(resp);
+
+});
+
+socket.on('parseStatus', function (data) {
+    let msg;
+    if (typeof data.msg !== 'undefined') {
+        msg = data.msg
+    } else {
+        msg = 'Parsing files'
+    }
+    let resp = '<br><div class="vpkfont vpkcolor">' + msg + '</div>';
+    $("#parseStatus").html(resp);
 
 });
 //==========================================================
@@ -783,16 +820,78 @@ socket.on('getFileByCidResults', function (data) {
 //==========================================================
 
 
+//----------------------------------------------------------
+// send request to server to get hierarchy data
+function getSecurityChart(type) {
+    hideMessage();
+    $("#securityChartInfo").empty();
+    $("#securityChartInfo").html('');
+    socket.emit('getSecurityHier', { "type": type, "namespaceFilter": 'n' });
+}
+//...
+socket.on('getSecurityHierResult', function (data) {
+    console.log(JSON.stringify(data, null, 2))
+    $("#securityCharts").removeAttr("height");
+    $("#securityCharts").removeAttr("width");
+    chartCollapsible(data, 's');
+});
 
 
+//----------------------------------------------------------
+// send request to server to get security rules data
+function getSecurityRules() {
+    hideMessage();
+    let parms = { 'vset': [], 'rsc': [], 'apiG': [], 'ns': ['kube-system'] };
+    socket.emit('getSecurityRules', parms);
+}
+//...
+socket.on('getSecurityRulesResult', function (data) {
+    console.log('SecurityRules data received');
+    $("#secTable").bootstrapTable('load', data)
+    $("#secTable").bootstrapTable('hideColumn', 'fnum');
+});
 
+//----------------------------------------------------------
+// send request to server to get hierarchy data
+function getSecurityViewData(namespace) {
+    hideMessage();
+    let ns;
+    if (typeof namespace === 'undefined' || namespace === null) {
+        let option = $('#security-ns-filter').select2('data');
+        ns = option[0].text;
+        ns = ns.trim();
+        if (ns.text === '' || ns.length === 0) {
+            showMessage('Select a namespace it cannot be blank.')
+        }
+    } else {
+        ns = namespace;
+    }
+
+    if (ns === '<cluster-level>') {
+        ns = 'cluster-level';
+    }
+    $("#secViz").empty();
+    $("#secViz").html('');
+    socket.emit('getSecurityViewData', ns);
+}
+//...
+socket.on('getSecurityViewDataResult', function (data) {
+    console.log('SecurityView data received');
+    buildSecGraph(data);
+});
 
 
 //----------------------------------------------------------
 // send request to server to get hierarchy data
-function getChart(type) {
+function getChart(type, what) {
     hideMessage();
     chartType = type;
+    if (what !== null) {
+        chartWhat = what;
+    } else {
+        chartWhat = 'none';
+    }
+
     $("#graphicCharts2").empty();
     $("#chartInfo").empty();
     $("#chartInfo").html(processingRequest);
@@ -1004,14 +1103,17 @@ socket.on('selectListsResult', function (data) {
 //----------------------------------------------------------
 // send request to server to get software version
 function getVersion() {
-    console.log('get version')
     socket.emit('getVersion');
 }
 //...
 socket.on('version', function (data) {
     version = data.version;
     runMode = data.runMode;
-    console.log('runMode: ' + runMode)
+    if (runMode === 'L') {
+        console.log('VpK runMode: Local')
+    } else {
+        console.log('VpK runMode: Container')
+    }
     // hide one of the select sections in the html
     if (runMode === 'C') {
         var link = document.getElementById('runLocal');
@@ -1045,9 +1147,17 @@ function reload() {
     $("#schematicDetail").html('');
     $("#ownerRefLinksDetail").empty();
     $("#ownerRefLinksDetail").html('');
-    if (typeof engine !== null) {
-        $("#Canvas3D").html('<canvas id="renderCanvas"></canvas>');
-    }
+
+    $("#cluster3DView").hide();
+
+    // if (typeof createDefaultEngine !== 'undefined') {
+    //     createDefaultEngine = null;
+    //     $("#canvas3D").html('<canvas id="renderCanvas"></canvas>');
+    // }
+    // if (typeof engine !== null) {
+    //     $("#canvas3D").html('<canvas id="renderCanvas"></canvas>');
+    // }
+
     //This will clear any previously loaded data
     k8cData = null;
     socket.emit('reload', newDir);
@@ -1166,9 +1276,9 @@ socket.on('schematicResult', function (data) {
     if (getDataRequest === 'cluster3D') {
         buildCluster3D();
     }
-    if (getDataRequest === 'clusterTable') {
-        buildClusterTable();
-    }
+    // if (getDataRequest === 'clusterTable') {
+    //     buildClusterTable();
+    // }
 
 });
 

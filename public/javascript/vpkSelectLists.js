@@ -43,6 +43,8 @@ function populateSelectLists(data) {
 
         // filter bar1 (namespaces) and grapcis and cluster drop downs
         options = bldOptions(data.namespaces, 'N', 'select2');
+        options.sort();
+
         $("#ns-filter").empty();
         $("#ns-filter").select2({
             data: options,
@@ -56,6 +58,26 @@ function populateSelectLists(data) {
             dropdownCssClass: "vpkfont-md",
             containerCssClass: "vpkfont-md"
         });
+
+        let secTemp = [];
+        options.sort();
+        for (let i = 0; i < options.length; i++) {
+            if (i === 0) {
+                secTemp.push({ 'id': 0, 'text': ' ' });
+                secTemp.push({ 'id': 0, 'text': '<cluster-level>' });
+            }
+            if (options[i].text === 'all-namespaces' || options[i].text === 'cluster-level') {
+                //console.log('skipped');
+            } else {
+                secTemp.push(options[i])
+
+            }
+        }
+
+        options = bldOptions(data.namespaces, 'S', 'no');
+
+        $("#security-ns-filter").empty();
+        $("#security-ns-filter").html(options);
 
         // filter bar2 (resource kinds)
         options = bldOptions(data.kinds, 'K', 'select2');
@@ -217,7 +239,15 @@ function bldOptions(options, type, style) {
                 if (cki === ": " || cki === "") {
                     listitems += '<option>&lt;cluster-level&gt;</option>';
                 } else {
-                    listitems += '<option>' + items[i] + '</option>';
+                    if (type === 'S') {
+                        if (items[i] === 'all-namespaces') {
+                            listitems += '<option>   </option>';
+                        } else {
+                            listitems += '<option>' + items[i] + '</option>';
+                        }
+                    } else {
+                        listitems += '<option>' + items[i] + '</option>';
+                    }
                 }
             } else {
                 if (cki === ": " || cki === "") {

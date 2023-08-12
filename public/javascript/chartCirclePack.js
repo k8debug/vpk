@@ -14,42 +14,45 @@ const chartCirclePack = (input, chType) => {
                 (d3.hierarchy(data)
                     .sum(d => d.value)
                     .sort((a, b) => b.value - a.value));
+            // type g: general chart, type  x: x-reference chart 
             if (chType === 'g') {
                 $("#chartInfo").empty();
                 $("#chartInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over item. Blue dots can be clicked to view yaml.<span>'
-                + '<div class="header-right">'
-                +    '<a href="javascript:printDiv(\'prtGraphic\')">'
-                +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
-                +    '</a>'
-                + '</div>');
+                    + '<div class="header-right">'
+                    + '<a href="javascript:printDiv(\'prtGraphic\')">'
+                    + '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+                    + '</a>'
+                    + '</div>');
 
             } else if (chType === 'x') {
                 $("#xrefInfo").empty();
                 $("#xrefInfo").html('<span class="vpkfont-md pl-3">View additional informaiton by placing cursor over item. Blue dots can be clicked to view yaml.<span>'
-                + '<div class="header-right">'
-                +    '<a href="javascript:printDiv(\'prtXref\')">'
-                +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
-                +    '</a>'
-                + '</div>');
+                    + '<div class="header-right">'
+                    + '<a href="javascript:printDiv(\'prtXref\')">'
+                    + '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+                    + '</a>'
+                    + '</div>');
             }
             return payload;
         }
 
+        const margin = { 'left': 100, 'top': 50 }
         const root = pack(data);
-
         let svg;
         if (chType === 'g') {
             svg = d3.select('#graphicCharts2')
-            .attr("viewBox", [0, 0, width, height])
-            .style("font", "10px sans-serif")
-            .style("overflow", "visible")
-            .attr("text-anchor", "middle");
+                .attr("viewBox", [0, 0, width, height])
+                .style("font", "10px sans-serif")
+                .style("overflow", "visible")
+                .attr("text-anchor", "middle")
+                .call(zoom);
         } else if (chType === 'x') {
             svg = d3.select('#xrefCharts2')
-            .attr("viewBox", [0, 0, width, height])
-            .style("font", "10px sans-serif")
-            .style("overflow", "visible")
-            .attr("text-anchor", "middle");
+                .attr("viewBox", [0, 0, width, height])
+                .style("font", "10px sans-serif")
+                .style("overflow", "visible")
+                .attr("text-anchor", "middle")
+                .call(zoom);
         }
 
         const node = svg.append("g")
@@ -66,7 +69,7 @@ const chartCirclePack = (input, chType) => {
             .attr("fill", d => {
                 let rtn;
                 rtn = d.children ? "#f7f7f7" : "#007bff";
-                return rtn;                
+                return rtn;
             })
             .attr("cid", d => {
                 let cid = eCount++;
@@ -80,10 +83,10 @@ const chartCirclePack = (input, chType) => {
         const leaf = node.filter(d => !d.children);
 
         leaf.select("circle")
-            .attr("id", d => (d.leafUid = "leaf" + leafCnt++ ));
+            .attr("id", d => (d.leafUid = "leaf" + leafCnt++));
 
         leaf.select("circle")
-            .attr("id", d => (d.leafUid = "leaf" + leafCnt++ ))
+            .attr("id", d => (d.leafUid = "leaf" + leafCnt++))
             .on("mouseover", handleCPMouseOver)
             .on("mouseout", handleCPMouseOut)
             .on("click", handleCPClick);
@@ -104,12 +107,13 @@ const chartCirclePack = (input, chType) => {
     render(input);
 }
 
+
 var lastMove;
 var elapsed;
 
-function handleCPMouseOver(d, i) {            
+function handleCPMouseOver(d, i) {
     // elapsed = Date.now() - lastMove;
-    if ( elapsed < 300 ) { 
+    if (elapsed < 300) {
         return;
     }
     let cid;
@@ -153,20 +157,20 @@ function handleCPMouseOver(d, i) {
                 if (typeof text[1] !== 'undefined') {
                     show = true;
                     tip = '<b>Xref value: </b>' + text[1] + '<br>Click blue dot to view info about occurrence'
-                } 
+                }
             }
         }
 
 
-        if (show === true) {            
-	
+        if (show === true) {
+
             let pageY = d.clientY;
             //let offTop  = $("#schematicDetail").offset().top;
             let offTop;
             if (chartT === 'g') {
-                offTop  = $("#prtGraphic").offset().top;
+                offTop = $("#prtGraphic").offset().top;
             } else {
-                offTop  = $("#prtXref").offset().top;
+                offTop = $("#prtXref").offset().top;
             }
             //let offTop  = window.pageYOffset;
             console.log(offTop)
@@ -178,7 +182,7 @@ function handleCPMouseOver(d, i) {
             } else {
                 offTop = 214 - offTop;
             }
-        
+
             let tipY = offTop + pageY;
             tipY = tipY - 90;
 
@@ -216,7 +220,7 @@ function handleCPClick(d, i, ct) {
     } else if (chartT === 'x') {
         let tmp = cid[1].split('::');
         let fp = tmp.indexOf(':');
-        if (fp > -1 ) {
+        if (fp > -1) {
             tmp = tmp.substring(0, fp);
         }
         if (secret === true) {

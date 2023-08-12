@@ -24,50 +24,52 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 let canvas = document.getElementById("renderCanvas");
 var engine = null;
 var camera = null;
-//var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, 3 * Math.PI / 8, 30, BABYLON.Vector3.Zero());
 var scene = null;
 var sceneToRender = null;
-var createDefaultEngine = function () { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false }); };
-let foundServices = {};
-let foundNSNames = [];
-let foundStorageClasses = {};
-let foundPVC = {};
-let foundPVs = {};
-let cluster = {};
-let meshArray = [];             // Array of all meshes
-let podArray = [];              // Array of displayed pods using fnum
-let sliceArray = [];            // Array of slice rings 
-let resourceArray = [];         // Array of memory and cpu info 
-let controlPArray = [];
-let mstCount = 0;
-let nodeSpace = {};
+var createDefaultEngine = function () {
+    return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false });
+};
+// let foundServices = {};
+// let foundNSNames = [];
+// let foundStorageClasses = {};
+// let foundPVC = {};
+// let foundPVs = {};
+// let cluster = {};
+// let meshArray = [];             // Array of all meshes
+// let podArray = [];              // Array of displayed pods using fnum
+// let sliceArray = [];            // Array of slice rings 
+// let resourceArray = [];         // Array of memory and cpu info 
+// let controlPArray = [];
+// let mstCount = 0;
+// let nodeSpace = {};
 
-let networkLinks = {};
-let pvLinks = [];              // Array of PVs that are biult
-let pvcLinks = {}
-let pvcBuild = {}
+// let networkLinks = {};
+// let pvLinks = [];              // Array of PVs that are biult
+// let pvcLinks = {};
+// let pvcBuild = {};
+// let pvToVolAttLinks = {};
 
-let bn = [
-    1024, //Ki
-    1048576, //Mi
-    1073741824, //Gi
-    1099511627776, //Ti
-    1125899906842620, //Pi
-    1152921504606850000, //Ei
-    1180591620717410000000, //Zi
-    1208925819614630000000000 //Yi
-]
+// let bn = [
+//     1024, //Ki
+//     1048576, //Mi
+//     1073741824, //Gi
+//     1099511627776, //Ti
+//     1125899906842620, //Pi
+//     1152921504606850000, //Ei
+//     1180591620717410000000, //Zi
+//     1208925819614630000000000 //Yi
+// ];
 
-let bt = [
-    1000,
-    1000000,
-    1000000000,
-    1000000000000,
-    1000000000000000,
-    1000000000000000000,
-    1000000000000000000000,
-    1000000000000000000000000
-]
+// let bt = [
+//     1000,
+//     1000000,
+//     1000000000,
+//     1000000000000,
+//     1000000000000000,
+//     1000000000000000000,
+//     1000000000000000000000,
+//     1000000000000000000000000
+// ];
 
 function print3Dscene() {
     if (engine !== null) {
@@ -118,427 +120,427 @@ function set3dBackColor(r, g, b, title) {
 }
 
 
-function populate3DSelectNS() {
-    if (foundNSNamesBuilt === true) {
-        return
-    }
-    // namespace drop downs
-    let data = bldOptions(foundNSNames, 'N', 'select2');
+// function populate3DSelectNSXXX() {
+//     if (foundNSNamesBuilt === true) {
+//         return
+//     }
+//     // namespace drop downs
+//     let data = bldOptions(foundNSNames, 'N', 'select2');
 
-    $("#cluster-ns-filter").empty();
-    $("#cluster-ns-filter").select2({
-        data: data,
-        dropdownCssClass: "vpkfont-md",
-        containerCssClass: "vpkfont-md"
-    });
-    foundNSNamesBuilt = true;
-}
-
-
-function build3DJSON() {
-    meshArray = [];
-    foundNSNames = [];
-    foundStorageClasses = {};
-    cluster = {};
-    podArray = [];              // Array of displayed pods using fnum
-    sliceArray = [];            // Array of slice rings 
-    resourceArray = [];         // Array of memory and cpu info 
-    controlPArray = [];         // Array for control plane
-    networkLinks = [];          // Array of pods that link to existing endpoint/service
-    pvcLinks = {};
-    pvcBuild = {};
-    foundPVC = {};
-    foundPVs = {};
-
-    if (typeof k8cData['0000-clusterLevel'] !== 'undefined') {
-        if (typeof k8cData['0000-clusterLevel'].Node !== 'undefined') {
-            let nData = k8cData['0000-clusterLevel'].Node;
-            //add Worker nodes to cluster, then add Master nodes
-            cluster.maxNodes = nData.length;
-            cluster.nodes = [];
-            // Worker nodes
-            for (let i = 0; i < nData.length; i++) {
-                if (nData[i].type === 'w') {
-                    cluster.nodes.push(nData[i])
-                }
-            }
-            // Master nodes
-            for (let i = 0; i < nData.length; i++) {
-                if (nData[i].type === 'm') {
-                    cluster.nodes.push(nData[i])
-                }
-            }
-            nData = null;
-            populatePods();
-        }
-    }
-
-    // populate drop down filter with located NS values in this cluster
-    populate3DSelectNS();
-
-    // populate storage class array
-    if (typeof k8cData['0000-@storageClass@'] !== 'undefined') {
-        let scKeys = Object.keys(k8cData['0000-@storageClass@']);
-        for (let k = 0; k < scKeys.length; k++) {
-            saveStorageClass(k8cData['0000-@storageClass@'][scKeys[k]].name,
-                k8cData['0000-@storageClass@'][scKeys[k]].fnum)
-        }
-    }
-
-}
+//     $("#cluster-ns-filter").empty();
+//     $("#cluster-ns-filter").select2({
+//         data: data,
+//         dropdownCssClass: "vpkfont-md",
+//         containerCssClass: "vpkfont-md"
+//     });
+//     foundNSNamesBuilt = true;
+// }
 
 
-function saveStorageClass(name, fnum) {
-    if (typeof name === 'undefined' || name === null) {
-        return;
-    }
-    if (typeof foundStorageClasses[name] === 'undefined') {
-        foundStorageClasses[name] = { 'name': name, 'fnum': fnum, 'pv': [] }
-    }
-}
+// function build3DJSONXXX() {
+//     meshArray = [];
+//     foundNSNames = [];
+//     foundStorageClasses = {};
+//     cluster = {};
+//     podArray = [];              // Array of displayed pods using fnum
+//     sliceArray = [];            // Array of slice rings 
+//     resourceArray = [];         // Array of memory and cpu info 
+//     controlPArray = [];         // Array for control plane
+//     networkLinks = [];          // Array of pods that link to existing endpoint/service
+//     pvcLinks = {};
+//     pvcBuild = {};
+//     foundPVC = {};
+//     foundPVs = {};
+
+//     if (typeof k8cData['0000-clusterLevel'] !== 'undefined') {
+//         if (typeof k8cData['0000-clusterLevel'].Node !== 'undefined') {
+//             let nData = k8cData['0000-clusterLevel'].Node;
+//             //add Worker nodes to cluster, then add Master nodes
+//             cluster.maxNodes = nData.length;
+//             cluster.nodes = [];
+//             // Worker nodes
+//             for (let i = 0; i < nData.length; i++) {
+//                 if (nData[i].type === 'w') {
+//                     cluster.nodes.push(nData[i])
+//                 }
+//             }
+//             // Master nodes
+//             for (let i = 0; i < nData.length; i++) {
+//                 if (nData[i].type === 'm') {
+//                     cluster.nodes.push(nData[i])
+//                 }
+//             }
+//             nData = null;
+//             populatePods();
+//         }
+//     }
+
+//     // populate drop down filter with located NS values in this cluster
+//     populate3DSelectNS();
+
+//     // populate storage class array
+//     if (typeof k8cData['0000-@storageClass@'] !== 'undefined') {
+//         let scKeys = Object.keys(k8cData['0000-@storageClass@']);
+//         for (let k = 0; k < scKeys.length; k++) {
+//             saveStorageClass(k8cData['0000-@storageClass@'][scKeys[k]].name,
+//                 k8cData['0000-@storageClass@'][scKeys[k]].fnum)
+//         }
+//     }
+
+// }
 
 
-function savePVC(name, ns, pvcFnum, podFnum) {
-    if (typeof name === 'undefined' || name === null) {
-        return;
-    }
-
-    let key = name + '::' + ns;
-    if (typeof foundPVC[key] === 'undefined') {
-        foundPVC[key] = { 'name': name, 'ns': ns, 'fnum': pvcFnum, 'cnt': 1, 'podFnum': podFnum }
-        //console.log('Added PCV: ' + key)
-    } else {
-        let cnt = foundPVC[key].cnt
-        cnt++;
-        foundPVC[key].cnt = cnt;
-    }
+// function saveStorageClass(name, fnum) {
+//     if (typeof name === 'undefined' || name === null) {
+//         return;
+//     }
+//     if (typeof foundStorageClasses[name] === 'undefined') {
+//         foundStorageClasses[name] = { 'name': name, 'fnum': fnum, 'pv': [] }
+//     }
+// }
 
 
-    if (typeof pvcBuild[key] === 'undefined') {
-        //PVC info does not exists
-        pvcBuild[key] = { 'fnum': pvcFnum, 'podFnum': podFnum }
-    } else {
-        //builtBy = pvcBuild[key].podFnum;
-        pvcLinks[podFnum] = { 'podFnum': pvcBuild[key].podFnum }
-    }
+// function savePVC(name, ns, pvcFnum, podFnum) {
+//     if (typeof name === 'undefined' || name === null) {
+//         return;
+//     }
+
+//     let key = name + '::' + ns;
+//     if (typeof foundPVC[key] === 'undefined') {
+//         foundPVC[key] = { 'name': name, 'ns': ns, 'fnum': pvcFnum, 'cnt': 1, 'podFnum': podFnum }
+//         //console.log('Added PCV: ' + key)
+//     } else {
+//         let cnt = foundPVC[key].cnt
+//         cnt++;
+//         foundPVC[key].cnt = cnt;
+//     }
 
 
-}
+//     if (typeof pvcBuild[key] === 'undefined') {
+//         //PVC info does not exists
+//         pvcBuild[key] = { 'fnum': pvcFnum, 'podFnum': podFnum }
+//     } else {
+//         //builtBy = pvcBuild[key].podFnum;
+//         pvcLinks[podFnum] = { 'podFnum': pvcBuild[key].podFnum }
+//     }
+
+
+// }
 
 
 // populate pod with information
-function populatePods() {
-    let keys = Object.keys(k8cData);
-    let spcTmp;
-    for (let i = 0; i < keys.length; i++) {
-        if (typeof k8cData[keys[i]].kind !== 'undefined') {
-            // In k8cData the kind = 'Pod' 
-            if (k8cData[keys[i]].kind === 'Pod') {
-                // save unique array list of namespaces 
-                if (!foundNSNames.includes(k8cData[keys[i]].namespace)) {
-                    foundNSNames.push(k8cData[keys[i]].namespace)
-                }
-                let pod = {};
-                let nodeName = k8cData[keys[i]].node;
-                pod.name = k8cData[keys[i]].name;
-                pod.ns = k8cData[keys[i]].namespace;
-                pod.fnum = k8cData[keys[i]].fnum;
+// function populatePods() {
+//     let keys = Object.keys(k8cData);
+//     let spcTmp;
+//     for (let i = 0; i < keys.length; i++) {
+//         if (typeof k8cData[keys[i]].kind !== 'undefined') {
+//             // In k8cData the kind = 'Pod' 
+//             if (k8cData[keys[i]].kind === 'Pod') {
+//                 // save unique array list of namespaces 
+//                 if (!foundNSNames.includes(k8cData[keys[i]].namespace)) {
+//                     foundNSNames.push(k8cData[keys[i]].namespace)
+//                 }
+//                 let pod = {};
+//                 let nodeName = k8cData[keys[i]].node;
+//                 pod.name = k8cData[keys[i]].name;
+//                 pod.ns = k8cData[keys[i]].namespace;
+//                 pod.fnum = k8cData[keys[i]].fnum;
 
-                pod.phase = k8cData[keys[i]].phase;
-                if (pod.phase === 'Running') {
-                    pod.status = 1;
-                } else if (pod.phase === 'Failed') {
-                    pod.status = 2;
-                } else if (pod.phase === 'Succeeded') {
-                    pod.status = 4;
-                } else {
-                    pod.status = 3;
-                }
+//                 pod.phase = k8cData[keys[i]].phase;
+//                 if (pod.phase === 'Running') {
+//                     pod.status = 1;
+//                 } else if (pod.phase === 'Failed') {
+//                     pod.status = 2;
+//                 } else if (pod.phase === 'Succeeded') {
+//                     pod.status = 4;
+//                 } else {
+//                     pod.status = 3;
+//                 }
 
-                if (k8cData[keys[i]].daemonSetPod === true) {
-                    pod.status = 0;
-                }
+//                 if (k8cData[keys[i]].daemonSetPod === true) {
+//                     pod.status = 0;
+//                 }
 
-                if (typeof k8cData[keys[i]].status.conditions !== 'undefined') {
-                    pod.conditions = k8cData[keys[i]].status.conditions;
-                } else {
-                    pod.conditions = [];
-                }
-                if (typeof k8cData[keys[i]].PersistentVolumeClaim !== 'undefined') {
-                    //Save the PVC name and NS
-                    savePVC(k8cData[keys[i]].PersistentVolumeClaim[0].pvcName,
-                        k8cData[keys[i]].namespace,
-                        k8cData[keys[i]].PersistentVolumeClaim[0].pvcFnum,
-                        pod.fnum)
+//                 if (typeof k8cData[keys[i]].status.conditions !== 'undefined') {
+//                     pod.conditions = k8cData[keys[i]].status.conditions;
+//                 } else {
+//                     pod.conditions = [];
+//                 }
+//                 if (typeof k8cData[keys[i]].PersistentVolumeClaim !== 'undefined') {
+//                     //Save the PVC name and NS
+//                     savePVC(k8cData[keys[i]].PersistentVolumeClaim[0].pvcName,
+//                         k8cData[keys[i]].namespace,
+//                         k8cData[keys[i]].PersistentVolumeClaim[0].pvcFnum,
+//                         pod.fnum)
 
-                    if (typeof k8cData[keys[i]].PersistentVolumeClaim[0] !== 'undefined') {
-                        pod.pvc = [{
-                            'name': k8cData[keys[i]].PersistentVolumeClaim[0].pvcName,
-                            'fnum': k8cData[keys[i]].PersistentVolumeClaim[0].pvcFnum,
-                            'pvName': k8cData[keys[i]].PersistentVolumeClaim[0].pvName,
-                            'pvFnum': k8cData[keys[i]].PersistentVolumeClaim[0].pvFnum,
-                            'pvcSpace': k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace,
-                            'scName': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassName,
-                            'scFnum': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassFnum,
-                            'ns': k8cData[keys[i]].namespace
-                        }]
+//                     if (typeof k8cData[keys[i]].PersistentVolumeClaim[0] !== 'undefined') {
+//                         pod.pvc = [{
+//                             'name': k8cData[keys[i]].PersistentVolumeClaim[0].pvcName,
+//                             'fnum': k8cData[keys[i]].PersistentVolumeClaim[0].pvcFnum,
+//                             'pvName': k8cData[keys[i]].PersistentVolumeClaim[0].pvName,
+//                             'pvFnum': k8cData[keys[i]].PersistentVolumeClaim[0].pvFnum,
+//                             'pvcSpace': k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace,
+//                             'scName': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassName,
+//                             'scFnum': k8cData[keys[i]].PersistentVolumeClaim[0].storageClassFnum,
+//                             'ns': k8cData[keys[i]].namespace
+//                         }]
 
-                        if (k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace > 0) {
-                            if (typeof nodeSpace[nodeName] !== 'undefined') {
-                                spcTmp = nodeSpace[nodeName];
-                                // console.log('Node: ' + nodeName)
-                                // console.log('Value old: ' + spcTmp);
-                                nodeSpace[nodeName] = spcTmp + k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace;
-                                // console.log('Added: ' + k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace)
-                                // console.log('Value new: ' + nodeSpace[nodeName]);
-                            } else {
-                                nodeSpace[nodeName] = k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace;
-                                // console.log('Inserted node: ' + nodeName + ' - ' + k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace)
-                            }
-                        }
+//                         if (k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace > 0) {
+//                             if (typeof nodeSpace[nodeName] !== 'undefined') {
+//                                 spcTmp = nodeSpace[nodeName];
+//                                 // console.log('Node: ' + nodeName)
+//                                 // console.log('Value old: ' + spcTmp);
+//                                 nodeSpace[nodeName] = spcTmp + k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace;
+//                                 // console.log('Added: ' + k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace)
+//                                 // console.log('Value new: ' + nodeSpace[nodeName]);
+//                             } else {
+//                                 nodeSpace[nodeName] = k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace;
+//                                 // console.log('Inserted node: ' + nodeName + ' - ' + k8cData[keys[i]].PersistentVolumeClaim[0].pvcSpace)
+//                             }
+//                         }
 
-                    } else {
-                        pod.pvc = [];
-                    }
-                } else {
-                    pod.pvc = false;
-                }
+//                     } else {
+//                         pod.pvc = [];
+//                     }
+//                 } else {
+//                     pod.pvc = false;
+//                 }
 
-                if (typeof k8cData[keys[i]].Services !== 'undefined') {
-                    pod.serviceFound = true;
-                    pod.services = [];
-                    let chkStr = ':';
-                    for (let s = 0; s < k8cData[keys[i]].Services.length; s++) {
-                        if (chkStr.indexOf(':' + k8cData[keys[i]].Services[s].fnum + ':') === -1) {
-                            let sData = k8cData[keys[i]].Services[s];
-                            pod.services.push(k8cData[keys[i]].Services[s])
-                            chkStr = chkStr + k8cData[keys[i]].Services[s].fnum + ':';
-                        }
-                    }
-                } else {
-                    pod.serviceFound = false;
-                    pod.services = [];
-                }
+//                 if (typeof k8cData[keys[i]].Services !== 'undefined') {
+//                     pod.serviceFound = true;
+//                     pod.services = [];
+//                     let chkStr = ':';
+//                     for (let s = 0; s < k8cData[keys[i]].Services.length; s++) {
+//                         if (chkStr.indexOf(':' + k8cData[keys[i]].Services[s].fnum + ':') === -1) {
+//                             let sData = k8cData[keys[i]].Services[s];
+//                             pod.services.push(k8cData[keys[i]].Services[s])
+//                             chkStr = chkStr + k8cData[keys[i]].Services[s].fnum + ':';
+//                         }
+//                     }
+//                 } else {
+//                     pod.serviceFound = false;
+//                     pod.services = [];
+//                 }
 
-                // Pod memory and cpu limits
-                if (typeof k8cData[keys[i]].resourceLimit !== 'undefined') {
-                    let cpuLimit = 0;
-                    let memoryLimit = 0;
-                    let tVal = 0;
+//                 // Pod memory and cpu limits
+//                 if (typeof k8cData[keys[i]].resourceLimit !== 'undefined') {
+//                     let cpuLimit = 0;
+//                     let memoryLimit = 0;
+//                     let tVal = 0;
 
-                    for (let r = 0; r < k8cData[keys[i]].resourceLimit.length; r++) {
-                        if (typeof k8cData[keys[i]].resourceLimit[r].cpu !== 'undefined') {
-                            tVal = k8cData[keys[i]].resourceLimit[r].cpu
-                            if (tVal !== '0') {
-                                //console.log('CPU: ' + tVal)
-                                tVal = parseCPU(tVal);
-                                //console.log('CPULimit: ' + tVal)
-                                if (typeof tVal === 'string') {
-                                    cpuLimit = cpuLimit + parseFloat(tVal);
-                                } else {
-                                    cpuLimit = cpuLimit + tVal;
-                                }
-                            }
-                        }
+//                     for (let r = 0; r < k8cData[keys[i]].resourceLimit.length; r++) {
+//                         if (typeof k8cData[keys[i]].resourceLimit[r].cpu !== 'undefined') {
+//                             tVal = k8cData[keys[i]].resourceLimit[r].cpu
+//                             if (tVal !== '0') {
+//                                 //console.log('CPU: ' + tVal)
+//                                 tVal = parseCPU(tVal);
+//                                 //console.log('CPULimit: ' + tVal)
+//                                 if (typeof tVal === 'string') {
+//                                     cpuLimit = cpuLimit + parseFloat(tVal);
+//                                 } else {
+//                                     cpuLimit = cpuLimit + tVal;
+//                                 }
+//                             }
+//                         }
 
-                        if (typeof k8cData[keys[i]].resourceLimit[r].memory !== 'undefined') {
-                            tVal = k8cData[keys[i]].resourceLimit[r].memory
-                            if (tVal !== '0') {
-                                //console.log('Memory: ' + tVal)
-                                tVal = parseMemory(tVal);
-                                //console.log('Memory New: ' + tVal)
-                                //memory = memory + tVal
-                                if (typeof tVal === 'string') {
-                                    memoryLimit = memoryLimit + parseFloat(tVal);
-                                } else {
-                                    memoryLimit = memoryLimit + tVal;
-                                }
-                            }
-                        }
-                    }
+//                         if (typeof k8cData[keys[i]].resourceLimit[r].memory !== 'undefined') {
+//                             tVal = k8cData[keys[i]].resourceLimit[r].memory
+//                             if (tVal !== '0') {
+//                                 //console.log('Memory: ' + tVal)
+//                                 tVal = parseMemory(tVal);
+//                                 //console.log('Memory New: ' + tVal)
+//                                 //memory = memory + tVal
+//                                 if (typeof tVal === 'string') {
+//                                     memoryLimit = memoryLimit + parseFloat(tVal);
+//                                 } else {
+//                                     memoryLimit = memoryLimit + tVal;
+//                                 }
+//                             }
+//                         }
+//                     }
 
-                    pod.cpuLimit = cpuLimit;
-                    pod.memoryLimit = memoryLimit;
-                } else {
-                    pod.cpuLimit = 0;
-                    pod.memoryLimit = 0;
-                }
+//                     pod.cpuLimit = cpuLimit;
+//                     pod.memoryLimit = memoryLimit;
+//                 } else {
+//                     pod.cpuLimit = 0;
+//                     pod.memoryLimit = 0;
+//                 }
 
-                // Pod memory and cpu limits
-                if (typeof k8cData[keys[i]].resourceRequest !== 'undefined') {
-                    let cpu = 0;
-                    let memory = 0;
-                    let tVal = 0;
+//                 // Pod memory and cpu limits
+//                 if (typeof k8cData[keys[i]].resourceRequest !== 'undefined') {
+//                     let cpu = 0;
+//                     let memory = 0;
+//                     let tVal = 0;
 
-                    for (let r = 0; r < k8cData[keys[i]].resourceRequest.length; r++) {
-                        if (typeof k8cData[keys[i]].resourceRequest[r].cpu !== 'undefined') {
-                            tVal = k8cData[keys[i]].resourceRequest[r].cpu
-                            if (tVal !== '0') {
-                                //console.log('CPU: ' + tVal)
-                                tVal = parseCPU(tVal);
-                                //console.log('CPURequest: ' + tVal)
-                                if (typeof tVal === 'string') {
-                                    cpu = cpu + parseFloat(tVal);
-                                } else {
-                                    cpu = cpu + tVal;
-                                }
-                            }
-                        }
+//                     for (let r = 0; r < k8cData[keys[i]].resourceRequest.length; r++) {
+//                         if (typeof k8cData[keys[i]].resourceRequest[r].cpu !== 'undefined') {
+//                             tVal = k8cData[keys[i]].resourceRequest[r].cpu
+//                             if (tVal !== '0') {
+//                                 //console.log('CPU: ' + tVal)
+//                                 tVal = parseCPU(tVal);
+//                                 //console.log('CPURequest: ' + tVal)
+//                                 if (typeof tVal === 'string') {
+//                                     cpu = cpu + parseFloat(tVal);
+//                                 } else {
+//                                     cpu = cpu + tVal;
+//                                 }
+//                             }
+//                         }
 
-                        if (typeof k8cData[keys[i]].resourceRequest[r].memory !== 'undefined') {
-                            tVal = k8cData[keys[i]].resourceRequest[r].memory
-                            if (tVal !== '0') {
-                                //console.log('Memory: ' + tVal)
-                                tVal = parseMemory(tVal);
-                                //console.log('Memory New: ' + tVal)
-                                //memory = memory + tVal
-                                if (typeof tVal === 'string') {
-                                    memory = memory + parseFloat(tVal);
-                                } else {
-                                    memory = memory + tVal;
-                                }
-                            }
-                        }
-                    }
-                    pod.cpuRequest = cpu;
-                    pod.memoryRequest = memory;
-                } else {
-                    pod.cpuRequest = 0;
-                    pod.memoryRequest = 0;
-                }
+//                         if (typeof k8cData[keys[i]].resourceRequest[r].memory !== 'undefined') {
+//                             tVal = k8cData[keys[i]].resourceRequest[r].memory
+//                             if (tVal !== '0') {
+//                                 //console.log('Memory: ' + tVal)
+//                                 tVal = parseMemory(tVal);
+//                                 //console.log('Memory New: ' + tVal)
+//                                 //memory = memory + tVal
+//                                 if (typeof tVal === 'string') {
+//                                     memory = memory + parseFloat(tVal);
+//                                 } else {
+//                                     memory = memory + tVal;
+//                                 }
+//                             }
+//                         }
+//                     }
+//                     pod.cpuRequest = cpu;
+//                     pod.memoryRequest = memory;
+//                 } else {
+//                     pod.cpuRequest = 0;
+//                     pod.memoryRequest = 0;
+//                 }
 
-                addPodToNode(pod, nodeName);
-            }
-        }
-    }
-}
-
-
-function parseLetter(s) {
-    let f = "";
-    //set factor
-    if (s = "K") {
-        f = 0;
-    } else if (s = "M") {
-        f = 1;
-    } else if (s = "G") {
-        f = 2;
-    } else if (s = "T") {
-        f = 3;
-    } else if (s = "P") {
-        f = 4;
-    } else if (s = "E") {
-        f = 5;
-    } else if (s = "Z") {
-        f = 6;
-    } else if (s = "Y") {
-        f = 7;
-    }
-    return f;
-}
+//                 addPodToNode(pod, nodeName);
+//             }
+//         }
+//     }
+// }
 
 
-function parseCPU(v) {
-    let num = 0;
-    let s = "";
-    let f = 0;
-
-    if (typeof v === 'string') {
-        if (v.endsWith("i")) {
-            s = v.substring(v.length - 2);
-            s = s.substring(0, s.length - 1);
-            f = parseLetter(s);
-            num = v.substring(0, v.length - 2);
-            //num = num * bt[f];
-        } else {
-            s = v.substring(v.length - 1, v.length);
-
-            if (s === 'm' || s === 'M') {
-                num = v.substring(0, v.length - 1);
-                //num = v * 1000
-            } else if (s === 'G') {
-                num = v.substring(0, v.length - 1);
-                num = v * 1000
-            } else {
-                if (v.length === 1) {
-                    num = s;
-                    num = s * 1000;
-                } else {
-                    num = v.substring(0, v.length - 1)
-                    if (typeof num !== 'number') {
-                        console.log('Dont know how to handle cpu: ' + v + ' num: ' + num);
-                    }
-                }
-
-                //f = parseLetter(s);
-                //num = v.substring(0, v.length - 1);
-                //num = num * bt[f];
-            }
-        }
-    } else {
-        num = v * 1000;
-    }
-
-    return num
-    //return parseFloat(num).toFixed(3);
-}
+// function parseLetter(s) {
+//     let f = "";
+//     //set factor
+//     if (s = "K") {
+//         f = 0;
+//     } else if (s = "M") {
+//         f = 1;
+//     } else if (s = "G") {
+//         f = 2;
+//     } else if (s = "T") {
+//         f = 3;
+//     } else if (s = "P") {
+//         f = 4;
+//     } else if (s = "E") {
+//         f = 5;
+//     } else if (s = "Z") {
+//         f = 6;
+//     } else if (s = "Y") {
+//         f = 7;
+//     }
+//     return f;
+// }
 
 
-function parseMemory(v) {
-    // Check if zero 
-    if (v === 0) {
-        return 0;
-    }
+// function parseCPU(v) {
+//     let num = 0;
+//     let s = "";
+//     let f = 0;
 
-    let num = 0;
-    let f = 0;
-    let s = "";
+//     if (typeof v === 'string') {
+//         if (v.endsWith("i")) {
+//             s = v.substring(v.length - 2);
+//             s = s.substring(0, s.length - 1);
+//             f = parseLetter(s);
+//             num = v.substring(0, v.length - 2);
+//             //num = num * bt[f];
+//         } else {
+//             s = v.substring(v.length - 1, v.length);
 
-    if (typeof v === 'string') {
-        if (v.endsWith("i")) {
-            s = v.substring(v.length - 2);
-            s = s.substring(0, s.length - 1);
-            f = parseLetter(s);
-            num = v.substring(0, v.length - 2);
-            num = num * bn[f];
-        } else {
-            s = v.substring(v.length, v.length);
-            f = parseLetter(s);
-            num = v.substring(0, v.length - 1);
-            num = num * bt[f];
-        }
-    } else {
-        num = v;
-    }
-    return num
-}
+//             if (s === 'm' || s === 'M') {
+//                 num = v.substring(0, v.length - 1);
+//                 //num = v * 1000
+//             } else if (s === 'G') {
+//                 num = v.substring(0, v.length - 1);
+//                 num = v * 1000
+//             } else {
+//                 if (v.length === 1) {
+//                     num = s;
+//                     num = s * 1000;
+//                 } else {
+//                     num = v.substring(0, v.length - 1)
+//                     if (typeof num !== 'number') {
+//                         console.log('Dont know how to handle cpu: ' + v + ' num: ' + num);
+//                     }
+//                 }
+
+//                 //f = parseLetter(s);
+//                 //num = v.substring(0, v.length - 1);
+//                 //num = num * bt[f];
+//             }
+//         }
+//     } else {
+//         num = v * 1000;
+//     }
+
+//     return num
+//     //return parseFloat(num).toFixed(3);
+// }
 
 
-function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) {
-        return '0 Bytes';
-    }
+// function parseMemory(v) {
+//     // Check if zero 
+//     if (v === 0) {
+//         return 0;
+//     }
 
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+//     let num = 0;
+//     let f = 0;
+//     let s = "";
 
-    return sizes[i] + ' ' + parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
-}
+//     if (typeof v === 'string') {
+//         if (v.endsWith("i")) {
+//             s = v.substring(v.length - 2);
+//             s = s.substring(0, s.length - 1);
+//             f = parseLetter(s);
+//             num = v.substring(0, v.length - 2);
+//             num = num * bn[f];
+//         } else {
+//             s = v.substring(v.length, v.length);
+//             f = parseLetter(s);
+//             num = v.substring(0, v.length - 1);
+//             num = num * bt[f];
+//         }
+//     } else {
+//         num = v;
+//     }
+//     return num
+// }
 
 
-function addPodToNode(pod, nodeName) {
-    for (let n = 0; n < cluster.nodes.length; n++) {
-        if (cluster.nodes[n].name === nodeName) {
-            if (typeof cluster.nodes[n].pods === 'undefined') {
-                cluster.nodes[n].pods = [];
-            }
-            cluster.nodes[n].pods.push(pod)
-            break;
-        }
-    }
-}
+// function formatBytes(bytes, decimals = 2) {
+//     if (bytes === 0) {
+//         return '0 Bytes';
+//     }
+
+//     const k = 1024;
+//     const dm = decimals < 0 ? 0 : decimals;
+//     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+//     const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+//     return sizes[i] + ' ' + parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+// }
+
+
+// function addPodToNode(pod, nodeName) {
+//     for (let n = 0; n < cluster.nodes.length; n++) {
+//         if (cluster.nodes[n].name === nodeName) {
+//             if (typeof cluster.nodes[n].pods === 'undefined') {
+//                 cluster.nodes[n].pods = [];
+//             }
+//             cluster.nodes[n].pods.push(pod)
+//             break;
+//         }
+//     }
+// }
 
 //used to diagnois filter settings
 function meshCnt() {
@@ -596,7 +598,7 @@ function getFnumInfo(data) {
 }
 
 
-function toggle3DView() {
+function filter3DView() {
     // get namespace filters if defined
     let namespaces = '';
     let options = $('#cluster-ns-filter').select2('data');
@@ -1134,7 +1136,14 @@ function createScene() {
     }
 
     camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, 3 * Math.PI / 8, 30, BABYLON.Vector3.Zero());
+    // camera.setPosition(new BABYLON.Vector3(0, 0, 100));
     camera.attachControl(canvas, true);
+
+
+    // camera = new BABYLON.ArcRotateCamera("camera1", 0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
+    // camera.setPosition(new BABYLON.Vector3(0, -40, -25));
+    // camera.attachControl(canvas, true);
+
 
     const light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 50, 0));
     const light2 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(10, -50, 0));
@@ -1189,6 +1198,11 @@ function createScene() {
     const storageClassColor = new BABYLON.StandardMaterial("", scene);
     //SCColor.diffuseColor = new BABYLON.Color3(0.98, 0.60, 0.01);
     storageClassColor.diffuseColor = new BABYLON.Color3.FromHexString("#fa9903");
+
+    const csiNodeColor = new BABYLON.StandardMaterial("", scene);
+    //SCColor.diffuseColor = new BABYLON.Color3(0.98, 0.60, 0.01);
+    csiNodeColor.diffuseColor = new BABYLON.Color3.FromHexString("#ff9903");
+
 
     const memoryLimitColor = new BABYLON.StandardMaterial("", scene);
     memoryLimitColor.diffuseColor = new BABYLON.Color3.FromHexString("#f4a8e6");
@@ -1400,8 +1414,10 @@ function createScene() {
 
             podName = '<div class="vpkfont vpkcolor ml-4">'
                 + '<div id="sliceKey">' + podFnum + '</div>'
+
                 + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
                 + ' onclick="showSchematic(\'' + ns + '\',\'' + podFnum + '\')"> &nbsp;View pod schematic&nbsp;</button>&nbsp;'
+
                 + '<a href="javascript:getDefFnum(\'' + podFnum + '\')">'
                 + '<img src="images/k8/pod.svg" style="width:40px;height:40px;"></a>'
                 + '<span class="pl-3"><b>' + RES_STATUS + '&nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].phase + '</span>'
@@ -1446,6 +1462,10 @@ function createScene() {
             if (cluster.nodes[node].pods[cCnt].services.length > 0) {
                 svcName = '<div class="vpkfont vpkcolor ml-4">'
                     + '<div id="sliceKey">' + cluster.nodes[node].pods[cCnt].services[0].fnum + '</div>'
+
+                    + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
+                    + ' onclick="getDefFnum(\'' + cluster.nodes[node].pods[cCnt].services[0].fnum + '\')"> &nbsp;View resource&nbsp;</button>&nbsp;'
+
                     + '<a href="javascript:getDefFnum(\'' + cluster.nodes[node].pods[cCnt].services[0].fnum + '\')">'
                     + '<img src="images/k8/svc.svg" style="width:40px;height:40px;"></a>'
                     + '<span class="pl-3"><b>' + RES_NAME + '&nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].services[0].name + '</span>'
@@ -1482,6 +1502,10 @@ function createScene() {
                 if (endPoint !== "") {
                     epName = '<div class="vpkfont vpkcolor ml-4">'
                         + '<div id="sliceKey">' + epFnum + '</div>'
+
+                        + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
+                        + ' onclick="getDefFnum(\'' + epFnum + '\')"> &nbsp;View resource&nbsp;</button>&nbsp;'
+
                         + '<a href="javascript:getDefFnum(\'' + epFnum + '\')">'
                         + '<img src="images/k8/' + epType + '.svg" style="width:40px;height:40px;"></a>'
                         + '<span class="pl-3"><b>' + RES_NAME + '&nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].services[0].name + '</span>'
@@ -1499,6 +1523,10 @@ function createScene() {
             if (cluster.nodes[node].pods[cCnt].pvc.length > 0) {
                 pvcName = '<div class="vpkfont vpkcolor ml-4">'
                     + '<div id="sliceKey">' + cluster.nodes[node].pods[cCnt].pvc[0].fnum + '</div>'
+
+                    + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
+                    + ' onclick="getDefFnum(\'' + cluster.nodes[node].pods[cCnt].pvc[0].fnum + '\')"> &nbsp;View resource&nbsp;</button>&nbsp;'
+
                     + '<a href="javascript:getDefFnum(\'' + cluster.nodes[node].pods[cCnt].pvc[0].fnum + '\')">'
                     + '<img src="images/k8/pvc.svg" style="width:40px;height:40px;"></a>'
                     + '<span class="pl-3"><b>PVC Name: &nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].pvc[0].name + '</span>'
@@ -1508,6 +1536,10 @@ function createScene() {
                 if (typeof cluster.nodes[node].pods[cCnt].pvc[0].pvName !== 'undefined') {
                     pvName = '<div class="vpkfont vpkcolor ml-4">'
                         + '<div id="sliceKey">' + cluster.nodes[node].pods[cCnt].pvc[0].pvFnum + '</div>'
+
+                        + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
+                        + ' onclick="getDefFnum(\'' + cluster.nodes[node].pods[cCnt].pvc[0].pvFnum + '\')"> &nbsp;View resource&nbsp;</button>&nbsp;'
+
                         + '<a href="javascript:getDefFnum(\'' + cluster.nodes[node].pods[cCnt].pvc[0].pvFnum + '\')">'
                         + '<img src="images/k8/pv.svg" style="width:40px;height:40px;"></a>'
                         + '<span class="pl-3"><b>PV Name: &nbsp;&nbsp;</b>' + cluster.nodes[node].pods[cCnt].pvc[0].pvName + '</span>'
@@ -1834,6 +1866,10 @@ function createScene() {
             scFnum = scData.fnum;
             scTxt = '<div class="vpkfont vpkcolor ml-4">'
                 + '<div id="sliceKey">' + scFnum + '</div>'
+
+                + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
+                + ' onclick="getDefFnum(\'' + scFnum + '\')"> &nbsp;View resource&nbsp;</button>&nbsp;'
+
                 + '<a href="javascript:getDefFnum(\'' + scFnum + '\')">'
                 + '<img src="images/k8/sc.svg" style="width:40px;height:40px;"></a>'
                 + '<span class="pl-3 pr-3"><b>Storage Class : &nbsp;&nbsp;</b>' + scData.name + '</span>'
@@ -1929,6 +1965,10 @@ function createScene() {
             let memory = 0;
             let memoryBase = 0;
             let nName = cluster.nodes[nodePtr].name;
+            let csiFnum;
+            let csiInner;
+            let csiX = pX;
+
 
             // "m" is a Master node, otherwise treat as worker node
             if (cluster.nodes[nodePtr].type === "m") {
@@ -1939,6 +1979,58 @@ function createScene() {
                 can.material = wrkNodeMat;
                 nType = WRK_TYPE;
             }
+
+
+            // CSINode information 
+            if (typeof cluster.nodes[nodePtr].csiNodes !== 'undefined') {
+                if (typeof cluster.nodes[nodePtr].csiNodes[0] !== 'undefined') {
+                    data = cluster.nodes[nodePtr].csiNodes;
+                    for (let c = 0; c < cluster.nodes[nodePtr].csiNodes[0].drivers.length; c++) {
+                        if (typeof cluster.nodes[nodePtr].csiNodes[0].fnum !== 'undefined') {
+
+                            csiInner = '<div class="vpkfont vpkcolor ml-4">'
+                                + '<div id="sliceKey">' + cluster.nodes[nodePtr].csiNodes[0].fnum + '</div>'
+
+                                + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
+                                + ' onclick="getDefFnum(\'' + cluster.nodes[nodePtr].csiNodes[0].fnum + '\')"> &nbsp;View resource&nbsp;</button>&nbsp;'
+
+                                + '<a href="javascript:getDefFnum(\'' + cluster.nodes[nodePtr].csiNodes[0].fnum + '\')">'
+                                + '<img src="images/k8/csinode.svg" style="width:40px;height:40px;"></a>'
+                                + '<span class="pl-3"><b>PV Name: &nbsp;&nbsp;</b>' + cluster.nodes[nodePtr].csiNodes[0].drivers[c].name + '</span>'
+                                + '&nbsp;&nbsp&nbsp;&nbsp&nbsp;&nbsp<span class="pl-3 vpkfont-sm">(Press icon to view resource info)</span></div>';
+
+                            // define the csiNode
+                            buildSphere(csiX, pY - 2, pZ, .175, 32, csiNodeColor, 'ClusterLevel', 'CSINode', csiFnum, csiInner);
+                            buildSlice(csiX, pY - 2, pZ, '1000.0', 'n');
+                            buildLine(csiX, pY - 2, pZ, 4, 'CSILine', 'ClusterLevel', cluster.nodes[nodePtr].csiNodes[0].fnum);
+
+                            //save the volumeAttachments
+                            if (typeof cluster.nodes[nodePtr].csiNodes[0].drivers[c].volAtt !== 'undefined') {
+                                if (cluster.nodes[nodePtr].csiNodes[0].drivers[c].volAtt.length > 0) {
+                                    for (let v = 0; v < cluster.nodes[nodePtr].csiNodes[0].drivers[c].volAtt.length; v++) {
+                                        volKey = cluster.nodes[nodePtr].csiNodes[0].drivers[c].volAtt[v].pvName;
+                                        if (typeof pvToVolAttLinks[volKey] === 'undefined') {
+                                            pvToVolAttLinks[volKey] = [];
+                                        }
+                                        pvToVolAttLinks[volKey].push({
+                                            'fnum': cluster.nodes[nodePtr].csiNodes[0].drivers[c].volAtt[v].fnum,
+                                            'x': csiX,
+                                            'y': pY - 5,
+                                            'z': pZ
+                                        })
+                                    }
+                                }
+                            }
+                            // increase csi X location for next entry
+                            csiX = csiX + .25;
+                        }
+                    }
+                }
+            }
+
+
+
+
 
             // Node CPU resource cylinder
             if (typeof nodeSpace[nName] !== 'undefined') {
@@ -1977,6 +2069,10 @@ function createScene() {
 
             let nTxt = '<div class="vpkfont vpkcolor ml-4">'
                 + '<div id="sliceKey">' + cluster.nodes[nodePtr].fnum + '</div>'
+
+                + '<button type="button" class="btn btn-outline-primary btn-sm vpkButton" '
+                + ' onclick="getDefFnum(\'' + cluster.nodes[nodePtr].fnum + '\')"> &nbsp;View resource&nbsp;</button>&nbsp;'
+
                 + '<a href="javascript:getDefFnum(\'' + cluster.nodes[nodePtr].fnum + '\')">'
                 + '<img src="images/k8/node.svg" style="width:40px;height:40px;"></a>'
                 + '<span class="pl-3 pr-3"><b>Node ' + NODE_TYPE + '&nbsp;&nbsp;</b>' + nType + '</span>'
@@ -2134,7 +2230,7 @@ function build3DView() {
         }
 
         window.scene = createScene();
-        toggle3DView();
+        filter3DView();
 
         // Populate the schematic tab 
         var openSch = async function () {

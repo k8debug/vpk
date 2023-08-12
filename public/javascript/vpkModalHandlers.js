@@ -32,7 +32,6 @@ function compareShowFiles() {
     $("#compareFilesModal").modal('show')
 }
 
-
 function getNsTable(ns) {
     $("#schemHeader").html('Resources for namespace: <span class="font-weight-bold">' + ns + '</span>');
     if (typeof nsResourceInfo[ns] !== 'undefined') {
@@ -378,80 +377,6 @@ function xrefCloseFirstRule() {
     $("#xrefFirstRule").hide();
     $("#xrefShowSelected").hide();
     $("#xrefSelect").show();
-}
-
-
-//----------------------------------------------------
-// ----- 3D cluster filtering
-function filter3DView() {
-    $("#filter3DModal").modal('show');
-}
-
-
-//----------------------------------------------------
-// ----- Security related
-
-function getRoleBindingByNs(ns) {
-    buildRBACs();
-    let key = formatNsKey(ns);
-    let showNs = formatShowNs(ns);
-    if (typeof securityRoleBindingInfo[key] === 'undefined') {
-        buildRoleBindings(key);
-    }
-    $("#schemBody").html(securityRoleBindingInfo[key]);
-    $("#schemHeader").html('RoleBindings for <span class="font-weight-bold">' + showNs + '</span>');
-    $("#schemModal").modal('show');
-}
-
-function getSecRoleByNs(ns) {
-    let level = 'ns'
-    if (ns === '0000-@clusterRoles@') {
-        level = 'cl';
-    }
-    buildRBACs();
-    let key = formatNsKey(ns);
-    let showNs = formatShowNs(ns);
-    if (typeof securityRoleInfo[key] === 'undefined') {
-        buildRoles(key, level);
-    }
-    $("#schemBody").html(securityRoleInfo[key]);
-    $("#schemHeader").html('Roles for <span class="font-weight-bold">' + showNs + '</span>');
-    $("#schemModal").modal('show');
-}
-
-function getSecSubjectsByNs(ns) {
-    buildRBACs();
-    let key = formatNsKey(ns);
-    let showNs = formatShowNs(ns);
-    if (typeof securitySubjectInfo[key] === 'undefined') {
-        buildRoleBindings(key);
-    }
-    $("#schemBody").html(securitySubjectInfo[key]);
-    $("#schemHeader").html('Subjects for <span class="font-weight-bold">' + showNs + '</span> definitions');
-    $("#schemModal").modal('show');
-}
-
-function formatNsKey(ns) {
-    let key = '';
-    if (ns.startsWith('0000-')) {
-        key = ns;
-    } else {
-        key = '0000-' + ns;
-    }
-    return key;
-}
-
-function formatShowNs(ns) {
-    let showNs = '';
-    if (ns.startsWith('0000-')) {
-        showNs = ns.substring(5);
-        if (showNs === '@clusterRoleBinding@' || showNs === '@clusterRoles@' || showNs === '@subjects@') {
-            showNs = '&lt;Cluster Level&gt;';
-        }
-    } else {
-        showNs = ' namespace: ' + ns;
-    }
-    return showNs;
 }
 
 //----------------------------------------------------------

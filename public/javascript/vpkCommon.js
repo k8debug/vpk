@@ -59,6 +59,7 @@ var selectedAction;
 var popCnt = 0;
 var cHeight;
 var chartType;
+var chartWhat;
 var selectCnt = 0;
 var currentTab = "instructions"
 var newData = [];
@@ -180,20 +181,20 @@ let explainInfo = [];
 
 // color legend for security 
 let RBAClegend = '<div class="vpkfont-md mb-2 mt-2">'
-	+ '<span class="pr-1 text-dark">Binding:</span>'
-	+ '<span class="bg-roleBinding pl-1 pr-1">RoleBinding</span>'
-	+ '<span class="bg-clusterRoleBinding pl-1 pr-1">ClusterRoleBinding</span>'
-
-	+ '<span class="pl-3 pr-1 text-dark">Roles:</span>'
+	+ '<span class="pr-1 text-dark">Namespace:</span>'
 	+ '<span class="bg-role pl-1 pr-1">Role</span>'
+	+ '<span class="bg-roleBinding pl-1 pr-1">RoleBinding</span>'
+
+	+ '<span class="pl-3 pr-1 text-dark">Cluster:</span>'
 	+ '<span class="bg-clusterRole pl-1 pr-1">ClusterRole</span>'
+	+ '<span class="bg-clusterRoleBinding pl-1 pr-1">ClusterRoleBinding</span>'
 
 	+ '<span class="pl-3 pr-1 text-dark">Subjects:</span>'
 	+ '<span class="bg-subjectServiceAccount pl-1 pr-1">ServiceAccount</span>'
 	+ '<span class="bg-subjectUser pl-1 pr-1">User</span>'
 	+ '<span class="bg-subjectGroup pl-1 pr-1">Group</span>'
-	+ '<span class="bg-subjectSystemUser pl-1 pr-1">System User</span>'
-	+ '<span class="bg-subjectSystemGroup pl-1 pr-1">System Group</span>'
+	// + '<span class="bg-subjectSystemUser pl-1 pr-1">System User</span>'
+	// + '<span class="bg-subjectSystemGroup pl-1 pr-1">System Group</span>'
 
 	+ '<span class="pl-1 vpkfont-md">(click colored background text for info)</span>';
 
@@ -204,7 +205,18 @@ let processingRequest = '<div class="row">'
 	+ '  </div>'
 	+ '</div>';
 
+function handleZoom(e) {
+	d3.select('svg g')
+		.attr('transform', e.transform);
+}
 
+function initZoom() {
+	d3.select('svg')
+		.call(zoom);
+}
+
+let zoom = d3.zoom()
+	.on('zoom', handleZoom);
 
 
 function getExplain(kind, api) {
@@ -873,250 +885,6 @@ function buildTipContent(data, type, fnum) {
 	return content;
 }
 
-function buildRBACUsage() {
-	whereRoleRefs = {};
-	whereRoleBound = {};
-
-	let keys = Object.keys(k8cData);
-	let key = '';
-	let newKeys = [];
-	let newKey;
-	let bind;
-
-	// build list of keys and pull out only the 0000- keys
-	if (keys.length > 0) {
-		for (let p = 0; p < keys.length; p++) {
-			newKey = keys[p];
-			if (newKey.startsWith('0000-')) {
-				newKeys.push({ 'namespace': k8cData[newKey].namespace, 'fnum': newKey });
-			}
-		}
-		// sort by namespace & kind
-		newKeys.sort((a, b) => (a.namespace > b.namespace) ? 1 : (a.namespace === b.namespace) ? ((a.fnum > b.fnum) ? 1 : -1) : -1);
-		// clear the old unsorted keys
-		keys = [];
-		// build new sorted array: keys
-		for (let t = 0; t < newKeys.length; t++) {
-			newKey = newKeys[t].fnum;
-			keys.push(newKey);
-		}
-		//clear temp vars
-		newKeys = null;
-		newKey = null;
-	} else {
-		// should this return a message that nothing was found
-	}
-
-	// build whereBound array 
-	for (let k = 0; k < keys.length; k++) {
-		key = keys[k];
-		//data to show
-		if (typeof k8cData[key].RoleBinding !== 'undefined') {
-			let bindings = k8cData[key].RoleBinding;
-			bindings.sort((a, b) => (a.name > b.name) ? 1 : (a.names === b.name) ? ((a.fnum > b.fnum) ? 1 : -1) : -1);
-			let hl = bindings.length;
-			for (r = 0; r < hl; r++) {
-				bind = bindings[r];
-				populateWhereRoleBound(bind);
-				populateWhereRoleRefs(bind);
-			}
-			updateSecurityBindingCounts(key);
-		} else {
-			console.log('No RoleBinding located for namespace: ' + key)
-		}
-	}
-}
-
-
-//For each role binding track where it's bound
-function populateWhereRoleRefs(binding) {
-	let kind = binding.kind;
-	let bindingName = binding.name;
-	let bindingNamespace = binding.namespace;
-	let roleRefName = binding.roleRef.name;
-	let roleRefKind = binding.roleRef.kind;
-	let row = '';
-	let ns = ''
-
-	if (typeof whereRoleRefs[roleRefName] === 'undefined') {
-		whereRoleRefs[roleRefName] = [];
-	}
-
-	if (typeof binding.subjects !== 'undefined') {
-		for (let b = 0; b < binding.subjects.length; b++) {
-			if (typeof binding.subjects[b].namespace === 'undefined') {
-				ns = '&lt;clusterLevel&gt;'
-			} else {
-				ns = binding.subjects[b].namespace;
-			}
-			row = {
-				'kind': kind,
-				'bindingName': bindingName,
-				'bindingNamespace': bindingNamespace,
-				'roleRefKind': roleRefKind,
-				'subjectName': binding.subjects[b].name,
-				'subjectKind': binding.subjects[b].kind,
-				'subjectNamespace': ns,
-				'fnum': binding.fnum
-			};
-			//console.log(JSON.stringify(row))
-			whereRoleRefs[roleRefName].push(row);
-		}
-	}
-}
-
-
-//For each role binding track where it's bound
-function populateWhereRoleBound(binding) {
-	let roleName = binding.roleRef.name;
-	if (roleName === 'default') {
-		console.log('k')
-	}
-
-	if (typeof whereRoleBound[roleName] === 'undefined') {
-		whereRoleBound[roleName] = {
-			'ClusterRoleBinding': { 'ClusterRole': [], 'Role': [] },
-			'RoleBinding': { 'ClusterRole': [], 'Role': [] },
-		}
-	}
-
-	if (typeof binding.roleRef.kind === 'undefined') {
-		if (binding.kind === 'ClusterRoleBinding') {
-			binding.roleRef.kind = 'ClusterRole';
-		} else {
-			binding.roleRef.kind = 'Role';
-		}
-		console.log('No roleRef.kind for fnum: ' + binding.fnum + ' changed to ' + binding.roleRef.kind);
-	}
-
-	if (binding.kind === 'RoleBinding') {
-		roleBindingCnt++
-	} else if (binding.kind === 'ClusterRoleBinding') {
-		clusterRoleBindingCnt++
-	}
-
-	if (binding.roleRef.kind === 'Role') {
-		roleRefRoleCnt++;
-	} else if (binding.roleRef.kind === 'ClusterRole') {
-		roleRefClusterRoleCnt++;
-	}
-
-	try {
-		if (typeof whereRoleBound[roleName][binding.kind][binding.roleRef.kind] === 'undefined') {
-			whereRoleBound[roleName][binding.kind][binding.roleRef.kind] = [];
-		}
-
-		whereRoleBound[roleName][binding.kind][binding.roleRef.kind].push({
-			'fnum': binding.fnum,
-			'subjects': binding.subjects
-		})
-	} catch (e) {
-		console.log(e)
-	}
-
-
-}
-
-
-// build the Role information to populate the secInfoModal for Role
-function buildSecModalRole(data, key, rColor) {
-	let role = data;
-	let item;
-	let rtn = '';
-	let grpInfo = '';
-	let resourceNames = '';
-	let resources = '';
-	let verbs = '';
-	let category = '';
-	let fnum = '<na>';
-
-	if (typeof role.fnum !== 'undefined') {
-		fnum = role.fnum;
-	} else {
-		// will never find this file
-		fnum = 'missing.0';
-	}
-
-	let roleId =
-		'<div class="d-flex justify-content-between vpkcolor vpkfont-md mb-0">'
-		+ '  <div>Role Name:&nbsp;<span onclick="getDefFnum(\'' + fnum + '\')"'
-		+ '  class="vpkfont-md ' + rColor + '">' + key + '</span></div>'
-		+ '</div><hr>';
-
-	let divSection = '<div class="events" ><table style="width:100%">';
-	let header = '<tr class="partsList"><th>Category</th><th>Category Values</th><th>Resource Names</th><th>Resources</th><th>Verbs</th></tr>';
-	rtn = roleId + divSection + header;
-
-	if (typeof role.rules !== 'undefined' && role.rules !== 'null' && role.rules !== null) {
-		for (let c = 0; c < role.rules.length; c++) {
-			category = '&nbsp;';
-			resourceNames = '&nbsp;'
-			resources = '&nbsp;'
-			verbs = '&nbsp;'
-			grpInfo = '&nbsp';
-			if (typeof role.rules[c].apiGroups !== 'undefined') {
-				grpInfo = parseArray(role.rules[c].apiGroups);
-
-				if (grpInfo === '' || grpInfo.length < 2) {
-					grpInfo = '&lt;blank&gt;'
-				}
-
-				category = 'apiGroup';
-			}
-
-			if (typeof role.rules[c].nonResourceURLs !== 'undefined') {
-				grpInfo = parseArray(role.rules[c].nonResourceURLs);
-				category = 'nonResourceURLs'
-			}
-
-			if (typeof role.rules[c].resourceNames !== 'undefined') {
-				resourceNames = parseArray(role.rules[c].resourceNames);
-			}
-			if (typeof role.rules[c].resources !== 'undefined') {
-				resources = parseArray(role.rules[c].resources);
-			}
-			if (typeof role.rules[c].verbs !== 'undefined') {
-				verbs = parseArray(role.rules[c].verbs);
-			}
-
-			if (grpInfo === '') {
-				grpInfo = '&lt;blank&gt;'
-			}
-
-			item = '<tr>'
-				+ '<td width="15%" class="align-top ">' + category + '</td>'
-				+ '<td width="25%" class="align-top ">' + grpInfo + '</td>'
-				+ '<td width="25%" class="align-top ">' + resourceNames + '</td>'
-				+ '<td width="25%" class="align-top ">' + resources + '</td>'
-				+ '<td width="10%" class="align-top">' + verbs + '</td>'
-				+ '</tr>';
-			rtn = rtn + item
-
-			item = '<tr>'
-				+ '<td width="15%"><hr></td>'
-				+ '<td width="25%"><hr></td>'
-				+ '<td width="25%"><hr></td>'
-				+ '<td width="25%"><hr></td>'
-				+ '<td width="10%"><hr></td>'
-				+ '</tr>';
-			rtn = rtn + item
-		}
-	} else {
-		console.log('No Role rules located for role: ' + key)
-		item = '<tr>'
-			+ '<td width="15%" class="align-top ">No Rules</td>'
-			+ '<td width="25%" class="align-top ">&nbsp;</td>'
-			+ '<td width="25%" class="align-top ">&nbsp;</td>'
-			+ '<td width="25%" class="align-top ">&nbsp;</td>'
-			+ '<td width="10%" class="align-top">&nbsp;</td>'
-			+ '</tr>';
-		rtn = rtn + item
-	}
-
-	rtn = rtn + '</table></div>';
-	return rtn;
-}
-
 
 // how to do
 // https://stackoverflow.com/questions/11219582/how-to-detect-my-browser-version-and-operating-system-using-javascript
@@ -1315,6 +1083,9 @@ function showVpkTooltip(evt, text) {
 	if (typeof svgInfo[text] !== 'undefined') {
 		info = svgInfo[text]
 	}
+	if (text === '0000.RBAC Security') {
+		info = '<span style="font-size: 0.80rem; text-decoration: underline;">Security</span><br><span style="font-size: 0.70rem;">RBAC security graph</span>';
+	}
 
 	let pageY = evt.pageY;
 	let offTop = $("#schematicDetail").offset().top;
@@ -1378,7 +1149,6 @@ function hideVpkTooltip() {
 
 
 function pickData(tmp) {
-	console.log(tmp)
 	tmp.trim();
 	if (tmp === 'Running cluster') {
 		getCluster();

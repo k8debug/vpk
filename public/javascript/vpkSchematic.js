@@ -755,23 +755,31 @@ function svgHeader(data, fnum) {
 		+ '<image x="1065" y="72" width="48"  height="48" href="images/k8/node.svg" onmousemove="showVpkTooltip(evt, \''
 		+ buildSvgInfo(nodeInfo, nodeInfo.fnum, 'Node')
 		+ '\');" onmouseout="hideVpkTooltip()"  onclick="getDefFnum(\'' + nodeInfo.fnum + '\')"/>'
-		+ '<text x="930" y="50" fill="white" class="workloadText">Cluster level resources</text>';
+		+ '<text x="930" y="50" fill="white" class="workloadText">Cluster level resources</text>'
 
-	let roleNs = '0000-' + data.namespace;
-	if (typeof k8cData[roleNs].RoleBinding !== 'undefined') {
-		rtn = rtn
-			+ '<image x="750"  y="22" width="45"  height="45" href="images/k8/rb.svg" onmousemove="showVpkTooltip(evt, \''
-			+ buildSvgInfo(data.namespace, fnum, 'RoleBinding')
-			+ '\');" onmouseout="hideVpkTooltip()"  onclick="getRoleBindingByNs(\'' + data.namespace + '\')"/>'
+		+ '<image x="750"  y="22" width="45"  height="45" href="images/k8/security.svg" onmousemove="showVpkTooltip(evt, \''
+		+ buildSvgInfo(data.namespace, '0000', 'RBAC Security')
+		+ '\');" onmouseout="hideVpkTooltip()"  onclick="showSecGraph(\'' + data.namespace + '\')"/>';
 
-			+ '<image x="675"  y="22" width="45"  height="45" href="images/k8/role.svg" onmousemove="showVpkTooltip(evt, \''
-			+ buildSvgInfo(data.namespace, fnum, 'Roles')
-			+ '\');" onmouseout="hideVpkTooltip()"  onclick="getSecRoleByNs(\'' + data.namespace + '\')"/>'
 
-			+ '<image x="600"  y="22" width="45"  height="45" href="images/k8/subjects.svg" onmousemove="showVpkTooltip(evt, \''
-			+ buildSvgInfo(data.namespace, fnum, 'Subject')
-			+ '\');" onmouseout="hideVpkTooltip()"  onclick="getSecSubjectsByNs(\'' + data.namespace + '\')"/>';
-	}
+	// let roleNs = '0000-' + data.namespace;
+	// if (typeof k8cData[roleNs].RoleBinding !== 'undefined') {
+	// 	rtn = rtn
+	// 		+ '<image x="750"  y="22" width="45"  height="45" href="images/k8/rb.svg" onmousemove="showVpkTooltip(evt, \''
+	// 		+ buildSvgInfo(data.namespace, fnum, 'RoleBinding')
+	// 		+ '\');" onmouseout="hideVpkTooltip()"  onclick="showSecGraph(\'' + data.namespace + '\')"/>'
+	// 		// + '\');" onmouseout="hideVpkTooltip()"  onclick="getRoleBindingByNs(\'' + data.namespace + '\')"/>'
+
+	// 		+ '<image x="675"  y="22" width="45"  height="45" href="images/k8/role.svg" onmousemove="showVpkTooltip(evt, \''
+	// 		+ buildSvgInfo(data.namespace, fnum, 'Roles')
+	// 		+ '\');" onmouseout="hideVpkTooltip()"  onclick="showSecGraph(\'' + data.namespace + '\')"/>'
+	// 		// + '\');" onmouseout="hideVpkTooltip()"  onclick="getSecRoleByNs(\'' + data.namespace + '\')"/>'
+
+	// 		+ '<image x="600"  y="22" width="45"  height="45" href="images/k8/subjects.svg" onmousemove="showVpkTooltip(evt, \''
+	// 		+ buildSvgInfo(data.namespace, fnum, 'Subject')
+	// 		+ '\');" onmouseout="hideVpkTooltip()"  onclick="showSecGraph(\'' + data.namespace + '\')"/>';
+	// 	// + '\');" onmouseout="hideVpkTooltip()"  onclick="getSecSubjectsByNs(\'' + data.namespace + '\')"/>';
+	// }
 
 	if (bnds.show === true) {
 		rtn = rect1 + rect2 + rtn;

@@ -4,34 +4,35 @@ const chartHierarchy = (input, chType) => {
     let width = 1250;
     let height = 500;
     let svg;
-    
+
+    // type g: general chart, type  x: x-reference chart 
     if (chType === 'x') {
 
         $("#xrefInfo").empty();
         $("#xrefInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy (click red dot to view resource)</span>'
-        + '<div class="header-right">'
-        +    '<a href="javascript:printDiv(\'prtXref\')">'
-        +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
-        +    '</a>'
-        + '</div>');
+            + '<div class="header-right">'
+            + '<a href="javascript:printDiv(\'prtXref\')">'
+            + '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+            + '</a>'
+            + '</div>');
 
         svg = d3.select('#xrefCharts2')
-        .style("font", "11px sans-serif")
-        .style("overflow", "visible")
-        .attr("text-anchor", "middle");
+            .style("font", "11px sans-serif")
+            .style("overflow", "visible")
+            .attr("text-anchor", "middle");
     } else {
         $("#chartInfo").empty();
         $("#chartInfo").html('<span class="vpkfont-md pl-3 pb-3">Expanded hierarchy (click red dot to view resource)</span>'
-        + '<div class="header-right">'
-        +    '<a href="javascript:printDiv(\'prtGraphic\')">'
-        +        '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
-        +    '</a>'
-        + '</div>');
+            + '<div class="header-right">'
+            + '<a href="javascript:printDiv(\'prtGraphic\')">'
+            + '<i class="fas fa-print mr-3 vpkcolor vpkfont-lg"></i>'
+            + '</a>'
+            + '</div>');
 
         svg = d3.select('#graphicCharts2')
-        .style("font", "11px sans-serif")
-        .style("overflow", "visible")
-        .attr("text-anchor", "middle");
+            .style("font", "11px sans-serif")
+            .style("overflow", "visible")
+            .attr("text-anchor", "middle");
     }
 
     const tree = data => {
@@ -41,7 +42,7 @@ const chartHierarchy = (input, chType) => {
         return d3.tree().nodeSize([root.dx, root.dy])(root);
     }
 
-    const render = data => { 
+    const render = data => {
         const root = tree(data);
 
         let x0 = Infinity;
@@ -92,15 +93,15 @@ const chartHierarchy = (input, chType) => {
             .attr("stroke", "white");
 
         node.append("circle")
-        .attr("fill", d => d.children ? "#999" : "#f33")
-        .attr("r", 4)
-        // ------ DaW -------
-        .attr("cid", d => {
-            let cid = eCount++;
-            let text = d.ancestors().map(d => d.data.name).reverse().join('::')
-            return 'cid' + cid + '$' + text + '$' + chType;
-        })
-        .on("click", handleHierarchyClick);
+            .attr("fill", d => d.children ? "#999" : "#f33")
+            .attr("r", 4)
+            // ------ DaW -------
+            .attr("cid", d => {
+                let cid = eCount++;
+                let text = d.ancestors().map(d => d.data.name).reverse().join('::')
+                return 'cid' + cid + '$' + text + '$' + chType;
+            })
+            .on("click", handleHierarchyClick);
         return svg.node();
     };
 
@@ -117,9 +118,9 @@ const handleHierarchyClick = (d, i, ct) => {
     let fnum = '';
     if (typeof d.currentTarget !== 'undefined') {
         if (typeof d.currentTarget.attributes !== 'undefined') {
-            if (typeof d.currentTarget.attributes['fill'] !== 'undefined' ) {
-                if (typeof d.currentTarget.attributes['fill'].nodeValue !== 'undefined' ) {
-                    if (d.currentTarget.attributes['fill'].nodeValue !== '#f33' ) {
+            if (typeof d.currentTarget.attributes['fill'] !== 'undefined') {
+                if (typeof d.currentTarget.attributes['fill'].nodeValue !== 'undefined') {
+                    if (d.currentTarget.attributes['fill'].nodeValue !== '#f33') {
                         return;
                     } else {
                         if (typeof d.currentTarget.attributes['cid'] !== 'undefined') {
@@ -127,17 +128,17 @@ const handleHierarchyClick = (d, i, ct) => {
                             cid = cid.split('$');
                             chartT = cid[2];
                             if (chartT === 'g') {
-                                getFileByCid(cid);  
+                                getFileByCid(cid);
                             } else if (chartT = 'x') {
                                 text = cid[1];
                                 text = text.split('::');
                                 if (text.length > 1) {
-                                    fnum = text[ text.length - 1];
+                                    fnum = text[text.length - 1];
                                     fnum = fnum.split(':')
                                     if (typeof fnum[0] !== 'undefined') {
                                         getDefFnum(fnum[0]);
                                     }
-                                } 
+                                }
                             }
                         } else {
                             return

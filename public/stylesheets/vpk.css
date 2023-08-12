@@ -21,8 +21,22 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#secViz svg {
+    height: auto;
+    width: 100%;
+    overflow: auto;
+}
+
+#secViz {
+    overflow: auto;
+}
+
 /* font sizes */
 .vpkfont-xsm {
+    font-size: 0.75rem;
+}
+
+.vpkfont-filter {
     font-size: 0.75rem;
 }
 
@@ -258,13 +272,14 @@ body {
     }
 }
 
+/* 
 .wrapper {
     max-width: 1280px;
     margin: auto;
     border-radius: 10px;
-}
+} */
 
-#tooltip {
+*/ #tooltip {
     background: cornsilk;
     border: 1px solid black;
     border-radius: 5px;
@@ -485,8 +500,8 @@ table.docsTable td {
 }
 
 .bg-clusterRoleBinding {
-    background-color: #6e03d3af;
-    color: white;
+    background-color: #6e03d3;
+    color: #fff;
 }
 
 .bg-roleBindingUnk {
